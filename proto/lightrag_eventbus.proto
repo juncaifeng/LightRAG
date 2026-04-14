@@ -1,0 +1,97 @@
+syntax = "proto3";
+
+package lightrag.eventbus.v1;
+
+option go_package = "github.com/HKUDS/LightRAG/go-eventbus/proto/eventbus/v1;eventbus";
+
+// ==========================================
+// 1. 服务注册与服务发现 (控制平面)
+// ==========================================
+
+message RegisterRequest {
+    string subscriber_id = 1;           // 订阅者唯一ID (如: "rust-semantic-chunker-node1")
+    string topic = 2;                   // 订阅的阶段 (如: "rag.insert.chunking")
+    repeated string capabilities = 3;   // 细粒度能力声明 (如: ["markdown", "pdf"])
+    int32 max_concurrency = 4;          // 声明最大并发处理能力 (用于背压)
+    int32 expected_latency_ms = 5;      // 预期处理延迟 (用于总线调度参考)
+}
+
+message RegisterResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+// ==========================================
+// 2. 核心数据传输载体 (数据平面)
+// ==========================================
+
+message EventEnvelope {
+    string topic = 1;                   // 路由 Topic (如: "rag.insert.chunking")
+    string correlation_id = 2;          // 全局唯一的请求标识 (匹配 Request/Reply)
+    string trace_id = 3;                // OpenTelemetry 追踪 ID
+    int64 deadline_timestamp = 4;       // 绝对截止时间戳 (Unix Epoch毫秒)，用于精确超时控制
+    int32 priority = 5;                 // 优先级 (0: Normal, 1: High)
+    string source_service = 6;          // 发起者标识 (如: "lightrag-core-api")
+    
+    map<string, bytes> inputs = 10;     // 业务上下文负载 (如果是瘦事件，这里可能只有 "document_id")
+    map<string, string> metadata = 11;  // 附加元数据
+}
+
+message SubscriberReply {
+    string correlation_id = 1;          // 必须与请求中的 correlation_id 对应
+    string subscriber_id = 2;           // 回包者标识
+    
+    map<string, bytes> outputs = 10;    // 处理后的增量结果
+    
+    // 合并策略：订阅者主动决定
+    enum MergeStrategy {
+        APPEND = 0;    // 追加 (适合扩词、抽取实体)
+        REPLACE = 1;   // 替换/覆盖 (适合更高优的算法，如专有分块算法覆盖默认算法)
+        IGNORE = 2;    // 旁路/忽略 (适合审计、敏感词拦截)
+    }
+    MergeStrategy strategy = 11;
+    int32 weight = 12;                  // 冲突解决权重 (权重大的 REPLACE 覆盖小的)
+    bool partial_result = 13;           // 流式标识: 是否只是部分结果 (支持渐进式返回)
+    
+    // 运维与可观测性
+    int32 latency_ms = 20;              // 订阅者内部处理耗时
+    string error_code = 21;             // 标准错误码 (成功为空，如 RATE_LIMIT)
+    string error_message = 22;          // 错误详情
+    map<string, bytes> metadata = 23;   // 订阅者回传元数据 (如 Token 消耗)
+
+    // 健康状态与熔断建议
+    enum HealthStatus {
+        HEALTHY = 0;
+        DEGRADED = 1;      // 服务可用但性能下降
+        OVERLOADED = 2;    // 负载过高，建议熔断
+        UNHEALTHY = 3;     // 服务不可用
+    }
+    HealthStatus health = 24;
+    
+    enum AdvisoryAction {
+        CONTINUE = 0;       // 正常继续
+        CIRCUIT_BREAK = 1;  // 建议熔断此订阅者 (如 30s 内不派发新任务)
+        RETRY = 2;          // 建议总线重试分发
+        FALLBACK = 3;       // 建议总线降级到默认实现
+    }
+    AdvisoryAction advisory = 25;
+}
+
+// ==========================================
+// 3. gRPC 接口定义 (简化单向流架构)
+// ==========================================
+
+service EventBus {
+    // 【控制平面】订阅者启动时注册
+    rpc RegisterSubscriber(RegisterRequest) returns (RegisterResponse);
+    
+    // 【数据平面】数据分发：订阅者只接收事件流 (单向流)
+    // 稳定性更高，负载均衡更友好。订阅者需通过独立的 Respond RPC 传回结果。
+    rpc Subscribe(RegisterRequest) returns (stream EventEnvelope);
+    
+    // 【数据平面】数据回传：订阅者处理完毕后通过独立的 RPC 返回结果
+    rpc Respond(SubscriberReply) returns (RegisterResponse);
+    
+    // 【数据平面】主服务(LightRAG)调用接口：发布事件并等待总线聚合结果
+    rpc PublishAndWait(EventEnvelope) returns (SubscriberReply);
+}
