@@ -50,13 +50,15 @@
 
 ### 3.1 生产级 Protobuf 契约设计
 
-这份契约设计具备了高并发流水线所需的流式处理、熔断降级、和背压调度能力。
+这份契约设计具备了高并发流水线所需的健康上报、熔断降级、和背压调度能力。同时，为了降低实现复杂度与提高故障隔离性，我们在数据平面放弃了双向流，采用更轻量稳健的**单向流 + 独立响应 RPC** 模式。
 
 ```protobuf
 syntax = "proto3";
 package lightrag.eventbus.v1;
 
+// ==========================================
 // 1. 服务注册与服务发现 (控制平面)
+// ==========================================
 message RegisterRequest {
     string subscriber_id = 1;           // 订阅者唯一ID (如: "rust-semantic-chunker-node1")
     string topic = 2;                   // 订阅的阶段 (如: "rag.insert.chunking")
@@ -70,7 +72,9 @@ message RegisterResponse {
     string message = 2;
 }
 
+// ==========================================
 // 2. 核心数据传输载体 (数据平面)
+// ==========================================
 message EventEnvelope {
     string topic = 1;                   // 路由 Topic
     string correlation_id = 2;          // 全局唯一的请求标识 (匹配 Request/Reply)
@@ -104,22 +108,74 @@ message SubscriberReply {
     string error_code = 21;             // 标准错误码 (成功为空，如 RATE_LIMIT)
     string error_message = 22;          // 错误详情
     map<string, bytes> metadata = 23;   // 订阅者回传元数据 (如 Token 消耗)
+    
+    // 🛡️ 熔断与健康上报
+    enum HealthStatus {
+        HEALTHY = 0;
+        DEGRADED = 1;      // 服务可用但性能下降
+        OVERLOADED = 2;    // 负载过高，建议熔断
+        UNHEALTHY = 3;     // 服务不可用
+    }
+    HealthStatus health = 24;
+    
+    enum AdvisoryAction {
+        CONTINUE = 0;       // 正常继续
+        CIRCUIT_BREAK = 1;  // 建议熔断此订阅者 (如 30 秒内不再派发)
+        RETRY = 2;          // 建议重试
+        FALLBACK = 3;       // 建议降级到默认实现
+    }
+    AdvisoryAction advisory = 25;
 }
 
+message Ack {
+    bool success = 1;
+}
+
+// ==========================================
 // 3. gRPC 接口定义
+// ==========================================
 service EventBus {
-    // 订阅者启动时注册
+    // 【控制平面】订阅者启动时注册
     rpc RegisterSubscriber(RegisterRequest) returns (RegisterResponse);
     
-    // 双向流通信：订阅者连上后，总线通过流下发 EventEnvelope，订阅者处理完通过流推回 SubscriberReply
-    rpc SubscribeStream(stream SubscriberReply) returns (stream EventEnvelope);
+    // 【数据平面】订阅者监听流：仅接收事件 (单向流)
+    // 采用单向流 + 独立响应 RPC 的模式，降低实现复杂度并提升故障隔离性
+    rpc Subscribe(RegisterRequest) returns (stream EventEnvelope);
     
-    // 主服务(LightRAG)调用接口：发布事件并等待合并结果
+    // 【数据平面】订阅者返回处理结果 (独立 RPC)
+    rpc Respond(SubscriberReply) returns (Ack);
+    
+    // 【数据平面】主服务(LightRAG)调用接口：发布事件并等待合并结果
     rpc PublishAndWait(EventEnvelope) returns (SubscriberReply);
 }
 ```
 
-### 3.2 运行机制推演 (以文档分块为例)
+### 3.2 角色职责与运行机制推演
+
+#### 1. 本地订阅者适配层 (Local Subscriber Adapter)
+为了保证向后兼容，LightRAG 原有的 Python 逻辑被包装为“默认订阅者”。关键在于**本地走内存短路，避免 gRPC 序列化开销**：
+
+```python
+class LocalSubscriberAdapter:
+    """将 Python 内部函数包装为统一契约的 Event Bus 订阅者"""
+    def __init__(self, handler_func, topic):
+        self.handler = handler_func
+        self.is_local = True  # 标识为本地调用
+        
+    async def process(self, envelope: EventEnvelope) -> SubscriberReply:
+        # 直接内存调用，延迟 < 1ms
+        result = await self.handler(envelope.inputs)
+        
+        return SubscriberReply(
+            correlation_id=envelope.correlation_id,
+            outputs={"result": result},
+            strategy=MergeStrategy.APPEND,
+            latency_ms=0  # 无网络延迟
+        )
+```
+通过统一的接口，Event Bus 调度时无需区分本地还是远程服务，实现优雅解耦。
+
+#### 2. 运行机制推演 (以文档分块为例)
 
 1. **主服务发广播**：LightRAG 核心引擎发布 `rag.insert.chunking` 事件。
 2. **总线盲发**：Event Bus 将文本并发推给 A（默认的 Python Token 切分器）和 B（外部用 Rust 写的语义切分器）。
