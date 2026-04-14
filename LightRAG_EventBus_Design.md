@@ -150,32 +150,34 @@ service EventBus {
 }
 ```
 
-### 3.2 角色职责与运行机制推演
+### 3.2 角色职责与本地短路优化 (Local Short-circuit)
 
-#### 1. 本地订阅者适配层 (Local Subscriber Adapter)
-为了保证向后兼容，LightRAG 原有的 Python 逻辑被包装为“默认订阅者”。关键在于**本地走内存短路，避免 gRPC 序列化开销**：
+#### 1. LightRAG Core Engine (发布者)
+- 在生命周期节点（如扩词、召回）调用 EventBus 发出广播并阻塞等待合并结果。
 
+#### 2. Native Capabilities (本地订阅者伪装与优化)
+为了保证向下兼容，LightRAG 原有的 Python 逻辑被包装为“默认订阅者”。
+**关键优化**：通过适配层实现“内存短路”，避免原生逻辑走 gRPC 网络序列化开销。
 ```python
 class LocalSubscriberAdapter:
-    """将 Python 内部函数包装为统一契约的 Event Bus 订阅者"""
+    """将 Python 函数包装为 Event Bus 订阅者"""
     def __init__(self, handler_func, topic):
         self.handler = handler_func
-        self.is_local = True  # 标识为本地调用
+        self.is_local = True  # 标识为本地订阅者
         
     async def process(self, envelope: EventEnvelope) -> SubscriberReply:
-        # 直接内存调用，延迟 < 1ms
+        # 直接内存调用，延迟 < 1ms，跳过 Protobuf 序列化
         result = await self.handler(envelope.inputs)
-        
         return SubscriberReply(
             correlation_id=envelope.correlation_id,
             outputs={"result": result},
             strategy=MergeStrategy.APPEND,
-            latency_ms=0  # 无网络延迟
+            latency_ms=0
         )
 ```
 通过统一的接口，Event Bus 调度时无需区分本地还是远程服务，实现优雅解耦。
 
-#### 2. 运行机制推演 (以文档分块为例)
+#### 3. 运行机制推演 (以文档分块为例)
 
 1. **主服务发广播**：LightRAG 核心引擎发布 `rag.insert.chunking` 事件。
 2. **总线盲发**：Event Bus 将文本并发推给 A（默认的 Python Token 切分器）和 B（外部用 Rust 写的语义切分器）。
