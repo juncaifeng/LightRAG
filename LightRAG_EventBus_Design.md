@@ -44,51 +44,64 @@
  └───────────────────────┘
 ```
 
-## 3. 设计细节
+## 3. 核心机制：订阅者驱动的智能合并 (Subscriber-driven Merge)
 
-### 3.1 gRPC Protobuf 契约
-通过严谨的 `.proto` 协议约束流水线的上下文状态。
+为了确保 Event Bus 的“绝对纯粹”，**Event Bus 不应该包含任何针对特定 RAG 阶段的硬编码合并逻辑（如扩词用并集，分块用替换等）**。所有的控制权必须下放给扩展服务本身。
+
+### 3.1 极简且通用的 Protobuf 契约
+通过在响应包中引入元数据，让订阅者主动告诉总线应该如何处理它的返回结果。
 
 ```protobuf
 syntax = "proto3";
 package lightrag.v1;
 
-// 贯穿整个 RAG 生命周期的上下文
-message PipelineContext {
-    string trace_id = 1;
-    string original_query = 2;
-    repeated string expanded_queries = 3;
-    repeated TextChunk retrieved_chunks = 4;
-    // ... 其他状态
+// 主服务抛出的事件包（仅包含通用槽位）
+message EventPayload {
+    string topic = 1;         // 如: "rag.insert.chunking"
+    string session_id = 2;
+    map<string, bytes> inputs = 3;  // 上下文数据
 }
 
-// 事件总线对外提供的接口
-service EventBusService {
-    // 外部服务启动时，向总线注册自己
-    rpc RegisterSubscriber(RegisterRequest) returns (RegisterResponse);
+// 订阅者返回的响应包
+message SubscriberResponse {
+    string subscriber_id = 1;
+    map<string, bytes> outputs = 2;
     
-    // 双向流通信：总线向服务推事件，服务处理完推回结果
-    rpc SubscribeStream(stream SubscribeResponse) returns (stream SubscribeRequest);
+    // ✨ 灵魂设计：订阅者主动决定合并策略
+    enum MergeStrategy {
+        APPEND = 0;    // 追加 (适合扩词、抽取实体)
+        REPLACE = 1;   // 替换/覆盖 (适合更高优的算法，如专有分块算法覆盖默认算法)
+        IGNORE = 2;    // 旁路/忽略 (适合审计、敏感词拦截)
+    }
+    MergeStrategy strategy = 3;
+    
+    // 权重（当多个服务都要求 REPLACE 时，总线根据权重决断）
+    int32 weight = 4;
 }
 ```
 
-### 3.2 角色职责
+### 3.2 运行机制推演 (以文档分块为例)
 
-#### 1. LightRAG Core Engine (发布者)
-- 在生命周期节点（如扩词、召回）调用 EventBus 发出广播并阻塞等待合并结果。
-- **无状态，无配置表**：不需要知道目标服务的任何信息。
+1. **主服务发广播**：LightRAG 核心引擎发布 `rag.insert.chunking` 事件。
+2. **总线盲发**：Event Bus 将文本并发推给 A（默认的 Python Token 切分器）和 B（外部用 Rust 写的语义切分器）。
+3. **订阅者表态**：
+   - A 返回切分结果，并声明：`strategy=APPEND, weight=10`。
+   - B 返回切分结果，并强势声明：`strategy=REPLACE, weight=100`。
+4. **总线机械式合并**：Event Bus 不懂业务，只遵循元数据协议。它看到 B 的 `REPLACE` 且权重更高，直接丢弃 A 的结果，只将 B 的结果返回给主服务。
 
-#### 2. gRPC Event Bus (中枢神经)
-- 维护动态路由表：接受外部服务的长连接与注册请求。
-- 策略分发与合并：当收到 Core 的广播时，并行下发给所有订阅了该 Topic 的服务，设置超时时间，收集返回结果并执行合并（如对数组进行 `extend` 和去重）。
+这种设计让 Event Bus 成为一个纯粹的、普适的中间件，甚至可以复用于其他非 RAG 场景，实现了终极的架构解耦。
 
-#### 3. External Services (订阅者)
-- 如 Go/Rust 开发的微服务。启动时连接 Event Bus 的 gRPC 端口，声明自己能处理的 Topic。
-- 热插拔：服务挂掉或停止时，总线自动剔除其注册信息，主链路丝毫不受影响。
+## 4. 全生命周期扩展 (Insert & Query)
 
-#### 4. Native Capabilities (向后兼容保障)
-- LightRAG 原有的 Python 逻辑被包装为“默认订阅者”，在系统内部注册到 Event Bus。
-- 保证在没有部署任何外部微服务的情况下，系统依然能完整、正常运行。
+Event Bus 不仅用于查询阶段（Query），它在计算密集型的数据摄入阶段（Insert）能发挥更大的价值。
+
+### 4.1 建图流水线 (Insert) 扩展场景
+- **`rag.insert.document_uploaded`**：可接入 OCR 服务或 Markdown 清洗服务。
+- **`rag.insert.chunking`**：可接入业务专有的正则切分或基于 NLP 的语义切分服务。
+- **`rag.insert.entity_extraction`**：可接入特定领域的 NER 服务（如医疗词典匹配），以毫秒级速度与大模型的抽取结果进行 `APPEND` 融合。
+- **`rag.insert.embedding`**：可接入独立的 GPU 向量化集群。
+
+> **优化挑战与应对**：在 Insert 阶段，考虑到 `PipelineContext` 可能会携带数 MB 的长文本，为了防止 gRPC 带宽爆炸，可采用**“瘦事件 + 共享存储”**的模式。事件总线只传递 `DocumentID`，订阅者自行去 Redis 或 S3 获取原始大文本进行处理。
 
 ## 4. 方案优势总结
 1. **彻底解耦**：新增能力（如同义词、术语过滤）只需要开发新服务并启动，无需修改 LightRAG 任何代码或配置。
