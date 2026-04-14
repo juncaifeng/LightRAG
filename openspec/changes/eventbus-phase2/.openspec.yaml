@@ -1,0 +1,9 @@
+name: eventbus-phase2
+status: proposed
+apply:
+  requires:
+    - tasks
+artifacts:
+  - proposal
+  - design
+  - tasks
