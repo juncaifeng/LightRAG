@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"time"
-	"fmt"
 
 	pb "github.com/HKUDS/LightRAG/go-eventbus/proto/eventbus/v1"
 )

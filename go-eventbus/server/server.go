@@ -2,10 +2,8 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"sync"
-	"time"
 
 	pb "github.com/HKUDS/LightRAG/go-eventbus/proto/eventbus/v1"
 )
