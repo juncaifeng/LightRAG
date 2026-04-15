@@ -30,7 +30,7 @@ from lightrag.utils import (
     logger,
 )
 
-from lightrag.types import GPTKeywordExtractionFormat
+from lightrag.lightrag_types import GPTKeywordExtractionFormat
 
 import numpy as np
 from typing import Union, List, Optional, Dict

@@ -28,7 +28,7 @@ from lightrag.utils import (
     logger,
 )
 
-from lightrag.types import GPTKeywordExtractionFormat
+from lightrag.lightrag_types import GPTKeywordExtractionFormat
 from lightrag.api import __api_version__
 
 import numpy as np

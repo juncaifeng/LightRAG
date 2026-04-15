@@ -3,7 +3,7 @@ from collections import deque
 from dataclasses import dataclass
 from typing import final
 
-from lightrag.types import KnowledgeGraph, KnowledgeGraphNode, KnowledgeGraphEdge
+from lightrag.lightrag_types import KnowledgeGraph, KnowledgeGraphNode, KnowledgeGraphEdge
 from lightrag.utils import logger
 from lightrag.base import BaseGraphStorage
 import networkx as nx

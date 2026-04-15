@@ -113,7 +113,7 @@ from lightrag.utils import (
     make_relation_chunk_key,
     normalize_source_ids_limit_method,
 )
-from lightrag.types import KnowledgeGraph
+from lightrag.lightrag_types import KnowledgeGraph
 from dotenv import load_dotenv
 
 # use the .env that is inside the current folder
@@ -236,6 +236,11 @@ class LightRAG:
 
     workspace: str = field(default_factory=lambda: os.getenv("WORKSPACE", ""))
     """Workspace for data isolation. Defaults to empty string if WORKSPACE environment variable is not set."""
+
+    # Event Bus Dispatcher
+    # ---
+    event_bus_url: str = field(default="")
+    """URL of the external gRPC Event Bus. If empty, a LocalMemoryDispatcher is used."""
 
     # ---
     # TODO: Deprecated, use setup_logger in utils.py instead
@@ -753,6 +758,23 @@ class LightRAG:
         )
 
         self._storages_status = StoragesStatus.CREATED
+
+        # Initialize EventBus Dispatcher
+        from .hooks import LocalMemoryDispatcher, GrpcEventBusDispatcher, NativeChunkingSubscriber
+        from .operate import chunking_by_token_size
+        
+        if self.event_bus_url:
+            self.dispatcher = GrpcEventBusDispatcher(self.event_bus_url)
+            logger.info(f"Initialized GrpcEventBusDispatcher connected to {self.event_bus_url}")
+        else:
+            self.dispatcher = LocalMemoryDispatcher()
+            logger.info("Initialized LocalMemoryDispatcher for fallback execution.")
+            
+        # Register Native Adapters to Dispatcher
+        self.dispatcher.register_local_subscriber(
+            topic="rag.insert.chunking",
+            subscriber=NativeChunkingSubscriber(chunking_func=chunking_by_token_size)
+        )
 
     async def initialize_storages(self):
         """Storage initialization must be called one by one to prevent deadlock"""
@@ -1952,19 +1974,25 @@ class LightRAG:
                                 )
                             content = content_data["content"]
 
-                            # Call chunking function, supporting both sync and async implementations
-                            chunking_result = self.chunking_func(
-                                self.tokenizer,
-                                content,
-                                split_by_character,
-                                split_by_character_only,
-                                self.chunk_overlap_token_size,
-                                self.chunk_token_size,
+                            # Call chunking via EventBus Dispatcher
+                            from .hooks import EventEnvelope
+                            envelope = EventEnvelope(
+                                topic="rag.insert.chunking",
+                                inputs={
+                                    "tokenizer": self.tokenizer,
+                                    "content": content,
+                                    "split_by_character": split_by_character,
+                                    "split_by_character_only": split_by_character_only,
+                                    "chunk_overlap_token_size": self.chunk_overlap_token_size,
+                                    "chunk_token_size": self.chunk_token_size
+                                }
                             )
-
-                            # If result is awaitable, await to get actual result
-                            if inspect.isawaitable(chunking_result):
-                                chunking_result = await chunking_result
+                            
+                            chunking_reply = await self.dispatcher.publish_and_wait(envelope)
+                            if chunking_reply.error_code:
+                                raise Exception(f"Chunking failed via EventBus: {chunking_reply.error_message}")
+                                
+                            chunking_result = chunking_reply.outputs.get("chunks", [])
 
                             # Validate return type
                             if not isinstance(chunking_result, (list, tuple)):

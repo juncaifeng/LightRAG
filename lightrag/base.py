@@ -17,7 +17,7 @@ from typing import (
     AsyncIterator,
 )
 from .utils import EmbeddingFunc
-from .types import KnowledgeGraph
+from .lightrag_types import KnowledgeGraph
 from .constants import (
     DEFAULT_TOP_K,
     DEFAULT_CHUNK_TOP_K,
