@@ -1,0 +1,9 @@
+name: eventbus-phase3-integration
+status: proposed
+apply:
+  requires:
+    - tasks
+artifacts:
+  - proposal
+  - design
+  - tasks
