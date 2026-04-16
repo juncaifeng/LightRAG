@@ -7,8 +7,8 @@ import (
 	_ "net/http/pprof"
 
 	"google.golang.org/grpc"
-	pb "github.com/HKUDS/LightRAG/go-eventbus/proto/eventbus/v1"
-	"github.com/HKUDS/LightRAG/go-eventbus/server"
+	pb "github.com/juncaifeng/LightRAG/go-eventbus/proto/eventbus/v1"
+	"github.com/juncaifeng/LightRAG/go-eventbus/server"
 )
 
 func main() {
@@ -27,8 +27,16 @@ func main() {
 
 	s := grpc.NewServer()
 	busServer := server.NewEventBusServer()
-	
+
 	pb.RegisterEventBusServer(s, busServer)
+
+	// Start HTTP API + WebSocket server for dashboard
+	go func() {
+		log.Println("Starting HTTP dashboard server on :6061")
+		if err := server.StartHTTPServer(busServer, ":6061"); err != nil {
+			log.Fatalf("HTTP server failed: %v", err)
+		}
+	}()
 	
 	log.Printf("Event Bus gRPC server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {

@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	pb "github.com/HKUDS/LightRAG/go-eventbus/proto/eventbus/v1"
+	pb "github.com/juncaifeng/LightRAG/go-eventbus/proto/eventbus/v1"
 )
 
 // PublishAndWait scatter-gather engine
@@ -16,6 +16,7 @@ func (s *EventBusServer) PublishAndWait(ctx context.Context, env *pb.EventEnvelo
 
 	if !exists || len(subs) == 0 {
 		log.Printf("No subscribers found for topic: %s", env.Topic)
+		s.metrics.RecordPublish(env.Topic, env.CorrelationId)
 		// Return empty reply indicating no processing
 		return &pb.SubscriberReply{
 			CorrelationId: env.CorrelationId,
@@ -23,6 +24,10 @@ func (s *EventBusServer) PublishAndWait(ctx context.Context, env *pb.EventEnvelo
 			Strategy:      pb.SubscriberReply_IGNORE,
 		}, nil
 	}
+
+	// Record metrics
+	s.metrics.RecordPublish(env.Topic, env.CorrelationId)
+	s.metrics.RecordScatter(env.Topic, env.CorrelationId, len(subs))
 
 	// Create a gather task
 	task := &GatherTask{
@@ -78,15 +83,18 @@ func (s *EventBusServer) PublishAndWait(ctx context.Context, env *pb.EventEnvelo
 		select {
 		case <-ctxDeadline.Done():
 			log.Printf("Deadline exceeded for event %s, gathering partial results", env.CorrelationId)
+			s.metrics.RecordTimeout(env.CorrelationId, env.Topic)
 			mergedReply.ErrorCode = "TIMEOUT"
 			return mergedReply, nil
 
 		case reply := <-task.Responses:
 			responsesReceived++
 			s.mergeResponses(mergedReply, reply)
+			s.metrics.RecordResponse(reply.CorrelationId, reply.SubscriberId, reply.LatencyMs, reply.Strategy.String())
 		}
 	}
 
+	s.metrics.RecordGatherComplete(env.CorrelationId, env.Topic, responsesReceived)
 	log.Printf("Successfully gathered %d responses for event %s", responsesReceived, env.CorrelationId)
 	return mergedReply, nil
 }

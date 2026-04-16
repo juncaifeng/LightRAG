@@ -1,0 +1,7 @@
+name: rag.query.vector_search
+pipeline: query
+stage: vector_search
+description: "向量检索 — 根据查询从向量数据库检索相似文本块"
+description_en: "Vector search — retrieves similar text chunks from vector database by query"
+recommended_strategy: REPLACE
+recommended_weight: 10

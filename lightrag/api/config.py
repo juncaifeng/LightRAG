@@ -132,6 +132,13 @@ def parse_args() -> argparse.Namespace:
         help="Timeout in seconds (useful when using slow AI). Use None for infinite timeout",
     )
 
+    # Event Bus configuration
+    parser.add_argument(
+        "--event-bus-url",
+        default=get_env_value("EVENT_BUS_URL", ""),
+        help="gRPC Event Bus URL (e.g. localhost:50051). If empty, uses local in-process dispatcher",
+    )
+
     # RAG configuration
     parser.add_argument(
         "--max-async",

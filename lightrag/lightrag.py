@@ -760,20 +760,72 @@ class LightRAG:
         self._storages_status = StoragesStatus.CREATED
 
         # Initialize EventBus Dispatcher
-        from .hooks import LocalMemoryDispatcher, GrpcEventBusDispatcher, NativeChunkingSubscriber
-        from .operate import chunking_by_token_size
-        
+        from .hooks import (
+            LocalMemoryDispatcher, GrpcEventBusDispatcher, NativeChunkingSubscriber,
+            NativeKeywordExtractionSubscriber, NativeQueryExpansionSubscriber,
+            NativeKGSearchSubscriber, NativeVectorSearchSubscriber,
+            NativeRerankSubscriber, NativeResponseSubscriber,
+        )
+        from .operate import (
+            chunking_by_token_size, extract_keywords_only,
+            _get_node_data, _get_edge_data, _get_vector_context,
+        )
+
         if self.event_bus_url:
             self.dispatcher = GrpcEventBusDispatcher(self.event_bus_url)
             logger.info(f"Initialized GrpcEventBusDispatcher connected to {self.event_bus_url}")
         else:
             self.dispatcher = LocalMemoryDispatcher()
             logger.info("Initialized LocalMemoryDispatcher for fallback execution.")
-            
-        # Register Native Adapters to Dispatcher
+
+        # Register Insert pipeline subscribers
         self.dispatcher.register_local_subscriber(
             topic="rag.insert.chunking",
             subscriber=NativeChunkingSubscriber(chunking_func=chunking_by_token_size)
+        )
+
+        # Register Query pipeline subscribers
+        self.dispatcher.register_local_subscriber(
+            topic="rag.query.keyword_extraction",
+            subscriber=NativeKeywordExtractionSubscriber(
+                extract_func=extract_keywords_only,
+                global_config=global_config,
+                hashing_kv=hashing_kv,
+            )
+        )
+        self.dispatcher.register_local_subscriber(
+            topic="rag.query.query_expansion",
+            subscriber=NativeQueryExpansionSubscriber()
+        )
+        self.dispatcher.register_local_subscriber(
+            topic="rag.query.kg_search",
+            subscriber=NativeKGSearchSubscriber(
+                get_node_data=_get_node_data,
+                get_edge_data=_get_edge_data,
+                global_config=global_config,
+                entities_vdb=self.entities_vdb,
+                relationships_vdb=self.relationships_vdb,
+                knowledge_graph=self.chunk_entity_relation_graph,
+            )
+        )
+        self.dispatcher.register_local_subscriber(
+            topic="rag.query.vector_search",
+            subscriber=NativeVectorSearchSubscriber(
+                get_vector_context=_get_vector_context,
+                chunks_vdb=self.chunks_vdb,
+                global_config=global_config,
+            )
+        )
+        self.dispatcher.register_local_subscriber(
+            topic="rag.query.rerank",
+            subscriber=NativeRerankSubscriber()
+        )
+        self.dispatcher.register_local_subscriber(
+            topic="rag.query.response",
+            subscriber=NativeResponseSubscriber(
+                llm_func=self.llm_model_func,
+                global_config=global_config,
+            )
         )
 
     async def initialize_storages(self):
@@ -2851,6 +2903,7 @@ class LightRAG:
                 hashing_kv=self.llm_response_cache,
                 system_prompt=None,
                 chunks_vdb=self.chunks_vdb,
+                dispatcher=self.dispatcher,
             )
         elif data_param.mode == "naive":
             logger.debug(f"[aquery_data] Using naive_query for mode: {data_param.mode}")
@@ -2861,6 +2914,7 @@ class LightRAG:
                 global_config,
                 hashing_kv=self.llm_response_cache,
                 system_prompt=None,
+                dispatcher=self.dispatcher,
             )
         elif data_param.mode == "bypass":
             logger.debug("[aquery_data] Using bypass mode")
@@ -2948,6 +3002,7 @@ class LightRAG:
                     hashing_kv=self.llm_response_cache,
                     system_prompt=system_prompt,
                     chunks_vdb=self.chunks_vdb,
+                    dispatcher=self.dispatcher,
                 )
             elif param.mode == "naive":
                 query_result = await naive_query(
@@ -2957,6 +3012,7 @@ class LightRAG:
                     global_config,
                     hashing_kv=self.llm_response_cache,
                     system_prompt=system_prompt,
+                    dispatcher=self.dispatcher,
                 )
             elif param.mode == "bypass":
                 # Bypass mode: directly use LLM without knowledge retrieval

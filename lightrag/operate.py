@@ -3114,6 +3114,10 @@ async def extract_entities(
                 prefixed_exception = create_prefixed_exception(e, chunk_id)
                 raise prefixed_exception from e
 
+    # Guard against empty chunks — asyncio.wait requires at least one task
+    if not ordered_chunks:
+        return []
+
     tasks = []
     for c in ordered_chunks:
         task = asyncio.create_task(_process_with_semaphore(c))
@@ -3172,6 +3176,7 @@ async def kg_query(
     hashing_kv: BaseKVStorage | None = None,
     system_prompt: str | None = None,
     chunks_vdb: BaseVectorStorage = None,
+    dispatcher: Any = None,
 ) -> QueryResult | None:
     """
     Execute knowledge graph query and return unified QueryResult object.
@@ -3213,9 +3218,31 @@ async def kg_query(
         # Apply higher priority (5) to query relation LLM function
         use_model_func = partial(use_model_func, _priority=5)
 
-    hl_keywords, ll_keywords = await get_keywords_from_query(
-        query, query_param, global_config, hashing_kv
-    )
+    # Step 1: Keyword extraction via EventBus topic
+    if dispatcher and not (query_param.hl_keywords or query_param.ll_keywords):
+        from .hooks import EventEnvelope
+        kw_envelope = EventEnvelope(
+            topic="rag.query.keyword_extraction",
+            inputs={"query": query},
+        )
+        kw_reply = await dispatcher.publish_and_wait(kw_envelope)
+        hl_keywords = kw_reply.outputs.get("hl_keywords", [])
+        ll_keywords = kw_reply.outputs.get("ll_keywords", [])
+    else:
+        hl_keywords, ll_keywords = await get_keywords_from_query(
+            query, query_param, global_config, hashing_kv
+        )
+
+    # Step 2: Query expansion via EventBus topic
+    if dispatcher:
+        from .hooks import EventEnvelope
+        exp_envelope = EventEnvelope(
+            topic="rag.query.query_expansion",
+            inputs={"hl_keywords": hl_keywords, "ll_keywords": ll_keywords},
+        )
+        exp_reply = await dispatcher.publish_and_wait(exp_envelope)
+        hl_keywords = exp_reply.outputs.get("expanded_hl_keywords", hl_keywords)
+        ll_keywords = exp_reply.outputs.get("expanded_ll_keywords", ll_keywords)
 
     logger.debug(f"High-level keywords: {hl_keywords}")
     logger.debug(f"Low-level  keywords: {ll_keywords}")
@@ -3312,6 +3339,47 @@ async def kg_query(
             " == LLM cache == Query cache hit, using cached response as query result"
         )
         response = cached_response
+    elif dispatcher and not query_param.stream:
+        # Generate response via EventBus topic (non-streaming only)
+        from .hooks import EventEnvelope
+        resp_envelope = EventEnvelope(
+            topic="rag.query.response",
+            inputs={
+                "query": user_query,
+                "context": context_result.context,
+                "response_type": response_type,
+                "user_prompt": query_param.user_prompt or "",
+            },
+        )
+        resp_reply = await dispatcher.publish_and_wait(resp_envelope)
+        response = resp_reply.outputs.get("response", "")
+
+        # Cache the response
+        if hashing_kv and hashing_kv.global_config.get("enable_llm_cache"):
+            queryparam_dict = {
+                "mode": query_param.mode,
+                "response_type": query_param.response_type,
+                "top_k": query_param.top_k,
+                "chunk_top_k": query_param.chunk_top_k,
+                "max_entity_tokens": query_param.max_entity_tokens,
+                "max_relation_tokens": query_param.max_relation_tokens,
+                "max_total_tokens": query_param.max_total_tokens,
+                "hl_keywords": hl_keywords_str,
+                "ll_keywords": ll_keywords_str,
+                "user_prompt": query_param.user_prompt or "",
+                "enable_rerank": query_param.enable_rerank,
+            }
+            await save_to_cache(
+                hashing_kv,
+                CacheData(
+                    args_hash=args_hash,
+                    content=response,
+                    prompt=query,
+                    mode=query_param.mode,
+                    cache_type="query",
+                    queryparam=queryparam_dict,
+                ),
+            )
     else:
         response = await use_model_func(
             user_query,
@@ -4957,6 +5025,7 @@ async def naive_query(
     global_config: dict[str, str],
     hashing_kv: BaseKVStorage | None = None,
     system_prompt: str | None = None,
+    dispatcher: Any = None,
 ) -> QueryResult | None:
     """
     Execute naive query and return unified QueryResult object.
@@ -4968,6 +5037,7 @@ async def naive_query(
         global_config: Global configuration
         hashing_kv: Cache storage
         system_prompt: System prompt
+        dispatcher: Optional EventBus dispatcher for topic-based execution
 
     Returns:
         QueryResult | None: Unified query result object containing:
@@ -4994,7 +5064,17 @@ async def naive_query(
         logger.error("Tokenizer not found in global configuration.")
         return QueryResult(content=PROMPTS["fail_response"])
 
-    chunks = await _get_vector_context(query, chunks_vdb, query_param, None)
+    # Vector search via EventBus topic or direct call
+    if dispatcher:
+        from .hooks import EventEnvelope
+        vs_envelope = EventEnvelope(
+            topic="rag.query.vector_search",
+            inputs={"query": query, "top_k": query_param.chunk_top_k},
+        )
+        vs_reply = await dispatcher.publish_and_wait(vs_envelope)
+        chunks = vs_reply.outputs.get("chunks", [])
+    else:
+        chunks = await _get_vector_context(query, chunks_vdb, query_param, None)
 
     if chunks is None or len(chunks) == 0:
         logger.info(
@@ -5141,6 +5221,44 @@ async def naive_query(
             " == LLM cache == Query cache hit, using cached response as query result"
         )
         response = cached_response
+    elif dispatcher and not query_param.stream:
+        # Generate response via EventBus topic (non-streaming only)
+        from .hooks import EventEnvelope
+        resp_envelope = EventEnvelope(
+            topic="rag.query.response",
+            inputs={
+                "query": user_query,
+                "context": context_content,
+                "response_type": query_param.response_type or "Multiple Paragraphs",
+                "user_prompt": query_param.user_prompt or "",
+            },
+        )
+        resp_reply = await dispatcher.publish_and_wait(resp_envelope)
+        response = resp_reply.outputs.get("response", "")
+
+        if hashing_kv and hashing_kv.global_config.get("enable_llm_cache"):
+            queryparam_dict = {
+                "mode": query_param.mode,
+                "response_type": query_param.response_type,
+                "top_k": query_param.top_k,
+                "chunk_top_k": query_param.chunk_top_k,
+                "max_entity_tokens": query_param.max_entity_tokens,
+                "max_relation_tokens": query_param.max_relation_tokens,
+                "max_total_tokens": query_param.max_total_tokens,
+                "user_prompt": query_param.user_prompt or "",
+                "enable_rerank": query_param.enable_rerank,
+            }
+            await save_to_cache(
+                hashing_kv,
+                CacheData(
+                    args_hash=args_hash,
+                    content=response,
+                    prompt=query,
+                    mode=query_param.mode,
+                    cache_type="query",
+                    queryparam=queryparam_dict,
+                ),
+            )
     else:
         response = await use_model_func(
             user_query,

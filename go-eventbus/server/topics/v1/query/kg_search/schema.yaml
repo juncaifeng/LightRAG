@@ -1,0 +1,34 @@
+inputs:
+  - name: hl_keywords
+    type: JSON
+    required: false
+    description: "高层关键词列表 (global/hybrid/mix 模式需要)"
+    description_en: "High-level keyword list (required for global/hybrid/mix modes)"
+  - name: ll_keywords
+    type: JSON
+    required: false
+    description: "低层关键词列表 (local/hybrid/mix 模式需要)"
+    description_en: "Low-level keyword list (required for local/hybrid/mix modes)"
+  - name: mode
+    type: string
+    required: false
+    description: "查询模式: local/global/hybrid/mix"
+    description_en: "Query mode: local/global/hybrid/mix"
+    default: "mix"
+  - name: top_k
+    type: int32
+    required: false
+    description: "检索数量"
+    description_en: "Number of items to retrieve"
+    default: "60"
+outputs:
+  - name: entities
+    type: JSON
+    required: true
+    description: "实体列表: [{entity_name, entity_type, description, rank, ...}]"
+    description_en: "Entity list: [{entity_name, entity_type, description, rank, ...}]"
+  - name: relations
+    type: JSON
+    required: true
+    description: "关系列表: [{src_id, tgt_id, description, keywords, weight, rank, ...}]"
+    description_en: "Relation list: [{src_id, tgt_id, description, keywords, weight, rank, ...}]"

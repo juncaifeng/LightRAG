@@ -1,0 +1,38 @@
+inputs:
+  - name: query
+    type: string
+    required: true
+    description: "用户原始查询"
+    description_en: "User's original query"
+  - name: context
+    type: string
+    required: true
+    description: "检索到的上下文文本"
+    description_en: "Retrieved context text"
+  - name: stream
+    type: bool
+    required: false
+    description: "是否流式输出"
+    description_en: "Enable streaming output"
+    default: "false"
+  - name: response_type
+    type: string
+    required: false
+    description: "回答格式: Multiple Paragraphs / Single Paragraph / Bullet Points"
+    description_en: "Response format: Multiple Paragraphs / Single Paragraph / Bullet Points"
+  - name: conversation_history
+    type: JSON
+    required: false
+    description: "对话历史: [{role, content}]"
+    description_en: "Conversation history: [{role, content}]"
+  - name: user_prompt
+    type: string
+    required: false
+    description: "用户附加指令"
+    description_en: "Additional user instructions"
+outputs:
+  - name: response
+    type: string
+    required: true
+    description: "生成的回答文本"
+    description_en: "Generated response text"

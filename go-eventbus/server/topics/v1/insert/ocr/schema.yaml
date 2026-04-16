@@ -1,0 +1,18 @@
+inputs:
+  - name: image
+    type: bytes
+    required: true
+    description: "图片二进制数据"
+    description_en: "Image binary data"
+  - name: language
+    type: string
+    required: false
+    description: "OCR 语言"
+    description_en: "OCR language"
+    default: "auto"
+outputs:
+  - name: text
+    type: string
+    required: true
+    description: "OCR 识别结果文本"
+    description_en: "OCR recognized text"

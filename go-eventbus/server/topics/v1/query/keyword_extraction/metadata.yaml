@@ -1,0 +1,7 @@
+name: rag.query.keyword_extraction
+pipeline: query
+stage: keyword_extraction
+description: "关键词提取 — 从用户查询中提取高层概念词和底层实体词"
+description_en: "Keyword extraction — extracts high-level concept and low-level entity keywords from user queries"
+recommended_strategy: REPLACE
+recommended_weight: 10

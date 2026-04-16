@@ -1090,6 +1090,7 @@ def create_app(args):
                 "entity_types": args.entity_types,
             },
             ollama_server_infos=ollama_server_infos,
+            event_bus_url=args.event_bus_url,
         )
     except Exception as e:
         logger.error(f"Failed to initialize LightRAG: {e}")

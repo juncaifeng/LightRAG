@@ -1,0 +1,7 @@
+name: rag.query.query_expansion
+pipeline: query
+stage: query_expansion
+description: "查询扩词 — 使用同义词/近义词/术语库扩展关键词"
+description_en: "Query expansion — expands keywords using synonym/near-synonym/terminology services"
+recommended_strategy: APPEND
+recommended_weight: 10

@@ -1,0 +1,40 @@
+inputs:
+  - name: content
+    type: string
+    required: true
+    description: "原始文档内容"
+    description_en: "Raw document content"
+  - name: tokenizer
+    type: bytes
+    required: true
+    description: "Tiktoken tokenizer 序列化对象"
+    description_en: "Serialized Tiktoken tokenizer object"
+  - name: chunk_token_size
+    type: int32
+    required: false
+    default: "1200"
+    description: "分块 token 大小"
+    description_en: "Chunk token size"
+  - name: chunk_overlap_token_size
+    type: int32
+    required: false
+    default: "100"
+    description: "重叠 token 数"
+    description_en: "Overlap token count"
+  - name: split_by_character
+    type: string
+    required: false
+    description: "按字符分割的分隔符"
+    description_en: "Character delimiter for splitting"
+  - name: split_by_character_only
+    type: bool
+    required: false
+    default: "false"
+    description: "是否仅按字符分割"
+    description_en: "Split by character only"
+outputs:
+  - name: chunks
+    type: JSON
+    required: true
+    description: "分块结果列表: [{content: string, ...}]"
+    description_en: "Chunk result list: [{content: string, ...}]"

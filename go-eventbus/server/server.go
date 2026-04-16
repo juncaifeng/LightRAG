@@ -4,16 +4,18 @@ import (
 	"context"
 	"log"
 	"sync"
+	"time"
 
-	pb "github.com/HKUDS/LightRAG/go-eventbus/proto/eventbus/v1"
+	pb "github.com/juncaifeng/LightRAG/go-eventbus/proto/eventbus/v1"
 )
 
 // Subscriber represents an active subscriber stream
 type Subscriber struct {
-	ID       string
-	Topic    string
-	Stream   pb.EventBus_SubscribeServer
-	IsActive bool
+	ID          string
+	Topic       string
+	Stream      pb.EventBus_SubscribeServer
+	IsActive    bool
+	ConnectedAt time.Time
 }
 
 // GatherTask represents an active PublishAndWait request
@@ -25,7 +27,7 @@ type GatherTask struct {
 
 type EventBusServer struct {
 	pb.UnimplementedEventBusServer
-	
+
 	// mu protects subscribers
 	mu sync.RWMutex
 	// topic -> list of subscribers
@@ -35,12 +37,16 @@ type EventBusServer struct {
 	taskMu sync.RWMutex
 	// correlation_id -> GatherTask
 	gatherTasks map[string]*GatherTask
+
+	// metrics for observability
+	metrics *EventMetrics
 }
 
 func NewEventBusServer() *EventBusServer {
 	return &EventBusServer{
 		subscribers: make(map[string][]*Subscriber),
 		gatherTasks: make(map[string]*GatherTask),
+		metrics:     NewEventMetrics(),
 	}
 }
 
@@ -58,10 +64,11 @@ func (s *EventBusServer) Subscribe(req *pb.RegisterRequest, stream pb.EventBus_S
 	log.Printf("Subscriber connected to stream: %s for topic: %s", req.SubscriberId, req.Topic)
 	
 	sub := &Subscriber{
-		ID:       req.SubscriberId,
-		Topic:    req.Topic,
-		Stream:   stream,
-		IsActive: true,
+		ID:          req.SubscriberId,
+		Topic:       req.Topic,
+		Stream:      stream,
+		IsActive:    true,
+		ConnectedAt: time.Now(),
 	}
 
 	s.mu.Lock()
@@ -107,4 +114,58 @@ func (s *EventBusServer) Respond(ctx context.Context, reply *pb.SubscriberReply)
 	}
 
 	return &pb.RegisterResponse{Success: true, Message: "Response received"}, nil
+}
+
+// --- Helper methods for HTTP API ---
+
+func (s *EventBusServer) GetSubscriberCount() int {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	count := 0
+	for _, subs := range s.subscribers {
+		count += len(subs)
+	}
+	return count
+}
+
+func (s *EventBusServer) GetTopicCount() int {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return len(s.subscribers)
+}
+
+func (s *EventBusServer) GetInFlightTaskCount() int {
+	s.taskMu.RLock()
+	defer s.taskMu.RUnlock()
+	return len(s.gatherTasks)
+}
+
+func (s *EventBusServer) GetSubscribersSnapshot() []SubscriberInfo {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	var result []SubscriberInfo
+	for _, subs := range s.subscribers {
+		for _, sub := range subs {
+			result = append(result, SubscriberInfo{
+				ID:          sub.ID,
+				Topic:       sub.Topic,
+				IsActive:    sub.IsActive,
+				ConnectedAt: sub.ConnectedAt.Format(time.RFC3339),
+			})
+		}
+	}
+	return result
+}
+
+func (s *EventBusServer) GetTopicsSnapshot() []TopicInfo {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	var result []TopicInfo
+	for topic, subs := range s.subscribers {
+		result = append(result, TopicInfo{
+			Name:            topic,
+			SubscriberCount: len(subs),
+		})
+	}
+	return result
 }

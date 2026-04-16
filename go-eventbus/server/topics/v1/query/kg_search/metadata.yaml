@@ -1,0 +1,7 @@
+name: rag.query.kg_search
+pipeline: query
+stage: kg_search
+description: "知识图谱检索 — 根据关键词在知识图谱中检索实体和关系"
+description_en: "Knowledge graph search — retrieves entities and relations from the knowledge graph by keywords"
+recommended_strategy: REPLACE
+recommended_weight: 10

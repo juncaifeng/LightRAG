@@ -1,0 +1,7 @@
+name: rag.query.response
+pipeline: query
+stage: response
+description: "回答生成 — 根据检索上下文和用户查询生成最终回答"
+description_en: "Response generation — generates final answer from retrieved context and user query"
+recommended_strategy: REPLACE
+recommended_weight: 10

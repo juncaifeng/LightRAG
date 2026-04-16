@@ -1,3 +1,5 @@
+//go:build tools
+
 package main
 
 import (
@@ -6,7 +8,7 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
-	pb "github.com/HKUDS/LightRAG/go-eventbus/proto/eventbus/v1"
+	pb "github.com/juncaifeng/LightRAG/go-eventbus/proto/eventbus/v1"
 )
 
 func main() {
