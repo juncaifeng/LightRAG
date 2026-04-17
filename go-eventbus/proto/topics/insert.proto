@@ -33,13 +33,10 @@ message ChunkItem {
 
 message EmbeddingInput {
     repeated string texts = 1;                      // 待嵌入的文本列表
-    string model_name = 2;                          // 嵌入模型名称
-    int32 embedding_dim = 3;                        // 嵌入维度
-    int32 max_token_size = 4;                       // 最大 token 数
 }
 
 message EmbeddingOutput {
-    repeated EmbeddingVector embeddings = 1;        // 嵌入结果列表
+    repeated EmbeddingVector embeddings = 1;        // 嵌入结果列表 (与输入 texts 顺序一一对应)
 }
 
 message EmbeddingVector {

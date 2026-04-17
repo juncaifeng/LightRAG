@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v7.34.0
-// source: insert.proto
+// source: topics/insert.proto
 
 package topics
 
@@ -35,7 +35,7 @@ type ChunkingInput struct {
 
 func (x *ChunkingInput) Reset() {
 	*x = ChunkingInput{}
-	mi := &file_insert_proto_msgTypes[0]
+	mi := &file_topics_insert_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -47,7 +47,7 @@ func (x *ChunkingInput) String() string {
 func (*ChunkingInput) ProtoMessage() {}
 
 func (x *ChunkingInput) ProtoReflect() protoreflect.Message {
-	mi := &file_insert_proto_msgTypes[0]
+	mi := &file_topics_insert_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -60,7 +60,7 @@ func (x *ChunkingInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChunkingInput.ProtoReflect.Descriptor instead.
 func (*ChunkingInput) Descriptor() ([]byte, []int) {
-	return file_insert_proto_rawDescGZIP(), []int{0}
+	return file_topics_insert_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *ChunkingInput) GetContent() string {
@@ -114,7 +114,7 @@ type ChunkingOutput struct {
 
 func (x *ChunkingOutput) Reset() {
 	*x = ChunkingOutput{}
-	mi := &file_insert_proto_msgTypes[1]
+	mi := &file_topics_insert_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -126,7 +126,7 @@ func (x *ChunkingOutput) String() string {
 func (*ChunkingOutput) ProtoMessage() {}
 
 func (x *ChunkingOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_insert_proto_msgTypes[1]
+	mi := &file_topics_insert_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -139,7 +139,7 @@ func (x *ChunkingOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChunkingOutput.ProtoReflect.Descriptor instead.
 func (*ChunkingOutput) Descriptor() ([]byte, []int) {
-	return file_insert_proto_rawDescGZIP(), []int{1}
+	return file_topics_insert_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ChunkingOutput) GetChunks() []*ChunkItem {
@@ -160,7 +160,7 @@ type ChunkItem struct {
 
 func (x *ChunkItem) Reset() {
 	*x = ChunkItem{}
-	mi := &file_insert_proto_msgTypes[2]
+	mi := &file_topics_insert_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -172,7 +172,7 @@ func (x *ChunkItem) String() string {
 func (*ChunkItem) ProtoMessage() {}
 
 func (x *ChunkItem) ProtoReflect() protoreflect.Message {
-	mi := &file_insert_proto_msgTypes[2]
+	mi := &file_topics_insert_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -185,7 +185,7 @@ func (x *ChunkItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChunkItem.ProtoReflect.Descriptor instead.
 func (*ChunkItem) Descriptor() ([]byte, []int) {
-	return file_insert_proto_rawDescGZIP(), []int{2}
+	return file_topics_insert_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ChunkItem) GetContent() string {
@@ -211,17 +211,14 @@ func (x *ChunkItem) GetChunkOrderIndex() int32 {
 
 type EmbeddingInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Texts         []string               `protobuf:"bytes,1,rep,name=texts,proto3" json:"texts,omitempty"`                                      // 待嵌入的文本列表
-	ModelName     string                 `protobuf:"bytes,2,opt,name=model_name,json=modelName,proto3" json:"model_name,omitempty"`             // 嵌入模型名称
-	EmbeddingDim  int32                  `protobuf:"varint,3,opt,name=embedding_dim,json=embeddingDim,proto3" json:"embedding_dim,omitempty"`   // 嵌入维度
-	MaxTokenSize  int32                  `protobuf:"varint,4,opt,name=max_token_size,json=maxTokenSize,proto3" json:"max_token_size,omitempty"` // 最大 token 数
+	Texts         []string               `protobuf:"bytes,1,rep,name=texts,proto3" json:"texts,omitempty"` // 待嵌入的文本列表
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *EmbeddingInput) Reset() {
 	*x = EmbeddingInput{}
-	mi := &file_insert_proto_msgTypes[3]
+	mi := &file_topics_insert_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -233,7 +230,7 @@ func (x *EmbeddingInput) String() string {
 func (*EmbeddingInput) ProtoMessage() {}
 
 func (x *EmbeddingInput) ProtoReflect() protoreflect.Message {
-	mi := &file_insert_proto_msgTypes[3]
+	mi := &file_topics_insert_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -246,7 +243,7 @@ func (x *EmbeddingInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EmbeddingInput.ProtoReflect.Descriptor instead.
 func (*EmbeddingInput) Descriptor() ([]byte, []int) {
-	return file_insert_proto_rawDescGZIP(), []int{3}
+	return file_topics_insert_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *EmbeddingInput) GetTexts() []string {
@@ -256,37 +253,16 @@ func (x *EmbeddingInput) GetTexts() []string {
 	return nil
 }
 
-func (x *EmbeddingInput) GetModelName() string {
-	if x != nil {
-		return x.ModelName
-	}
-	return ""
-}
-
-func (x *EmbeddingInput) GetEmbeddingDim() int32 {
-	if x != nil {
-		return x.EmbeddingDim
-	}
-	return 0
-}
-
-func (x *EmbeddingInput) GetMaxTokenSize() int32 {
-	if x != nil {
-		return x.MaxTokenSize
-	}
-	return 0
-}
-
 type EmbeddingOutput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Embeddings    []*EmbeddingVector     `protobuf:"bytes,1,rep,name=embeddings,proto3" json:"embeddings,omitempty"` // 嵌入结果列表
+	Embeddings    []*EmbeddingVector     `protobuf:"bytes,1,rep,name=embeddings,proto3" json:"embeddings,omitempty"` // 嵌入结果列表 (与输入 texts 顺序一一对应)
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *EmbeddingOutput) Reset() {
 	*x = EmbeddingOutput{}
-	mi := &file_insert_proto_msgTypes[4]
+	mi := &file_topics_insert_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -298,7 +274,7 @@ func (x *EmbeddingOutput) String() string {
 func (*EmbeddingOutput) ProtoMessage() {}
 
 func (x *EmbeddingOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_insert_proto_msgTypes[4]
+	mi := &file_topics_insert_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -311,7 +287,7 @@ func (x *EmbeddingOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EmbeddingOutput.ProtoReflect.Descriptor instead.
 func (*EmbeddingOutput) Descriptor() ([]byte, []int) {
-	return file_insert_proto_rawDescGZIP(), []int{4}
+	return file_topics_insert_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *EmbeddingOutput) GetEmbeddings() []*EmbeddingVector {
@@ -330,7 +306,7 @@ type EmbeddingVector struct {
 
 func (x *EmbeddingVector) Reset() {
 	*x = EmbeddingVector{}
-	mi := &file_insert_proto_msgTypes[5]
+	mi := &file_topics_insert_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -342,7 +318,7 @@ func (x *EmbeddingVector) String() string {
 func (*EmbeddingVector) ProtoMessage() {}
 
 func (x *EmbeddingVector) ProtoReflect() protoreflect.Message {
-	mi := &file_insert_proto_msgTypes[5]
+	mi := &file_topics_insert_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -355,7 +331,7 @@ func (x *EmbeddingVector) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EmbeddingVector.ProtoReflect.Descriptor instead.
 func (*EmbeddingVector) Descriptor() ([]byte, []int) {
-	return file_insert_proto_rawDescGZIP(), []int{5}
+	return file_topics_insert_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *EmbeddingVector) GetValues() []float32 {
@@ -375,7 +351,7 @@ type OcrInput struct {
 
 func (x *OcrInput) Reset() {
 	*x = OcrInput{}
-	mi := &file_insert_proto_msgTypes[6]
+	mi := &file_topics_insert_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -387,7 +363,7 @@ func (x *OcrInput) String() string {
 func (*OcrInput) ProtoMessage() {}
 
 func (x *OcrInput) ProtoReflect() protoreflect.Message {
-	mi := &file_insert_proto_msgTypes[6]
+	mi := &file_topics_insert_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -400,7 +376,7 @@ func (x *OcrInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OcrInput.ProtoReflect.Descriptor instead.
 func (*OcrInput) Descriptor() ([]byte, []int) {
-	return file_insert_proto_rawDescGZIP(), []int{6}
+	return file_topics_insert_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *OcrInput) GetImage() []byte {
@@ -426,7 +402,7 @@ type OcrOutput struct {
 
 func (x *OcrOutput) Reset() {
 	*x = OcrOutput{}
-	mi := &file_insert_proto_msgTypes[7]
+	mi := &file_topics_insert_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -438,7 +414,7 @@ func (x *OcrOutput) String() string {
 func (*OcrOutput) ProtoMessage() {}
 
 func (x *OcrOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_insert_proto_msgTypes[7]
+	mi := &file_topics_insert_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -451,7 +427,7 @@ func (x *OcrOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OcrOutput.ProtoReflect.Descriptor instead.
 func (*OcrOutput) Descriptor() ([]byte, []int) {
-	return file_insert_proto_rawDescGZIP(), []int{7}
+	return file_topics_insert_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *OcrOutput) GetText() string {
@@ -461,11 +437,11 @@ func (x *OcrOutput) GetText() string {
 	return ""
 }
 
-var File_insert_proto protoreflect.FileDescriptor
+var File_topics_insert_proto protoreflect.FileDescriptor
 
-const file_insert_proto_rawDesc = "" +
+const file_topics_insert_proto_rawDesc = "" +
 	"\n" +
-	"\finsert.proto\x12\x1blightrag.eventbus.topics.v1\"\x8f\x02\n" +
+	"\x13topics/insert.proto\x12\x1blightrag.eventbus.topics.v1\"\x8f\x02\n" +
 	"\rChunkingInput\x12\x18\n" +
 	"\acontent\x18\x01 \x01(\tR\acontent\x12\x1c\n" +
 	"\ttokenizer\x18\x02 \x01(\fR\ttokenizer\x12(\n" +
@@ -478,13 +454,9 @@ const file_insert_proto_rawDesc = "" +
 	"\tChunkItem\x12\x18\n" +
 	"\acontent\x18\x01 \x01(\tR\acontent\x12\x16\n" +
 	"\x06tokens\x18\x02 \x01(\x05R\x06tokens\x12*\n" +
-	"\x11chunk_order_index\x18\x03 \x01(\x05R\x0fchunkOrderIndex\"\x90\x01\n" +
+	"\x11chunk_order_index\x18\x03 \x01(\x05R\x0fchunkOrderIndex\"&\n" +
 	"\x0eEmbeddingInput\x12\x14\n" +
-	"\x05texts\x18\x01 \x03(\tR\x05texts\x12\x1d\n" +
-	"\n" +
-	"model_name\x18\x02 \x01(\tR\tmodelName\x12#\n" +
-	"\rembedding_dim\x18\x03 \x01(\x05R\fembeddingDim\x12$\n" +
-	"\x0emax_token_size\x18\x04 \x01(\x05R\fmaxTokenSize\"_\n" +
+	"\x05texts\x18\x01 \x03(\tR\x05texts\"_\n" +
 	"\x0fEmbeddingOutput\x12L\n" +
 	"\n" +
 	"embeddings\x18\x01 \x03(\v2,.lightrag.eventbus.topics.v1.EmbeddingVectorR\n" +
@@ -498,19 +470,19 @@ const file_insert_proto_rawDesc = "" +
 	"\x04text\x18\x01 \x01(\tR\x04textBDZBgithub.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go/topics;topicsb\x06proto3"
 
 var (
-	file_insert_proto_rawDescOnce sync.Once
-	file_insert_proto_rawDescData []byte
+	file_topics_insert_proto_rawDescOnce sync.Once
+	file_topics_insert_proto_rawDescData []byte
 )
 
-func file_insert_proto_rawDescGZIP() []byte {
-	file_insert_proto_rawDescOnce.Do(func() {
-		file_insert_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_insert_proto_rawDesc), len(file_insert_proto_rawDesc)))
+func file_topics_insert_proto_rawDescGZIP() []byte {
+	file_topics_insert_proto_rawDescOnce.Do(func() {
+		file_topics_insert_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_topics_insert_proto_rawDesc), len(file_topics_insert_proto_rawDesc)))
 	})
-	return file_insert_proto_rawDescData
+	return file_topics_insert_proto_rawDescData
 }
 
-var file_insert_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
-var file_insert_proto_goTypes = []any{
+var file_topics_insert_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_topics_insert_proto_goTypes = []any{
 	(*ChunkingInput)(nil),   // 0: lightrag.eventbus.topics.v1.ChunkingInput
 	(*ChunkingOutput)(nil),  // 1: lightrag.eventbus.topics.v1.ChunkingOutput
 	(*ChunkItem)(nil),       // 2: lightrag.eventbus.topics.v1.ChunkItem
@@ -520,7 +492,7 @@ var file_insert_proto_goTypes = []any{
 	(*OcrInput)(nil),        // 6: lightrag.eventbus.topics.v1.OcrInput
 	(*OcrOutput)(nil),       // 7: lightrag.eventbus.topics.v1.OcrOutput
 }
-var file_insert_proto_depIdxs = []int32{
+var file_topics_insert_proto_depIdxs = []int32{
 	2, // 0: lightrag.eventbus.topics.v1.ChunkingOutput.chunks:type_name -> lightrag.eventbus.topics.v1.ChunkItem
 	5, // 1: lightrag.eventbus.topics.v1.EmbeddingOutput.embeddings:type_name -> lightrag.eventbus.topics.v1.EmbeddingVector
 	2, // [2:2] is the sub-list for method output_type
@@ -530,26 +502,26 @@ var file_insert_proto_depIdxs = []int32{
 	0, // [0:2] is the sub-list for field type_name
 }
 
-func init() { file_insert_proto_init() }
-func file_insert_proto_init() {
-	if File_insert_proto != nil {
+func init() { file_topics_insert_proto_init() }
+func file_topics_insert_proto_init() {
+	if File_topics_insert_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_insert_proto_rawDesc), len(file_insert_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_topics_insert_proto_rawDesc), len(file_topics_insert_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_insert_proto_goTypes,
-		DependencyIndexes: file_insert_proto_depIdxs,
-		MessageInfos:      file_insert_proto_msgTypes,
+		GoTypes:           file_topics_insert_proto_goTypes,
+		DependencyIndexes: file_topics_insert_proto_depIdxs,
+		MessageInfos:      file_topics_insert_proto_msgTypes,
 	}.Build()
-	File_insert_proto = out.File
-	file_insert_proto_goTypes = nil
-	file_insert_proto_depIdxs = nil
+	File_topics_insert_proto = out.File
+	file_topics_insert_proto_goTypes = nil
+	file_topics_insert_proto_depIdxs = nil
 }
