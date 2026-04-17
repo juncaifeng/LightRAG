@@ -13,9 +13,10 @@ description: >
 ## Overview
 
 The LightRAG EventBus uses **protobuf as the single source of truth** for topic data contracts.
-Topic schemas are auto-discovered at runtime by Go backend from proto message descriptors.
 
 Adding a new topic is a **3-step process**. Modifying an existing topic is **2 steps**.
+
+> **本 Skill 面向平台/SDK 维护者**（有 proto 仓库 push 权限的人）。业务开发者请使用 `eventbus-go-sdk-usage`。
 
 ## Quick Reference
 
@@ -124,11 +125,13 @@ message IndexBuildOutput {
 
 ---
 
-## Step 2: Register Go Types
+## Step 2: Register Go Types in Server
 
 **Only needed for NEW topics.** For modifications to existing topics, skip this step.
 
-Open `go-eventbus/server/topic_registry.go` and add to `allProtoMessages` init():
+这一步是 **server 侧的**类型注册，不是业务开发者需要做的。Server 启动时通过 `discoverTopics()` 扫描 `allProtoMessages` 中已注册的 proto message 类型，自动推导 topic 名和字段 schema。但你必须先把新类型加到注册列表里，server 才能发现它。
+
+打开 `go-eventbus/server/topic_registry.go`，在 `allProtoMessages` 的 init() 中添加：
 
 ```go
 (*topicspb.IndexBuildInput)(nil),
