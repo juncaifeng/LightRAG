@@ -37,7 +37,8 @@ type inputOutput struct {
 	OutputName string
 	InputType  reflect.Type
 	OutputType reflect.Type
-	Pipeline   string // derived from proto file name
+	Domain     string // derived from proto file path parent directory (e.g. "rag", "index")
+	Pipeline   string // derived from proto file path filename (e.g. "insert", "builder")
 }
 
 // allProtoMessages maps proto message short names to their Go reflect type.
@@ -64,6 +65,12 @@ func init() {
 		(*topicspb.RerankOutput)(nil),
 		(*topicspb.ResponseInput)(nil),
 		(*topicspb.ResponseOutput)(nil),
+		// index domain
+		(*topicspb.IndexBuildInput)(nil),
+		(*topicspb.IndexBuildOutput)(nil),
+		(*topicspb.RetrieveInput)(nil),
+		(*topicspb.RetrieveOutput)(nil),
+		(*topicspb.RetrieveResult)(nil),
 	} {
 		t := reflect.TypeOf(msg).Elem()
 		allProtoMessages[t.Name()] = t
@@ -105,14 +112,15 @@ func camelToSnake(s string) string {
 }
 
 // discoverTopics scans all registered proto messages and pairs XxxInput/XxxOutput
-// into topics. Pipeline is derived from proto file name (insert.proto → insert).
+// into topics. Domain is derived from proto file path's parent directory
+// (e.g. "topics/rag/insert.proto" → domain="rag", pipeline="insert").
 // Stage is derived from message name (ChunkingInput → chunking).
-// Topic name: rag.{pipeline}.{stage}
+// Topic name: {domain}.{pipeline}.{stage}
 func discoverTopics() []inputOutput {
 	type msgInfo struct {
 		name     string
 		goType   reflect.Type
-		fileName string // proto source file name
+		filePath string // proto source file path
 	}
 
 	// Collect all messages with their source file
@@ -121,8 +129,8 @@ func discoverTopics() []inputOutput {
 		instance := reflect.New(goType).Interface()
 		if pr, ok := instance.(interface{ ProtoReflect() protoreflect.Message }); ok {
 			desc := pr.ProtoReflect().Descriptor()
-			fileName := string(desc.ParentFile().Path())
-			allMsgs = append(allMsgs, msgInfo{name: name, goType: goType, fileName: fileName})
+			filePath := string(desc.ParentFile().Path())
+			allMsgs = append(allMsgs, msgInfo{name: name, goType: goType, filePath: filePath})
 		}
 	}
 
@@ -146,19 +154,28 @@ func discoverTopics() []inputOutput {
 			continue
 		}
 
-		// Derive pipeline from proto file name
-		// e.g. "topics/insert.proto" → "insert"
-		pipeline := info.fileName
-		if idx := strings.LastIndex(pipeline, "/"); idx >= 0 {
-			pipeline = pipeline[idx+1:]
+		// Derive pipeline from proto file path filename
+		// e.g. "topics/rag/insert.proto" → "insert"
+		fileName := info.filePath
+		if idx := strings.LastIndex(fileName, "/"); idx >= 0 {
+			fileName = fileName[idx+1:]
 		}
-		pipeline = strings.TrimSuffix(pipeline, ".proto")
+		pipeline := strings.TrimSuffix(fileName, ".proto")
+
+		// Derive domain from proto file path parent directory
+		// e.g. "topics/rag/insert.proto" → "rag"
+		domain := ""
+		pathParts := strings.Split(info.filePath, "/")
+		if len(pathParts) >= 2 {
+			domain = pathParts[len(pathParts)-2]
+		}
 
 		pairs = append(pairs, inputOutput{
 			InputName:  name,
 			OutputName: outputName,
 			InputType:  info.goType,
 			OutputType: outputInfo.goType,
+			Domain:     domain,
 			Pipeline:   pipeline,
 		})
 	}
@@ -250,7 +267,7 @@ func loadTopicSchemas() {
 		stageBase := strings.TrimSuffix(pair.InputName, "Input")
 		stage := camelToSnake(stageBase)
 
-		topicName := "rag." + pair.Pipeline + "." + stage
+		topicName := pair.Domain + "." + pair.Pipeline + "." + stage
 
 		inputs := extractFieldsFromProto(pair.InputType)
 		outputs := extractFieldsFromProto(pair.OutputType)

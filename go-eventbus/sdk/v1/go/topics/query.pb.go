@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v7.34.0
-// source: query.proto
+// source: rag/query.proto
 
 package topics
 
@@ -30,7 +30,7 @@ type KeywordExtractionInput struct {
 
 func (x *KeywordExtractionInput) Reset() {
 	*x = KeywordExtractionInput{}
-	mi := &file_query_proto_msgTypes[0]
+	mi := &file_rag_query_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -42,7 +42,7 @@ func (x *KeywordExtractionInput) String() string {
 func (*KeywordExtractionInput) ProtoMessage() {}
 
 func (x *KeywordExtractionInput) ProtoReflect() protoreflect.Message {
-	mi := &file_query_proto_msgTypes[0]
+	mi := &file_rag_query_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -55,7 +55,7 @@ func (x *KeywordExtractionInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KeywordExtractionInput.ProtoReflect.Descriptor instead.
 func (*KeywordExtractionInput) Descriptor() ([]byte, []int) {
-	return file_query_proto_rawDescGZIP(), []int{0}
+	return file_rag_query_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *KeywordExtractionInput) GetQuery() string {
@@ -75,7 +75,7 @@ type KeywordExtractionOutput struct {
 
 func (x *KeywordExtractionOutput) Reset() {
 	*x = KeywordExtractionOutput{}
-	mi := &file_query_proto_msgTypes[1]
+	mi := &file_rag_query_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -87,7 +87,7 @@ func (x *KeywordExtractionOutput) String() string {
 func (*KeywordExtractionOutput) ProtoMessage() {}
 
 func (x *KeywordExtractionOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_query_proto_msgTypes[1]
+	mi := &file_rag_query_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -100,7 +100,7 @@ func (x *KeywordExtractionOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KeywordExtractionOutput.ProtoReflect.Descriptor instead.
 func (*KeywordExtractionOutput) Descriptor() ([]byte, []int) {
-	return file_query_proto_rawDescGZIP(), []int{1}
+	return file_rag_query_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *KeywordExtractionOutput) GetHlKeywords() []string {
@@ -128,7 +128,7 @@ type QueryExpansionInput struct {
 
 func (x *QueryExpansionInput) Reset() {
 	*x = QueryExpansionInput{}
-	mi := &file_query_proto_msgTypes[2]
+	mi := &file_rag_query_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -140,7 +140,7 @@ func (x *QueryExpansionInput) String() string {
 func (*QueryExpansionInput) ProtoMessage() {}
 
 func (x *QueryExpansionInput) ProtoReflect() protoreflect.Message {
-	mi := &file_query_proto_msgTypes[2]
+	mi := &file_rag_query_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -153,7 +153,7 @@ func (x *QueryExpansionInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QueryExpansionInput.ProtoReflect.Descriptor instead.
 func (*QueryExpansionInput) Descriptor() ([]byte, []int) {
-	return file_query_proto_rawDescGZIP(), []int{2}
+	return file_rag_query_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *QueryExpansionInput) GetHlKeywords() []string {
@@ -189,7 +189,7 @@ type ExpansionConfig struct {
 
 func (x *ExpansionConfig) Reset() {
 	*x = ExpansionConfig{}
-	mi := &file_query_proto_msgTypes[3]
+	mi := &file_rag_query_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -201,7 +201,7 @@ func (x *ExpansionConfig) String() string {
 func (*ExpansionConfig) ProtoMessage() {}
 
 func (x *ExpansionConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_query_proto_msgTypes[3]
+	mi := &file_rag_query_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -214,7 +214,7 @@ func (x *ExpansionConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExpansionConfig.ProtoReflect.Descriptor instead.
 func (*ExpansionConfig) Descriptor() ([]byte, []int) {
-	return file_query_proto_rawDescGZIP(), []int{3}
+	return file_rag_query_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ExpansionConfig) GetSynonym() bool {
@@ -256,7 +256,7 @@ type QueryExpansionOutput struct {
 
 func (x *QueryExpansionOutput) Reset() {
 	*x = QueryExpansionOutput{}
-	mi := &file_query_proto_msgTypes[4]
+	mi := &file_rag_query_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -268,7 +268,7 @@ func (x *QueryExpansionOutput) String() string {
 func (*QueryExpansionOutput) ProtoMessage() {}
 
 func (x *QueryExpansionOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_query_proto_msgTypes[4]
+	mi := &file_rag_query_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -281,7 +281,7 @@ func (x *QueryExpansionOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QueryExpansionOutput.ProtoReflect.Descriptor instead.
 func (*QueryExpansionOutput) Descriptor() ([]byte, []int) {
-	return file_query_proto_rawDescGZIP(), []int{4}
+	return file_rag_query_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *QueryExpansionOutput) GetExpandedHlKeywords() []string {
@@ -315,7 +315,7 @@ type ExpansionMetadata struct {
 
 func (x *ExpansionMetadata) Reset() {
 	*x = ExpansionMetadata{}
-	mi := &file_query_proto_msgTypes[5]
+	mi := &file_rag_query_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -327,7 +327,7 @@ func (x *ExpansionMetadata) String() string {
 func (*ExpansionMetadata) ProtoMessage() {}
 
 func (x *ExpansionMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_query_proto_msgTypes[5]
+	mi := &file_rag_query_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -340,7 +340,7 @@ func (x *ExpansionMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExpansionMetadata.ProtoReflect.Descriptor instead.
 func (*ExpansionMetadata) Descriptor() ([]byte, []int) {
-	return file_query_proto_rawDescGZIP(), []int{5}
+	return file_rag_query_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ExpansionMetadata) GetSource() string {
@@ -368,7 +368,7 @@ type VectorSearchInput struct {
 
 func (x *VectorSearchInput) Reset() {
 	*x = VectorSearchInput{}
-	mi := &file_query_proto_msgTypes[6]
+	mi := &file_rag_query_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -380,7 +380,7 @@ func (x *VectorSearchInput) String() string {
 func (*VectorSearchInput) ProtoMessage() {}
 
 func (x *VectorSearchInput) ProtoReflect() protoreflect.Message {
-	mi := &file_query_proto_msgTypes[6]
+	mi := &file_rag_query_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -393,7 +393,7 @@ func (x *VectorSearchInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VectorSearchInput.ProtoReflect.Descriptor instead.
 func (*VectorSearchInput) Descriptor() ([]byte, []int) {
-	return file_query_proto_rawDescGZIP(), []int{6}
+	return file_rag_query_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *VectorSearchInput) GetQuery() string {
@@ -426,7 +426,7 @@ type VectorSearchOutput struct {
 
 func (x *VectorSearchOutput) Reset() {
 	*x = VectorSearchOutput{}
-	mi := &file_query_proto_msgTypes[7]
+	mi := &file_rag_query_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -438,7 +438,7 @@ func (x *VectorSearchOutput) String() string {
 func (*VectorSearchOutput) ProtoMessage() {}
 
 func (x *VectorSearchOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_query_proto_msgTypes[7]
+	mi := &file_rag_query_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -451,7 +451,7 @@ func (x *VectorSearchOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VectorSearchOutput.ProtoReflect.Descriptor instead.
 func (*VectorSearchOutput) Descriptor() ([]byte, []int) {
-	return file_query_proto_rawDescGZIP(), []int{7}
+	return file_rag_query_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *VectorSearchOutput) GetChunks() []*VectorChunk {
@@ -474,7 +474,7 @@ type VectorChunk struct {
 
 func (x *VectorChunk) Reset() {
 	*x = VectorChunk{}
-	mi := &file_query_proto_msgTypes[8]
+	mi := &file_rag_query_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -486,7 +486,7 @@ func (x *VectorChunk) String() string {
 func (*VectorChunk) ProtoMessage() {}
 
 func (x *VectorChunk) ProtoReflect() protoreflect.Message {
-	mi := &file_query_proto_msgTypes[8]
+	mi := &file_rag_query_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -499,7 +499,7 @@ func (x *VectorChunk) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VectorChunk.ProtoReflect.Descriptor instead.
 func (*VectorChunk) Descriptor() ([]byte, []int) {
-	return file_query_proto_rawDescGZIP(), []int{8}
+	return file_rag_query_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *VectorChunk) GetContent() string {
@@ -549,7 +549,7 @@ type KgSearchInput struct {
 
 func (x *KgSearchInput) Reset() {
 	*x = KgSearchInput{}
-	mi := &file_query_proto_msgTypes[9]
+	mi := &file_rag_query_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -561,7 +561,7 @@ func (x *KgSearchInput) String() string {
 func (*KgSearchInput) ProtoMessage() {}
 
 func (x *KgSearchInput) ProtoReflect() protoreflect.Message {
-	mi := &file_query_proto_msgTypes[9]
+	mi := &file_rag_query_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -574,7 +574,7 @@ func (x *KgSearchInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KgSearchInput.ProtoReflect.Descriptor instead.
 func (*KgSearchInput) Descriptor() ([]byte, []int) {
-	return file_query_proto_rawDescGZIP(), []int{9}
+	return file_rag_query_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *KgSearchInput) GetHlKeywords() []string {
@@ -615,7 +615,7 @@ type KgSearchOutput struct {
 
 func (x *KgSearchOutput) Reset() {
 	*x = KgSearchOutput{}
-	mi := &file_query_proto_msgTypes[10]
+	mi := &file_rag_query_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -627,7 +627,7 @@ func (x *KgSearchOutput) String() string {
 func (*KgSearchOutput) ProtoMessage() {}
 
 func (x *KgSearchOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_query_proto_msgTypes[10]
+	mi := &file_rag_query_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -640,7 +640,7 @@ func (x *KgSearchOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KgSearchOutput.ProtoReflect.Descriptor instead.
 func (*KgSearchOutput) Descriptor() ([]byte, []int) {
-	return file_query_proto_rawDescGZIP(), []int{10}
+	return file_rag_query_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *KgSearchOutput) GetEntities() []*KgEntity {
@@ -674,7 +674,7 @@ type KgEntity struct {
 
 func (x *KgEntity) Reset() {
 	*x = KgEntity{}
-	mi := &file_query_proto_msgTypes[11]
+	mi := &file_rag_query_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -686,7 +686,7 @@ func (x *KgEntity) String() string {
 func (*KgEntity) ProtoMessage() {}
 
 func (x *KgEntity) ProtoReflect() protoreflect.Message {
-	mi := &file_query_proto_msgTypes[11]
+	mi := &file_rag_query_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -699,7 +699,7 @@ func (x *KgEntity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KgEntity.ProtoReflect.Descriptor instead.
 func (*KgEntity) Descriptor() ([]byte, []int) {
-	return file_query_proto_rawDescGZIP(), []int{11}
+	return file_rag_query_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *KgEntity) GetEntityId() string {
@@ -783,7 +783,7 @@ type KgRelation struct {
 
 func (x *KgRelation) Reset() {
 	*x = KgRelation{}
-	mi := &file_query_proto_msgTypes[12]
+	mi := &file_rag_query_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -795,7 +795,7 @@ func (x *KgRelation) String() string {
 func (*KgRelation) ProtoMessage() {}
 
 func (x *KgRelation) ProtoReflect() protoreflect.Message {
-	mi := &file_query_proto_msgTypes[12]
+	mi := &file_rag_query_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -808,7 +808,7 @@ func (x *KgRelation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KgRelation.ProtoReflect.Descriptor instead.
 func (*KgRelation) Descriptor() ([]byte, []int) {
-	return file_query_proto_rawDescGZIP(), []int{12}
+	return file_rag_query_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *KgRelation) GetSrcId() string {
@@ -892,7 +892,7 @@ type RerankInput struct {
 
 func (x *RerankInput) Reset() {
 	*x = RerankInput{}
-	mi := &file_query_proto_msgTypes[13]
+	mi := &file_rag_query_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -904,7 +904,7 @@ func (x *RerankInput) String() string {
 func (*RerankInput) ProtoMessage() {}
 
 func (x *RerankInput) ProtoReflect() protoreflect.Message {
-	mi := &file_query_proto_msgTypes[13]
+	mi := &file_rag_query_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -917,7 +917,7 @@ func (x *RerankInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RerankInput.ProtoReflect.Descriptor instead.
 func (*RerankInput) Descriptor() ([]byte, []int) {
-	return file_query_proto_rawDescGZIP(), []int{13}
+	return file_rag_query_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *RerankInput) GetQuery() string {
@@ -954,7 +954,7 @@ type RerankChunk struct {
 
 func (x *RerankChunk) Reset() {
 	*x = RerankChunk{}
-	mi := &file_query_proto_msgTypes[14]
+	mi := &file_rag_query_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -966,7 +966,7 @@ func (x *RerankChunk) String() string {
 func (*RerankChunk) ProtoMessage() {}
 
 func (x *RerankChunk) ProtoReflect() protoreflect.Message {
-	mi := &file_query_proto_msgTypes[14]
+	mi := &file_rag_query_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -979,7 +979,7 @@ func (x *RerankChunk) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RerankChunk.ProtoReflect.Descriptor instead.
 func (*RerankChunk) Descriptor() ([]byte, []int) {
-	return file_query_proto_rawDescGZIP(), []int{14}
+	return file_rag_query_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *RerankChunk) GetContent() string {
@@ -1026,7 +1026,7 @@ type RerankOutput struct {
 
 func (x *RerankOutput) Reset() {
 	*x = RerankOutput{}
-	mi := &file_query_proto_msgTypes[15]
+	mi := &file_rag_query_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1038,7 +1038,7 @@ func (x *RerankOutput) String() string {
 func (*RerankOutput) ProtoMessage() {}
 
 func (x *RerankOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_query_proto_msgTypes[15]
+	mi := &file_rag_query_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1051,7 +1051,7 @@ func (x *RerankOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RerankOutput.ProtoReflect.Descriptor instead.
 func (*RerankOutput) Descriptor() ([]byte, []int) {
-	return file_query_proto_rawDescGZIP(), []int{15}
+	return file_rag_query_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *RerankOutput) GetRankedChunks() []*RerankChunk {
@@ -1075,7 +1075,7 @@ type ResponseInput struct {
 
 func (x *ResponseInput) Reset() {
 	*x = ResponseInput{}
-	mi := &file_query_proto_msgTypes[16]
+	mi := &file_rag_query_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1087,7 +1087,7 @@ func (x *ResponseInput) String() string {
 func (*ResponseInput) ProtoMessage() {}
 
 func (x *ResponseInput) ProtoReflect() protoreflect.Message {
-	mi := &file_query_proto_msgTypes[16]
+	mi := &file_rag_query_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1100,7 +1100,7 @@ func (x *ResponseInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResponseInput.ProtoReflect.Descriptor instead.
 func (*ResponseInput) Descriptor() ([]byte, []int) {
-	return file_query_proto_rawDescGZIP(), []int{16}
+	return file_rag_query_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ResponseInput) GetQuery() string {
@@ -1155,7 +1155,7 @@ type ConversationTurn struct {
 
 func (x *ConversationTurn) Reset() {
 	*x = ConversationTurn{}
-	mi := &file_query_proto_msgTypes[17]
+	mi := &file_rag_query_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1167,7 +1167,7 @@ func (x *ConversationTurn) String() string {
 func (*ConversationTurn) ProtoMessage() {}
 
 func (x *ConversationTurn) ProtoReflect() protoreflect.Message {
-	mi := &file_query_proto_msgTypes[17]
+	mi := &file_rag_query_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1180,7 +1180,7 @@ func (x *ConversationTurn) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConversationTurn.ProtoReflect.Descriptor instead.
 func (*ConversationTurn) Descriptor() ([]byte, []int) {
-	return file_query_proto_rawDescGZIP(), []int{17}
+	return file_rag_query_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ConversationTurn) GetRole() string {
@@ -1206,7 +1206,7 @@ type ResponseOutput struct {
 
 func (x *ResponseOutput) Reset() {
 	*x = ResponseOutput{}
-	mi := &file_query_proto_msgTypes[18]
+	mi := &file_rag_query_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1218,7 +1218,7 @@ func (x *ResponseOutput) String() string {
 func (*ResponseOutput) ProtoMessage() {}
 
 func (x *ResponseOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_query_proto_msgTypes[18]
+	mi := &file_rag_query_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1231,7 +1231,7 @@ func (x *ResponseOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResponseOutput.ProtoReflect.Descriptor instead.
 func (*ResponseOutput) Descriptor() ([]byte, []int) {
-	return file_query_proto_rawDescGZIP(), []int{18}
+	return file_rag_query_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *ResponseOutput) GetResponse() string {
@@ -1241,11 +1241,11 @@ func (x *ResponseOutput) GetResponse() string {
 	return ""
 }
 
-var File_query_proto protoreflect.FileDescriptor
+var File_rag_query_proto protoreflect.FileDescriptor
 
-const file_query_proto_rawDesc = "" +
+const file_rag_query_proto_rawDesc = "" +
 	"\n" +
-	"\vquery.proto\x12\x1blightrag.eventbus.topics.v1\".\n" +
+	"\x0frag/query.proto\x12\x1blightrag.eventbus.topics.v1\".\n" +
 	"\x16KeywordExtractionInput\x12\x14\n" +
 	"\x05query\x18\x01 \x01(\tR\x05query\"[\n" +
 	"\x17KeywordExtractionOutput\x12\x1f\n" +
@@ -1353,19 +1353,19 @@ const file_query_proto_rawDesc = "" +
 	"\bresponse\x18\x01 \x01(\tR\bresponseBDZBgithub.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go/topics;topicsb\x06proto3"
 
 var (
-	file_query_proto_rawDescOnce sync.Once
-	file_query_proto_rawDescData []byte
+	file_rag_query_proto_rawDescOnce sync.Once
+	file_rag_query_proto_rawDescData []byte
 )
 
-func file_query_proto_rawDescGZIP() []byte {
-	file_query_proto_rawDescOnce.Do(func() {
-		file_query_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_query_proto_rawDesc), len(file_query_proto_rawDesc)))
+func file_rag_query_proto_rawDescGZIP() []byte {
+	file_rag_query_proto_rawDescOnce.Do(func() {
+		file_rag_query_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_rag_query_proto_rawDesc), len(file_rag_query_proto_rawDesc)))
 	})
-	return file_query_proto_rawDescData
+	return file_rag_query_proto_rawDescData
 }
 
-var file_query_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
-var file_query_proto_goTypes = []any{
+var file_rag_query_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_rag_query_proto_goTypes = []any{
 	(*KeywordExtractionInput)(nil),  // 0: lightrag.eventbus.topics.v1.KeywordExtractionInput
 	(*KeywordExtractionOutput)(nil), // 1: lightrag.eventbus.topics.v1.KeywordExtractionOutput
 	(*QueryExpansionInput)(nil),     // 2: lightrag.eventbus.topics.v1.QueryExpansionInput
@@ -1386,7 +1386,7 @@ var file_query_proto_goTypes = []any{
 	(*ConversationTurn)(nil),        // 17: lightrag.eventbus.topics.v1.ConversationTurn
 	(*ResponseOutput)(nil),          // 18: lightrag.eventbus.topics.v1.ResponseOutput
 }
-var file_query_proto_depIdxs = []int32{
+var file_rag_query_proto_depIdxs = []int32{
 	3,  // 0: lightrag.eventbus.topics.v1.QueryExpansionInput.expansion_config:type_name -> lightrag.eventbus.topics.v1.ExpansionConfig
 	5,  // 1: lightrag.eventbus.topics.v1.QueryExpansionOutput.expansion_metadata:type_name -> lightrag.eventbus.topics.v1.ExpansionMetadata
 	8,  // 2: lightrag.eventbus.topics.v1.VectorSearchOutput.chunks:type_name -> lightrag.eventbus.topics.v1.VectorChunk
@@ -1402,28 +1402,28 @@ var file_query_proto_depIdxs = []int32{
 	0,  // [0:8] is the sub-list for field type_name
 }
 
-func init() { file_query_proto_init() }
-func file_query_proto_init() {
-	if File_query_proto != nil {
+func init() { file_rag_query_proto_init() }
+func file_rag_query_proto_init() {
+	if File_rag_query_proto != nil {
 		return
 	}
-	file_query_proto_msgTypes[2].OneofWrappers = []any{}
-	file_query_proto_msgTypes[4].OneofWrappers = []any{}
+	file_rag_query_proto_msgTypes[2].OneofWrappers = []any{}
+	file_rag_query_proto_msgTypes[4].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_query_proto_rawDesc), len(file_query_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_rag_query_proto_rawDesc), len(file_rag_query_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_query_proto_goTypes,
-		DependencyIndexes: file_query_proto_depIdxs,
-		MessageInfos:      file_query_proto_msgTypes,
+		GoTypes:           file_rag_query_proto_goTypes,
+		DependencyIndexes: file_rag_query_proto_depIdxs,
+		MessageInfos:      file_rag_query_proto_msgTypes,
 	}.Build()
-	File_query_proto = out.File
-	file_query_proto_goTypes = nil
-	file_query_proto_depIdxs = nil
+	File_rag_query_proto = out.File
+	file_rag_query_proto_goTypes = nil
+	file_rag_query_proto_depIdxs = nil
 }

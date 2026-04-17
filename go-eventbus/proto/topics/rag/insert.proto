@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package lightrag.eventbus.topics.v1;
 
+import "index/builder.proto";
+
 option go_package = "github.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go/topics;topics";
 
 // ==========================================
@@ -37,10 +39,6 @@ message EmbeddingInput {
 
 message EmbeddingOutput {
     repeated EmbeddingVector embeddings = 1;        // 嵌入结果列表 (与输入 texts 顺序一一对应)
-}
-
-message EmbeddingVector {
-    repeated float values = 1;                      // 向量值
 }
 
 // ==========================================

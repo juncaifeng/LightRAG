@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { useDashboardStore } from '@/stores/dashboard'
 import { useI18n } from '@/lib/i18n'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -16,6 +17,8 @@ const strategyColors: Record<string, string> = {
 const pipelineColors: Record<string, string> = {
   insert: 'bg-green-500/15 text-green-700 dark:text-green-400',
   query: 'bg-orange-500/15 text-orange-700 dark:text-orange-400',
+  builder: 'bg-cyan-500/15 text-cyan-700 dark:text-cyan-400',
+  retriever: 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-400',
 }
 
 function desc(f: FieldSchema, lang: 'zh' | 'en') {
@@ -81,7 +84,17 @@ function TopicCard({ schema }: { schema: TopicSchema }) {
           )}
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <CardTitle className="text-base font-mono">{schema.name}</CardTitle>
+              <CardTitle
+                className="text-base font-mono cursor-pointer hover:text-primary transition-colors"
+                title={t('点击复制主题名', 'Click to copy topic name')}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  navigator.clipboard.writeText(schema.name)
+                  toast.success(t('已复制', 'Copied') + ': ' + schema.name)
+                }}
+              >
+                {schema.name}
+              </CardTitle>
               <Badge className={pipelineColors[schema.pipeline] || ''} variant="secondary">
                 {schema.pipeline}
               </Badge>

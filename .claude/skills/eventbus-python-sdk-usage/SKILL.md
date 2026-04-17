@@ -10,6 +10,44 @@ description: >
 
 # LightRAG EventBus — Python SDK 使用指南
 
+## Topic 名 → 一切推导规则
+
+只需要知道 topic 名（如 `index.retriever.retrieve`），即可推导出所有需要的信息：
+
+```
+topic: index.retriever.retrieve
+       ──── ──────── ───────
+       domain pipeline stage
+         ↓       ↓       ↓
+proto 路径: go-eventbus/proto/topics/{domain}/{pipeline}.proto
+           → proto/topics/index/retriever.proto
+
+Python import: from topics.{domain}.{pipeline}_pb2 import {PascalCase}Input, {PascalCase}Output
+           → from topics.index.retriever_pb2 import RetrieveInput, RetrieveOutput
+```
+
+**完整映射表：**
+
+| Topic | Proto 文件 | Python import |
+|-------|-----------|---------------|
+| `rag.insert.chunking` | `proto/topics/rag/insert.proto` | `from topics.rag.insert_pb2 import ChunkingInput` |
+| `rag.insert.embedding` | `proto/topics/rag/insert.proto` | `from topics.rag.insert_pb2 import EmbeddingInput` |
+| `rag.insert.ocr` | `proto/topics/rag/insert.proto` | `from topics.rag.insert_pb2 import OcrInput` |
+| `rag.query.keyword_extraction` | `proto/topics/rag/query.proto` | `from topics.rag.query_pb2 import KeywordExtractionInput` |
+| `rag.query.query_expansion` | `proto/topics/rag/query.proto` | `from topics.rag.query_pb2 import QueryExpansionInput` |
+| `rag.query.vector_search` | `proto/topics/rag/query.proto` | `from topics.rag.query_pb2 import VectorSearchInput` |
+| `rag.query.kg_search` | `proto/topics/rag/query.proto` | `from topics.rag.query_pb2 import KgSearchInput` |
+| `rag.query.rerank` | `proto/topics/rag/query.proto` | `from topics.rag.query_pb2 import RerankInput` |
+| `rag.query.response` | `proto/topics/rag/query.proto` | `from topics.rag.query_pb2 import ResponseInput` |
+| `index.builder.index_build` | `proto/topics/index/builder.proto` | `from topics.index.builder_pb2 import IndexBuildInput` |
+| `index.retriever.retrieve` | `proto/topics/index/retriever.proto` | `from topics.index.retriever_pb2 import RetrieveInput` |
+
+**Python 推导公式：**
+- import 模块 = `topics.{domain}.{pipeline}_pb2`
+- 类型名 = `PascalCase(stage)` + `Input`/`Output`
+
+**注意**：Python 的 `topics` 包保留了子目录结构（`topics.rag.*` 和 `topics.index.*`），而 Go 是扁平的（`topics.*`）。
+
 ## SDK 获取
 
 ### 1. Topic 数据模型（protobuf 生成）
@@ -21,8 +59,12 @@ uv add --editable sdk/v1/python
 
 ```python
 from lightrag_eventbus_pb2 import EventEnvelope, SubscriberReply, RegisterRequest
-from topics.insert_pb2 import ChunkingInput, EmbeddingInput, OcrInput
-from topics.query_pb2 import KeywordExtractionInput, VectorSearchInput, ...
+
+# 按推导规则导入 — topic = index.retriever.retrieve
+from topics.index.retriever_pb2 import RetrieveInput, RetrieveOutput
+
+# 或 topic = rag.insert.embedding
+from topics.rag.insert_pb2 import EmbeddingInput, EmbeddingOutput
 ```
 
 ### 2. 平台通信层（本地适配器）
@@ -50,7 +92,6 @@ Python 服务                          EventBus 平台（Go）
     │  gRPC 模式：                        │
     │  publish_and_wait ────────────────→│→ 散射给所有订阅者
     │←───────────────────────────────────│← 聚合结果返回
-    │                                    │
 ```
 
 **两种使用模式**：
@@ -69,26 +110,32 @@ from lightrag.hooks.base import (
     MergeStrategy,
 )
 
-class MyEmbeddingSubscriber(LocalSubscriberAdapter):
-    def __init__(self, embedding_func):
+class MyRetrieverSubscriber(LocalSubscriberAdapter):
+    def __init__(self, retriever_func):
         super().__init__(
-            topic="rag.insert.embedding",
-            subscriber_id="my-embedder",
-            strategy=MergeStrategy.FIRST,
+            topic="index.retriever.retrieve",  # topic 名
+            subscriber_id="my-retriever",
+            strategy=MergeStrategy.APPEND,
             weight=10,
         )
-        self.embedding_func = embedding_func
+        self.retriever_func = retriever_func
 
     async def process(self, envelope: EventEnvelope) -> SubscriberReply:
-        # 1. 从 envelope.inputs 获取输入
-        texts = envelope.inputs.get("texts", [])
+        # 1. 从 envelope.inputs 获取输入（按 proto 字段名）
+        index_name = envelope.inputs.get("index_name", "")
+        query = envelope.inputs.get("query", "")
+        top_k = envelope.inputs.get("top_k", 20)
+        score_threshold = envelope.inputs.get("score_threshold", 0.0)
 
         # 2. 业务逻辑
-        embeddings = await self.embedding_func(texts)
+        results, total_hits = await self.retriever_func(
+            index_name=index_name, query=query, top_k=top_k,
+            score_threshold=score_threshold,
+        )
 
         # 3. 返回结果
         return SubscriberReply(
-            outputs={"embeddings": embeddings},
+            outputs={"results": results, "total_hits": total_hits, "index_name": index_name},
             strategy=self.strategy,
             weight=self.weight,
             correlation_id=envelope.correlation_id,
@@ -104,8 +151,8 @@ dispatcher = GrpcEventBusDispatcher(target="localhost:50051")
 
 # 注册本地订阅者
 dispatcher.register_local_subscriber(
-    "rag.insert.embedding",
-    MyEmbeddingSubscriber(my_embedding_func),
+    "index.retriever.retrieve",
+    MyRetrieverSubscriber(my_retriever_func),
 )
 ```
 
@@ -115,15 +162,34 @@ dispatcher.register_local_subscriber(
 from lightrag.hooks.base import EventEnvelope
 
 envelope = EventEnvelope(
-    topic="rag.insert.embedding",
-    inputs={"texts": ["hello", "world"]},
-    source_service="lightrag-core",
+    topic="index.retriever.retrieve",
+    inputs={
+        "index_name": "thesaurus",
+        "query": "deep learning",
+        "top_k": 20,
+        "semantic_ratio": 0.5,
+        "score_threshold": 0.65,
+    },
+    source_service="query-expansion",
 )
 
 result = await dispatcher.publish_and_wait(envelope)
 
-# result.outputs = {"embeddings": [[0.1, 0.2, ...], [0.3, 0.4, ...]]}
-# result.strategy, result.weight, result.latency_ms
+# result.outputs = {"results": [...], "total_hits": 42, "index_name": "thesaurus"}
+```
+
+## 查看 Topic 字段
+
+方式一：看 proto 源文件（注释最全）
+```
+proto/topics/index/retriever.proto
+```
+
+方式二：导入生成的 protobuf 类型查看字段描述
+```python
+from topics.index.retriever_pb2 import RetrieveInput
+print(RetrieveInput.DESCRIPTOR.fields_by_name.keys())
+# dict_keys(['index_name', 'query', 'top_k', 'semantic_ratio', 'query_vector', 'embedder', 'score_threshold', 'filter_expr'])
 ```
 
 ## 数据约定
@@ -139,53 +205,12 @@ Python 侧的 `envelope.inputs` 和 `reply.outputs` 是**普通 Python dict**，
 
 gRPC 模式下，dict 自动转为 JSON bytes 编码传输。
 
-## Topic 数据模型
-
-Topic 的输入输出定义在 protobuf 中，Python 侧查看方式：
-
-```python
-# 查看 Topic Input 字段 — 导入生成的 protobuf 类型
-from topics.insert_pb2 import ChunkingInput, EmbeddingInput, OcrInput
-from topics.query_pb2 import (
-    KeywordExtractionInput, KeywordExtractionOutput,
-    QueryExpansionInput, QueryExpansionOutput,
-    VectorSearchInput, VectorSearchOutput,
-    KgSearchInput, KgSearchOutput,
-    RerankInput, RerankOutput,
-    ResponseInput, ResponseOutput,
-)
-
-# 字段定义在 proto 文件中
-# go-eventbus/proto/topics/insert.proto
-# go-eventbus/proto/topics/query.proto
-```
-
-## Topic 速查
-
-### Insert
-
-| Topic | Input | Output |
-|-------|-------|--------|
-| `rag.insert.chunking` | `ChunkingInput` | `ChunkingOutput` |
-| `rag.insert.embedding` | `EmbeddingInput` | `EmbeddingOutput` |
-| `rag.insert.ocr` | `OcrInput` | `OcrOutput` |
-
-### Query
-
-| Topic | Input | Output |
-|-------|-------|--------|
-| `rag.query.keyword_extraction` | `KeywordExtractionInput` | `KeywordExtractionOutput` |
-| `rag.query.query_expansion` | `QueryExpansionInput` | `QueryExpansionOutput` |
-| `rag.query.vector_search` | `VectorSearchInput` | `VectorSearchOutput` |
-| `rag.query.kg_search` | `KgSearchInput` | `KgSearchOutput` |
-| `rag.query.rerank` | `RerankInput` | `RerankOutput` |
-| `rag.query.response` | `ResponseInput` | `ResponseOutput` |
-
 ## 合并策略
 
 | Strategy | 值 | 行为 | 适用 |
 |----------|---|------|------|
-| `MergeStrategy.FIRST` | 0 | 首个到达生效 | 嵌入、分块、OCR |
+| `MergeStrategy.FIRST` | 0 | 首个到达生效 | 嵌入、分块、OCR、索引构建 |
+| `MergeStrategy.APPEND` | — | 追加所有结果 | 向量搜索、KG 搜索、查询扩展、检索 |
 | `MergeStrategy.REPLACE` | 1 | 权重高覆盖低 | 重排序 |
 | `MergeStrategy.IGNORE` | 2 | 旁路不影响主流程 | 审计、敏感词检测 |
 
@@ -208,11 +233,15 @@ from topics.query_pb2 import (
 
 ## 常见问题
 
-**Q: 本地订阅者和 gRPC 订阅者有什么区别？**
-本地订阅者在同一进程内，`inputs` 是普通 Python dict。gRPC 订阅者是独立进程，通过 gRPC 通信，dict 自动 JSON 编码。
+**Q: 我只知道 topic 名，怎么找到对应的 Python 类型？**
+用推导规则：`index.retriever.retrieve` → `from topics.index.retriever_pb2 import RetrieveInput, RetrieveOutput`
+
+**Q: Python 和 Go 的 import 路径为什么不同？**
+Python 保留了 proto 子目录结构（`topics.rag.*` / `topics.index.*`），Go 是扁平包（`topics.*`）。对业务开发者来说，Python 的按目录分包更清晰。
 
 **Q: 怎么知道 topic 有哪些字段？**
-导入 `topicspb`（Go）或 `topics/insert_pb2`（Python）查看生成的数据模型。也可以看 proto 源文件。
+方式一：读 `proto/topics/{domain}/{pipeline}.proto`（注释最全）。
+方式二：`RetrieveInput.DESCRIPTOR.fields_by_name.keys()` 查看所有字段名。
 
 **Q: `envelope.inputs` 的 key 从哪来？**
-由发布方决定，对应 Topic Input 的字段名。例如 `EmbeddingInput` 的 `texts` 字段，key 就是 `"texts"`。
+由发布方决定，对应 Topic Input 的字段名。例如 `RetrieveInput` 的 `query` 字段，key 就是 `"query"`。
