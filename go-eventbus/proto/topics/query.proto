@@ -1,0 +1,153 @@
+syntax = "proto3";
+
+package lightrag.eventbus.topics.v1;
+
+option go_package = "github.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go/topics;topics";
+
+// ==========================================
+// rag.query.keyword_extraction
+// ==========================================
+
+message KeywordExtractionInput {
+    string query = 1;                               // 用户原始查询
+}
+
+message KeywordExtractionOutput {
+    repeated string hl_keywords = 1;                // 高层概念关键词
+    repeated string ll_keywords = 2;                // 底层实体关键词
+}
+
+// ==========================================
+// rag.query.query_expansion
+// ==========================================
+
+message QueryExpansionInput {
+    repeated string hl_keywords = 1;                // 高层关键词列表
+    repeated string ll_keywords = 2;                // 底层关键词列表
+    optional ExpansionConfig expansion_config = 3;  // 扩展配置 (可选)
+}
+
+message ExpansionConfig {
+    bool synonym = 1;                               // 同义词扩展
+    bool near_synonym = 2;                          // 近义词扩展
+    bool terminology = 3;                           // 术语库扩展
+    int32 max_expansion_per_keyword = 4;            // 每个关键词最大扩展数
+}
+
+message QueryExpansionOutput {
+    repeated string expanded_hl_keywords = 1;       // 扩展后的高层关键词
+    repeated string expanded_ll_keywords = 2;       // 扩展后的底层关键词
+    optional ExpansionMetadata expansion_metadata = 3; // 扩展元数据 (可选)
+}
+
+message ExpansionMetadata {
+    string source = 1;                              // 扩展来源
+    float hit_rate = 2;                             // 命中率
+}
+
+// ==========================================
+// rag.query.vector_search
+// ==========================================
+
+message VectorSearchInput {
+    string query = 1;                               // 用户查询
+    int32 top_k = 2;                                // 返回 chunk 数量 (默认 20)
+    bool enable_rerank = 3;                         // 是否启用重排序 (默认 true)
+}
+
+message VectorSearchOutput {
+    repeated VectorChunk chunks = 1;                // 检索到的 chunk 列表
+}
+
+message VectorChunk {
+    string content = 1;                             // chunk 文本内容
+    int64 created_at = 2;                           // 创建时间戳
+    string file_path = 3;                           // 来源文件路径
+    string source_type = 4;                         // 来源类型 (如 "vector")
+    string chunk_id = 5;                            // chunk ID
+}
+
+// ==========================================
+// rag.query.kg_search
+// ==========================================
+
+message KgSearchInput {
+    repeated string hl_keywords = 1;                // 高层关键词 (global/hybrid/mix 模式)
+    repeated string ll_keywords = 2;                // 底层关键词 (local/hybrid/mix 模式)
+    string mode = 3;                                // 查询模式 (默认 mix)
+    int32 top_k = 4;                                // 返回数量 (默认 60)
+}
+
+message KgSearchOutput {
+    repeated KgEntity entities = 1;                 // 实体列表
+    repeated KgRelation relations = 2;              // 关系列表
+}
+
+message KgEntity {
+    string entity_id = 1;                           // 实体 ID
+    string entity_name = 2;                         // 实体名称
+    string entity_type = 3;                         // 实体类型
+    string description = 4;                         // 描述
+    int32 rank = 5;                                 // 节点度数
+    string source_id = 6;                           // 来源 chunk ID
+    string file_path = 7;                           // 来源文件路径
+    int64 created_at = 8;                           // 创建时间戳
+    string truncate = 9;                            // 截断信息
+}
+
+message KgRelation {
+    string src_id = 1;                              // 源实体 ID
+    string tgt_id = 2;                              // 目标实体 ID
+    float weight = 3;                               // 关系权重
+    string description = 4;                         // 描述
+    string keywords = 5;                            // 关键词
+    int32 rank = 6;                                 // 边度数
+    string source_id = 7;                           // 来源 chunk ID
+    string file_path = 8;                           // 来源文件路径
+    int64 created_at = 9;                           // 创建时间戳
+    string truncate = 10;                           // 截断信息
+}
+
+// ==========================================
+// rag.query.rerank
+// ==========================================
+
+message RerankInput {
+    string query = 1;                               // 用户查询
+    repeated RerankChunk chunks = 2;                // 待重排的 chunk 列表
+    bool enable_rerank = 3;                         // 是否启用重排 (默认 true)
+}
+
+message RerankChunk {
+    string content = 1;                             // chunk 文本内容
+    int64 created_at = 2;                           // 创建时间戳
+    string file_path = 3;                           // 来源文件路径
+    string source_type = 4;                         // 来源类型
+    string chunk_id = 5;                            // chunk ID
+}
+
+message RerankOutput {
+    repeated RerankChunk ranked_chunks = 1;         // 重排后的 chunk 列表
+}
+
+// ==========================================
+// rag.query.response
+// ==========================================
+
+message ResponseInput {
+    string query = 1;                               // 用户查询
+    string context = 2;                             // 检索到的上下文
+    bool stream = 3;                                // 是否启用流式输出 (默认 false)
+    string response_type = 4;                       // 响应格式
+    repeated ConversationTurn conversation_history = 5; // 对话历史 (可选，空列表表示无历史)
+    string user_prompt = 6;                         // 附加用户指令
+}
+
+message ConversationTurn {
+    string role = 1;                                // "user" 或 "assistant"
+    string content = 2;                             // 消息内容
+}
+
+message ResponseOutput {
+    string response = 1;                            // 生成的回答
+}

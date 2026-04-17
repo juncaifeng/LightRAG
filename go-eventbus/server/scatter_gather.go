@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	pb "github.com/juncaifeng/LightRAG/go-eventbus/proto/eventbus/v1"
+	pb "github.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go"
 )
 
 // PublishAndWait scatter-gather engine
@@ -16,7 +16,7 @@ func (s *EventBusServer) PublishAndWait(ctx context.Context, env *pb.EventEnvelo
 
 	if !exists || len(subs) == 0 {
 		log.Printf("No subscribers found for topic: %s", env.Topic)
-		s.metrics.RecordPublish(env.Topic, env.CorrelationId)
+		s.metrics.RecordPublish(env.Topic, env.CorrelationId, env.Inputs)
 		// Return empty reply indicating no processing
 		return &pb.SubscriberReply{
 			CorrelationId: env.CorrelationId,
@@ -26,7 +26,7 @@ func (s *EventBusServer) PublishAndWait(ctx context.Context, env *pb.EventEnvelo
 	}
 
 	// Record metrics
-	s.metrics.RecordPublish(env.Topic, env.CorrelationId)
+	s.metrics.RecordPublish(env.Topic, env.CorrelationId, env.Inputs)
 	s.metrics.RecordScatter(env.Topic, env.CorrelationId, len(subs))
 
 	// Create a gather task
@@ -90,11 +90,11 @@ func (s *EventBusServer) PublishAndWait(ctx context.Context, env *pb.EventEnvelo
 		case reply := <-task.Responses:
 			responsesReceived++
 			s.mergeResponses(mergedReply, reply)
-			s.metrics.RecordResponse(reply.CorrelationId, reply.SubscriberId, reply.LatencyMs, reply.Strategy.String())
+			s.metrics.RecordResponse(reply.CorrelationId, reply.SubscriberId, reply.LatencyMs, reply.Strategy.String(), reply.Outputs)
 		}
 	}
 
-	s.metrics.RecordGatherComplete(env.CorrelationId, env.Topic, responsesReceived)
+	s.metrics.RecordGatherComplete(env.CorrelationId, env.Topic, responsesReceived, mergedReply.Outputs)
 	log.Printf("Successfully gathered %d responses for event %s", responsesReceived, env.CorrelationId)
 	return mergedReply, nil
 }

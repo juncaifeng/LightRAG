@@ -85,6 +85,9 @@ func StartHTTPServer(busServer *EventBusServer, addr string) error {
 	mux.HandleFunc("/api/topics/schemas", handleTopicSchemas)
 	mux.HandleFunc("/api/topics/schemas/", handleTopicSchema)
 
+	// Event detail by correlation ID
+	mux.HandleFunc("/api/events/detail/", busServer.handleEventDetail)
+
 	// WebSocket endpoint
 	mux.HandleFunc("/ws/events", busServer.handleWSEvents)
 
@@ -167,6 +170,21 @@ func (s *EventBusServer) handleWSEvents(w http.ResponseWriter, r *http.Request) 
 	// Unregister on disconnect
 	s.metrics.RemoveWSClient(conn)
 	log.Printf("WebSocket client disconnected (total: %d)", s.metrics.GetWSClientCount())
+}
+
+// --- Topic Schema handlers ---
+
+func (s *EventBusServer) handleEventDetail(w http.ResponseWriter, r *http.Request) {
+	correlationID := strings.TrimPrefix(r.URL.Path, "/api/events/detail/")
+	if correlationID == "" {
+		http.Error(w, "correlation_id required", http.StatusBadRequest)
+		return
+	}
+	events := s.metrics.GetEventsByCorrelationID(correlationID)
+	if events == nil {
+		events = []EventRecord{}
+	}
+	writeJSON(w, RecentEventsResponse{Events: events})
 }
 
 // --- Topic Schema handlers ---

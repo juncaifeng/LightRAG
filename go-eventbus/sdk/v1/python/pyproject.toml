@@ -1,0 +1,26 @@
+[project]
+name = "lightrag-eventbus-sdk"
+version = "0.1.0"
+description = "LightRAG EventBus gRPC SDK (generated from protobuf)"
+requires-python = ">=3.10"
+dependencies = [
+    "grpcio>=1.60.0",
+    "protobuf>=4.25.0",
+]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = [
+    "lightrag_eventbus_pb2",
+    "lightrag_eventbus_pb2_grpc",
+    "topics.insert_pb2",
+    "topics.insert_pb2_grpc",
+    "topics.query_pb2",
+    "topics.query_pb2_grpc",
+]
+
+[tool.setuptools.packages.find]
+include = ["topics*"]

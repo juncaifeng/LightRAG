@@ -1,0 +1,11 @@
+{
+  "name": "lightrag-eventbus-sdk",
+  "version": "0.1.0",
+  "description": "LightRAG EventBus TypeScript SDK (generated from protobuf)",
+  "type": "module",
+  "main": "src/topics/index.ts",
+  "types": "src/topics/index.ts",
+  "peerDependencies": {
+    "@bufbuild/protobuf": "^2.0.0"
+  }
+}

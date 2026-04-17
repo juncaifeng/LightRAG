@@ -24,6 +24,12 @@ resolution-markers = [
     "(python_full_version < '3.11' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version < '3.11' and sys_platform != 'darwin' and sys_platform != 'linux')",
 ]
 
+[manifest]
+members = [
+    "lightrag-eventbus-sdk",
+    "lightrag-hku",
+]
+
 [[package]]
 name = "accelerate"
 version = "1.11.0"
@@ -2555,6 +2561,21 @@ wheels = [
 ]
 
 [[package]]
+name = "lightrag-eventbus-sdk"
+version = "0.1.0"
+source = { editable = "go-eventbus/sdk/v1/python" }
+dependencies = [
+    { name = "grpcio" },
+    { name = "protobuf" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "grpcio", specifier = ">=1.60.0" },
+    { name = "protobuf", specifier = ">=4.25.0" },
+]
+
+[[package]]
 name = "lightrag-hku"
 source = { editable = "." }
 dependencies = [
@@ -2570,6 +2591,7 @@ dependencies = [
     { name = "grpcio" },
     { name = "grpcio-tools" },
     { name = "json-repair" },
+    { name = "lightrag-eventbus-sdk" },
     { name = "llama-index" },
     { name = "llama-index-llms-openai" },
     { name = "nano-vectordb" },
@@ -2863,6 +2885,7 @@ requires-dist = [
     { name = "json-repair" },
     { name = "json-repair", marker = "extra == 'api'" },
     { name = "langfuse", marker = "extra == 'observability'", specifier = ">=3.8.1" },
+    { name = "lightrag-eventbus-sdk", editable = "go-eventbus/sdk/v1/python" },
     { name = "lightrag-hku", extras = ["api"], marker = "extra == 'evaluation'" },
     { name = "lightrag-hku", extras = ["api"], marker = "extra == 'test'" },
     { name = "lightrag-hku", extras = ["api", "offline-llm", "offline-storage"], marker = "extra == 'offline'" },

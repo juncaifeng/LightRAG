@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	pb "github.com/juncaifeng/LightRAG/go-eventbus/proto/eventbus/v1"
+	pb "github.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go"
 )
 
 // Subscriber represents an active subscriber stream

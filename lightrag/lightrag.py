@@ -759,12 +759,16 @@ class LightRAG:
 
         self._storages_status = StoragesStatus.CREATED
 
+        # Sync global_config with the wrapped llm_model_func (asdict snapshot was taken before wrapping)
+        global_config["llm_model_func"] = self.llm_model_func
+
         # Initialize EventBus Dispatcher
         from .hooks import (
             LocalMemoryDispatcher, GrpcEventBusDispatcher, NativeChunkingSubscriber,
             NativeKeywordExtractionSubscriber, NativeQueryExpansionSubscriber,
             NativeKGSearchSubscriber, NativeVectorSearchSubscriber,
             NativeRerankSubscriber, NativeResponseSubscriber,
+            NativeEmbeddingSubscriber,
         )
         from .operate import (
             chunking_by_token_size, extract_keywords_only,
@@ -825,6 +829,12 @@ class LightRAG:
             subscriber=NativeResponseSubscriber(
                 llm_func=self.llm_model_func,
                 global_config=global_config,
+            )
+        )
+        self.dispatcher.register_local_subscriber(
+            topic="rag.insert.embedding",
+            subscriber=NativeEmbeddingSubscriber(
+                embedding_func=self.embedding_func,
             )
         )
 

@@ -33,6 +33,7 @@ dependencies = [
     "grpcio>=1.80.0",
     "grpcio-tools>=1.80.0",
     "json_repair",
+    "lightrag-eventbus-sdk",
     "llama-index>=0.14.0,<1.0.0",
     "llama-index-llms-openai>=0.6.12",
     "nano-vectordb",
@@ -212,3 +213,11 @@ python_functions = ["test_*"]
 
 [tool.ruff]
 target-version = "py310"
+
+[tool.uv.workspace]
+members = [
+    "go-eventbus/sdk/v1/python",
+]
+
+[tool.uv.sources]
+lightrag-eventbus-sdk = { workspace = true, editable = true }

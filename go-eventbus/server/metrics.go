@@ -12,16 +12,19 @@ import (
 
 // EventRecord is stored in the ring buffer and broadcast via WebSocket.
 type EventRecord struct {
-	Timestamp    time.Time `json:"timestamp"`
-	Type         string    `json:"type"` // "publish", "scatter", "response", "timeout", "gather_complete"
-	Topic        string    `json:"topic"`
-	CorrelationID string   `json:"correlation_id"`
-	SubscriberID string   `json:"subscriber_id,omitempty"`
-	LatencyMs    int32     `json:"latency_ms,omitempty"`
-	Strategy     string    `json:"strategy,omitempty"`
-	Status       string    `json:"status"` // "success", "timeout", "error"
-	SubscriberCount int    `json:"subscriber_count,omitempty"`
-	ResponseCount   int    `json:"response_count,omitempty"`
+	Timestamp       time.Time         `json:"timestamp"`
+	Type            string            `json:"type"` // "publish", "scatter", "response", "timeout", "gather_complete"
+	Topic           string            `json:"topic"`
+	CorrelationID   string            `json:"correlation_id"`
+	SubscriberID    string            `json:"subscriber_id,omitempty"`
+	LatencyMs       int32             `json:"latency_ms,omitempty"`
+	Strategy        string            `json:"strategy,omitempty"`
+	Status          string            `json:"status"` // "success", "timeout", "error"
+	SubscriberCount int               `json:"subscriber_count,omitempty"`
+	ResponseCount   int               `json:"response_count,omitempty"`
+	Inputs          map[string]string `json:"inputs,omitempty"`         // publish event inputs (UTF-8)
+	Outputs         map[string]string `json:"outputs,omitempty"`        // individual subscriber outputs
+	MergedOutputs   map[string]string `json:"merged_outputs,omitempty"` // final merged outputs
 }
 
 // MetricsSnapshot is the JSON-serializable snapshot for HTTP API.
@@ -74,7 +77,7 @@ func NewEventMetrics() *EventMetrics {
 
 // --- Recording methods (called from scatter-gather hot path) ---
 
-func (m *EventMetrics) RecordPublish(topic, correlationID string) {
+func (m *EventMetrics) RecordPublish(topic, correlationID string, inputs map[string][]byte) {
 	m.totalEventsPublished.Add(1)
 	rec := EventRecord{
 		Timestamp:     time.Now(),
@@ -82,6 +85,7 @@ func (m *EventMetrics) RecordPublish(topic, correlationID string) {
 		Topic:         topic,
 		CorrelationID: correlationID,
 		Status:        "success",
+		Inputs:        bytesMapToStrings(inputs),
 	}
 	m.pushEvent(rec)
 }
@@ -98,7 +102,7 @@ func (m *EventMetrics) RecordScatter(topic, correlationID string, subscriberCoun
 	m.pushEvent(rec)
 }
 
-func (m *EventMetrics) RecordResponse(correlationID, subscriberID string, latencyMs int32, strategy string) {
+func (m *EventMetrics) RecordResponse(correlationID, subscriberID string, latencyMs int32, strategy string, outputs map[string][]byte) {
 	m.totalResponses.Add(1)
 	rec := EventRecord{
 		Timestamp:     time.Now(),
@@ -108,6 +112,7 @@ func (m *EventMetrics) RecordResponse(correlationID, subscriberID string, latenc
 		LatencyMs:     latencyMs,
 		Strategy:      strategy,
 		Status:        "success",
+		Outputs:       bytesMapToStrings(outputs),
 	}
 	m.pushEvent(rec)
 }
@@ -124,7 +129,7 @@ func (m *EventMetrics) RecordTimeout(correlationID, topic string) {
 	m.pushEvent(rec)
 }
 
-func (m *EventMetrics) RecordGatherComplete(correlationID, topic string, responseCount int) {
+func (m *EventMetrics) RecordGatherComplete(correlationID, topic string, responseCount int, mergedOutputs map[string][]byte) {
 	rec := EventRecord{
 		Timestamp:      time.Now(),
 		Type:           "gather_complete",
@@ -132,6 +137,7 @@ func (m *EventMetrics) RecordGatherComplete(correlationID, topic string, respons
 		CorrelationID:  correlationID,
 		Status:         "success",
 		ResponseCount:  responseCount,
+		MergedOutputs:  bytesMapToStrings(mergedOutputs),
 	}
 	m.pushEvent(rec)
 }
@@ -243,4 +249,31 @@ func (m *EventMetrics) GetWSClientCount() int {
 	m.wsMu.RLock()
 	defer m.wsMu.RUnlock()
 	return len(m.wsClients)
+}
+
+// GetEventsByCorrelationID returns all events matching the given correlation ID.
+func (m *EventMetrics) GetEventsByCorrelationID(correlationID string) []EventRecord {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	var result []EventRecord
+	for i := 0; i < m.count; i++ {
+		idx := (m.head - m.count + i + ringBufferSize) % ringBufferSize
+		if m.events[idx].CorrelationID == correlationID {
+			result = append(result, m.events[idx])
+		}
+	}
+	return result
+}
+
+// bytesMapToStrings converts map[string][]byte to map[string]string.
+func bytesMapToStrings(m map[string][]byte) map[string]string {
+	if m == nil {
+		return nil
+	}
+	result := make(map[string]string, len(m))
+	for k, v := range m {
+		result[k] = string(v)
+	}
+	return result
 }

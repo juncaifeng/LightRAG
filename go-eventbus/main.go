@@ -7,7 +7,7 @@ import (
 	_ "net/http/pprof"
 
 	"google.golang.org/grpc"
-	pb "github.com/juncaifeng/LightRAG/go-eventbus/proto/eventbus/v1"
+	pb "github.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go"
 	"github.com/juncaifeng/LightRAG/go-eventbus/server"
 )
 

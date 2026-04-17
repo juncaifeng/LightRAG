@@ -360,3 +360,55 @@ class NativeResponseSubscriber(LocalSubscriberAdapter):
                 error_message=str(e),
                 correlation_id=envelope.correlation_id,
             )
+
+
+class NativeEmbeddingSubscriber(LocalSubscriberAdapter):
+    """
+    Wraps the native embedding function for the rag.insert.embedding topic.
+    External subscribers with higher weight can REPLACE this default.
+    """
+    def __init__(self, embedding_func: Any):
+        super().__init__(
+            topic="rag.insert.embedding",
+            subscriber_id="native-embedder",
+            strategy=MergeStrategy.REPLACE,
+            weight=10,
+        )
+        self.embedding_func = embedding_func
+
+    async def process(self, envelope: EventEnvelope) -> SubscriberReply:
+        import numpy as np
+
+        texts_raw = envelope.inputs.get("texts", [])
+        if isinstance(texts_raw, str):
+            texts_raw = json.loads(texts_raw)
+
+        if not texts_raw:
+            return SubscriberReply(
+                outputs={"embeddings": []},
+                strategy=MergeStrategy.IGNORE,
+                error_message="No texts provided for embedding",
+            )
+
+        try:
+            embeddings = await self.embedding_func(texts_raw)
+
+            # Convert numpy array to list for JSON serialization
+            if hasattr(embeddings, "tolist"):
+                embeddings = embeddings.tolist()
+
+            return SubscriberReply(
+                outputs={"embeddings": embeddings},
+                strategy=self.strategy,
+                weight=self.weight,
+                correlation_id=envelope.correlation_id,
+            )
+        except Exception as e:
+            logger.error(f"NativeEmbeddingSubscriber failed: {e}")
+            return SubscriberReply(
+                outputs={"embeddings": []},
+                strategy=MergeStrategy.IGNORE,
+                error_code="EMBEDDING_FAILED",
+                error_message=str(e),
+                correlation_id=envelope.correlation_id,
+            )
