@@ -1,7 +1,0 @@
-name: rag.insert.ocr
-pipeline: insert
-stage: ocr
-description: "OCR 文字识别 — 从图片中提取文本内容"
-description_en: "OCR text recognition — extracts text content from images"
-recommended_strategy: REPLACE
-recommended_weight: 10

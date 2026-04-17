@@ -1,62 +1,239 @@
 package server
 
 import (
-	"embed"
-	"fmt"
-	"io/fs"
-	"path"
+	"reflect"
 	"strings"
 
-	"gopkg.in/yaml.v3"
-)
+	"google.golang.org/protobuf/reflect/protoreflect"
 
-//go:embed topics/v1/**/*
-var topicFiles embed.FS
+	topicspb "github.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go/topics"
+)
 
 // FieldSchema describes a single input or output field.
 type FieldSchema struct {
-	Name         string `json:"name" yaml:"name"`
-	Type         string `json:"type" yaml:"type"`
-	Required     bool   `json:"required" yaml:"required"`
-	Description  string `json:"description" yaml:"description"`     // zh
-	DescriptionEn string `json:"description_en" yaml:"description_en"` // en
-	Default      string `json:"default,omitempty" yaml:"default,omitempty"`
+	Name          string `json:"name"`
+	Type          string `json:"type"`
+	Required      bool   `json:"required"`
+	Description   string `json:"description"`     // zh
+	DescriptionEn string `json:"description_en"` // en
 }
 
 // TopicSchema describes the complete protocol definition for a topic.
 type TopicSchema struct {
-	Name               string            `json:"name"`
-	Pipeline           string            `json:"pipeline"`
-	Stage              string            `json:"stage"`
-	Description        string            `json:"description"`     // zh
-	DescriptionEn      string            `json:"description_en"`  // en
-	Inputs             []FieldSchema     `json:"inputs"`
-	Outputs            []FieldSchema     `json:"outputs"`
-	RecommendedStrategy string          `json:"recommended_strategy"`
-	RecommendedWeight  int               `json:"recommended_weight"`
-	CodeTemplates      map[string]string `json:"code_templates"`
+	Name                string        `json:"name"`
+	Pipeline            string        `json:"pipeline"`
+	Stage               string        `json:"stage"`
+	Description         string        `json:"description"`     // zh
+	DescriptionEn       string        `json:"description_en"` // en
+	Inputs              []FieldSchema `json:"inputs"`
+	Outputs             []FieldSchema `json:"outputs"`
+	RecommendedStrategy string        `json:"recommended_strategy"`
+	RecommendedWeight   int           `json:"recommended_weight"`
 }
 
-// schemaYAML maps to schema.yaml
-type schemaYAML struct {
-	Inputs  []FieldSchema `yaml:"inputs"`
-	Outputs []FieldSchema `yaml:"outputs"`
+// inputOutput pairs Input/Output proto messages that form a topic.
+type inputOutput struct {
+	InputName  string
+	OutputName string
+	InputType  reflect.Type
+	OutputType reflect.Type
+	Pipeline   string // derived from proto file name
 }
 
-// metadataYAML maps to metadata.yaml
-type metadataYAML struct {
-	Name                string `yaml:"name"`
-	Pipeline            string `yaml:"pipeline"`
-	Stage               string `yaml:"stage"`
-	Description         string `yaml:"description"`
-	DescriptionEn       string `yaml:"description_en"`
-	RecommendedStrategy string `yaml:"recommended_strategy"`
-	RecommendedWeight   int    `yaml:"recommended_weight"`
+// allProtoMessages maps proto message short names to their Go reflect type.
+var allProtoMessages map[string]reflect.Type
+
+func init() {
+	allProtoMessages = make(map[string]reflect.Type)
+	for _, msg := range []any{
+		(*topicspb.ChunkingInput)(nil),
+		(*topicspb.ChunkingOutput)(nil),
+		(*topicspb.EmbeddingInput)(nil),
+		(*topicspb.EmbeddingOutput)(nil),
+		(*topicspb.OcrInput)(nil),
+		(*topicspb.OcrOutput)(nil),
+		(*topicspb.KeywordExtractionInput)(nil),
+		(*topicspb.KeywordExtractionOutput)(nil),
+		(*topicspb.QueryExpansionInput)(nil),
+		(*topicspb.QueryExpansionOutput)(nil),
+		(*topicspb.VectorSearchInput)(nil),
+		(*topicspb.VectorSearchOutput)(nil),
+		(*topicspb.KgSearchInput)(nil),
+		(*topicspb.KgSearchOutput)(nil),
+		(*topicspb.RerankInput)(nil),
+		(*topicspb.RerankOutput)(nil),
+		(*topicspb.ResponseInput)(nil),
+		(*topicspb.ResponseOutput)(nil),
+	} {
+		t := reflect.TypeOf(msg).Elem()
+		allProtoMessages[t.Name()] = t
+	}
 }
 
-// builtinSchemas is loaded from embedded YAML files lazily on first access.
+// topicStrategyOverrides allows per-topic strategy overrides when the default
+// doesn't fit. Most topics default to APPEND (scatter-gather merge semantics).
+var topicStrategyOverrides = map[string]string{
+	"rag.insert.chunking":           "FIRST",
+	"rag.insert.embedding":          "FIRST",
+	"rag.insert.ocr":                "FIRST",
+	"rag.query.keyword_extraction":  "FIRST",
+	"rag.query.query_expansion":     "APPEND",
+	"rag.query.vector_search":       "APPEND",
+	"rag.query.kg_search":           "APPEND",
+	"rag.query.rerank":              "REPLACE",
+	"rag.query.response":            "FIRST",
+}
+
+// camelToSnake converts CamelCase to snake_case.
+// "ChunkingInput" → "chunking_input", "KgSearch" → "kg_search"
+func camelToSnake(s string) string {
+	var result strings.Builder
+	for i, r := range s {
+		if r >= 'A' && r <= 'Z' {
+			if i > 0 {
+				prev := rune(s[i-1])
+				if prev >= 'a' && prev <= 'z' {
+					result.WriteRune('_')
+				}
+			}
+			result.WriteRune(r + ('a' - 'A'))
+		} else {
+			result.WriteRune(r)
+		}
+	}
+	return result.String()
+}
+
+// discoverTopics scans all registered proto messages and pairs XxxInput/XxxOutput
+// into topics. Pipeline is derived from proto file name (insert.proto → insert).
+// Stage is derived from message name (ChunkingInput → chunking).
+// Topic name: rag.{pipeline}.{stage}
+func discoverTopics() []inputOutput {
+	type msgInfo struct {
+		name     string
+		goType   reflect.Type
+		fileName string // proto source file name
+	}
+
+	// Collect all messages with their source file
+	var allMsgs []msgInfo
+	for name, goType := range allProtoMessages {
+		instance := reflect.New(goType).Interface()
+		if pr, ok := instance.(interface{ ProtoReflect() protoreflect.Message }); ok {
+			desc := pr.ProtoReflect().Descriptor()
+			fileName := string(desc.ParentFile().Path())
+			allMsgs = append(allMsgs, msgInfo{name: name, goType: goType, fileName: fileName})
+		}
+	}
+
+	// Build a map of message name → info
+	msgMap := make(map[string]msgInfo, len(allMsgs))
+	for _, m := range allMsgs {
+		msgMap[m.name] = m
+	}
+
+	// Find all Input messages and pair with corresponding Output
+	var pairs []inputOutput
+	for name, info := range msgMap {
+		if !strings.HasSuffix(name, "Input") {
+			continue
+		}
+
+		base := strings.TrimSuffix(name, "Input")
+		outputName := base + "Output"
+		outputInfo, ok := msgMap[outputName]
+		if !ok {
+			continue
+		}
+
+		// Derive pipeline from proto file name
+		// e.g. "topics/insert.proto" → "insert"
+		pipeline := info.fileName
+		if idx := strings.LastIndex(pipeline, "/"); idx >= 0 {
+			pipeline = pipeline[idx+1:]
+		}
+		pipeline = strings.TrimSuffix(pipeline, ".proto")
+
+		pairs = append(pairs, inputOutput{
+			InputName:  name,
+			OutputName: outputName,
+			InputType:  info.goType,
+			OutputType: outputInfo.goType,
+			Pipeline:   pipeline,
+		})
+	}
+
+	return pairs
+}
+
+// protoTypeString returns a human-readable type string for a protobuf field descriptor.
+func protoTypeString(fd protoreflect.FieldDescriptor) string {
+	if fd.IsList() {
+		return "repeated " + protoBaseType(fd)
+	}
+	if fd.IsMap() {
+		keyType := protoBaseType(fd.MapKey())
+		valType := protoBaseType(fd.MapValue())
+		return "map<" + keyType + ", " + valType + ">"
+	}
+	return protoBaseType(fd)
+}
+
+func protoBaseType(fd protoreflect.FieldDescriptor) string {
+	if fd.Kind() == protoreflect.MessageKind || fd.Kind() == protoreflect.GroupKind {
+		return string(fd.Message().Name())
+	}
+	return fd.Kind().String()
+}
+
+// extractFieldsFromProto reads fields from a proto message type and returns FieldSchema list.
+func extractFieldsFromProto(goType reflect.Type) []FieldSchema {
+	instance := reflect.New(goType).Interface()
+	pr, ok := instance.(interface{ ProtoReflect() protoreflect.Message })
+	if !ok {
+		return nil
+	}
+
+	desc := pr.ProtoReflect().Descriptor()
+	fields := desc.Fields()
+	result := make([]FieldSchema, 0, fields.Len())
+
+	for i := 0; i < fields.Len(); i++ {
+		fd := fields.Get(i)
+
+		// Extract field comment from proto source locations.
+		descEn := ""
+		if locs := desc.ParentFile().SourceLocations().ByDescriptor(fd); locs.LeadingComments != "" {
+			descEn = strings.TrimSpace(locs.LeadingComments)
+		}
+
+		result = append(result, FieldSchema{
+			Name:          string(fd.Name()),
+			Type:          protoTypeString(fd),
+			Required:      fd.HasPresence(),
+			Description:   descEn,
+			DescriptionEn: descEn,
+		})
+	}
+	return result
+}
+
+// extractMsgDescription reads the leading comment of a proto message.
+func extractMsgDescription(goType reflect.Type) string {
+	instance := reflect.New(goType).Interface()
+	pr, ok := instance.(interface{ ProtoReflect() protoreflect.Message })
+	if !ok {
+		return ""
+	}
+	desc := pr.ProtoReflect().Descriptor()
+	if locs := desc.ParentFile().SourceLocations().ByDescriptor(desc); locs.LeadingComments != "" {
+		return strings.TrimSpace(locs.LeadingComments)
+	}
+	return ""
+}
+
+// builtinSchemas is populated lazily.
 var builtinSchemas map[string]TopicSchema
-var loadErr error
 var schemasLoaded bool
 
 func loadTopicSchemas() {
@@ -64,88 +241,46 @@ func loadTopicSchemas() {
 		return
 	}
 	schemasLoaded = true
-	builtinSchemas = make(map[string]TopicSchema)
 
-	loadErr = fs.WalkDir(topicFiles, ".", func(fpath string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.IsDir() {
-			return nil
-		}
+	pairs := discoverTopics()
+	builtinSchemas = make(map[string]TopicSchema, len(pairs))
 
-		// Only process metadata.yaml to discover topic directories
-		if path.Base(fpath) != "metadata.yaml" {
-			return nil
-		}
+	for _, pair := range pairs {
+		// Derive stage from Input message name: "ChunkingInput" → "chunking"
+		stageBase := strings.TrimSuffix(pair.InputName, "Input")
+		stage := camelToSnake(stageBase)
 
-		topicDir := path.Dir(fpath)
+		topicName := "rag." + pair.Pipeline + "." + stage
 
-		// Read metadata.yaml
-		metaBytes, err := topicFiles.ReadFile(fpath)
-		if err != nil {
-			return fmt.Errorf("failed to read %s: %w", fpath, err)
-		}
-		var meta metadataYAML
-		if err := yaml.Unmarshal(metaBytes, &meta); err != nil {
-			return fmt.Errorf("failed to parse %s: %w", fpath, err)
+		inputs := extractFieldsFromProto(pair.InputType)
+		outputs := extractFieldsFromProto(pair.OutputType)
+
+		// Description from Input message comment
+		desc := extractMsgDescription(pair.InputType)
+
+		strategy := topicStrategyOverrides[topicName]
+		if strategy == "" {
+			strategy = "APPEND"
 		}
 
-		// Read schema.yaml
-		schemaPath := path.Join(topicDir, "schema.yaml")
-		schemaBytes, err := topicFiles.ReadFile(schemaPath)
-		if err != nil {
-			return fmt.Errorf("failed to read %s: %w", schemaPath, err)
+		schema := TopicSchema{
+			Name:                topicName,
+			Pipeline:            pair.Pipeline,
+			Stage:               stage,
+			Description:         desc,
+			DescriptionEn:       desc,
+			Inputs:              inputs,
+			Outputs:             outputs,
+			RecommendedStrategy: strategy,
+			RecommendedWeight:   10,
 		}
-		var schema schemaYAML
-		if err := yaml.Unmarshal(schemaBytes, &schema); err != nil {
-			return fmt.Errorf("failed to parse %s: %w", schemaPath, err)
-		}
-
-		// Read examples/*.md as code templates
-		codeTemplates := make(map[string]string)
-		examplesDir := path.Join(topicDir, "examples")
-		fs.WalkDir(topicFiles, examplesDir, func(epath string, eentry fs.DirEntry, eerr error) error {
-			if eerr != nil || eentry.IsDir() {
-				return nil
-			}
-			ename := eentry.Name()
-			if !strings.HasSuffix(ename, ".md") {
-				return nil
-			}
-			lang := strings.TrimSuffix(ename, ".md")
-			content, err := topicFiles.ReadFile(epath)
-			if err == nil {
-				codeTemplates[lang] = string(content)
-			}
-			return nil
-		})
-
-		// Assemble TopicSchema
-		topic := TopicSchema{
-			Name:               meta.Name,
-			Pipeline:           meta.Pipeline,
-			Stage:              meta.Stage,
-			Description:        meta.Description,
-			DescriptionEn:      meta.DescriptionEn,
-			Inputs:             schema.Inputs,
-			Outputs:            schema.Outputs,
-			RecommendedStrategy: meta.RecommendedStrategy,
-			RecommendedWeight:  meta.RecommendedWeight,
-			CodeTemplates:      codeTemplates,
-		}
-
-		builtinSchemas[meta.Name] = topic
-		return nil
-	})
+		builtinSchemas[topicName] = schema
+	}
 }
 
 // GetTopicSchemas returns all registered topic schemas.
 func GetTopicSchemas() []TopicSchema {
 	loadTopicSchemas()
-	if loadErr != nil {
-		return nil
-	}
 	result := make([]TopicSchema, 0, len(builtinSchemas))
 	for _, schema := range builtinSchemas {
 		result = append(result, schema)
@@ -156,9 +291,6 @@ func GetTopicSchemas() []TopicSchema {
 // GetTopicSchema returns a single topic schema by name, or nil if not found.
 func GetTopicSchema(name string) *TopicSchema {
 	loadTopicSchemas()
-	if loadErr != nil {
-		return nil
-	}
 	s, ok := builtinSchemas[name]
 	if !ok {
 		return nil

@@ -1,7 +1,0 @@
-name: rag.insert.chunking
-pipeline: insert
-stage: chunking
-description: "文档分块处理 — 将长文档按 token 数量拆分为多个 chunk"
-description_en: "Document chunking — splits long documents into chunks by token count"
-recommended_strategy: REPLACE
-recommended_weight: 10

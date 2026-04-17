@@ -1,7 +1,0 @@
-name: rag.query.rerank
-pipeline: query
-stage: rerank
-description: "重排序 — 对检索到的文本块按相关性重新排序"
-description_en: "Rerank — re-sorts retrieved text chunks by relevance"
-recommended_strategy: REPLACE
-recommended_weight: 10
