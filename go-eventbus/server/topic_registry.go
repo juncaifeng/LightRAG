@@ -53,6 +53,8 @@ func init() {
 		(*topicspb.EmbeddingOutput)(nil),
 		(*topicspb.OcrInput)(nil),
 		(*topicspb.OcrOutput)(nil),
+		(*topicspb.DocumentLoadInput)(nil),
+		(*topicspb.DocumentLoadOutput)(nil),
 		(*topicspb.KeywordExtractionInput)(nil),
 		(*topicspb.KeywordExtractionOutput)(nil),
 		(*topicspb.QueryExpansionInput)(nil),

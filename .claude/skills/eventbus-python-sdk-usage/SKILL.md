@@ -33,6 +33,7 @@ Python import: from topics.{domain}.{pipeline}_pb2 import {PascalCase}Input, {Pa
 | `rag.insert.chunking` | `proto/topics/rag/insert.proto` | `from topics.rag.insert_pb2 import ChunkingInput` |
 | `rag.insert.embedding` | `proto/topics/rag/insert.proto` | `from topics.rag.insert_pb2 import EmbeddingInput` |
 | `rag.insert.ocr` | `proto/topics/rag/insert.proto` | `from topics.rag.insert_pb2 import OcrInput` |
+| `rag.insert.document_load` | `proto/topics/rag/insert.proto` | `from topics.rag.insert_pb2 import DocumentLoadInput` |
 | `rag.query.keyword_extraction` | `proto/topics/rag/query.proto` | `from topics.rag.query_pb2 import KeywordExtractionInput` |
 | `rag.query.query_expansion` | `proto/topics/rag/query.proto` | `from topics.rag.query_pb2 import QueryExpansionInput` |
 | `rag.query.vector_search` | `proto/topics/rag/query.proto` | `from topics.rag.query_pb2 import VectorSearchInput` |

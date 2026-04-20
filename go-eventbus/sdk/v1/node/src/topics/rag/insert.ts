@@ -61,6 +61,38 @@ export interface OcrOutput {
   text: string;
 }
 
+export interface DocumentLoadInput {
+  /** 文件二进制内容 */
+  fileContent: Uint8Array;
+  /** 文件名（含扩展名，用于格式判断） */
+  fileName: string;
+  /** 原始文件路径（可选，用于日志/citation） */
+  filePath: string;
+  /** 追踪 ID（可选） */
+  trackId: string;
+  /** 加载引擎偏好："native" / "docling"（默认 "native"） */
+  loadingEngine: string;
+  /** PDF 解密密码（可选） */
+  pdfDecryptPassword: string;
+}
+
+export interface DocumentLoadOutput {
+  /** 提取的纯文本内容 */
+  content: string;
+  /** 回显文件名 */
+  fileName: string;
+  /** 回显文件路径 */
+  filePath: string;
+  /** 内容 MD5 hash（用于去重） */
+  contentHash: string;
+  /** 提取文本长度 */
+  contentLength: number;
+  /** 识别的文件格式（如 "pdf", "docx", "txt"） */
+  fileFormat: string;
+  /** 错误信息（空字符串=成功） */
+  errorMessage: string;
+}
+
 function createBaseChunkingInput(): ChunkingInput {
   return {
     content: "",
@@ -486,6 +518,245 @@ export const OcrOutput: MessageFns<OcrOutput> = {
   },
 };
 
+function createBaseDocumentLoadInput(): DocumentLoadInput {
+  return {
+    fileContent: new Uint8Array(0),
+    fileName: "",
+    filePath: "",
+    trackId: "",
+    loadingEngine: "",
+    pdfDecryptPassword: "",
+  };
+}
+
+export const DocumentLoadInput: MessageFns<DocumentLoadInput> = {
+  encode(message: DocumentLoadInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.fileContent.length !== 0) {
+      writer.uint32(10).bytes(message.fileContent);
+    }
+    if (message.fileName !== "") {
+      writer.uint32(18).string(message.fileName);
+    }
+    if (message.filePath !== "") {
+      writer.uint32(26).string(message.filePath);
+    }
+    if (message.trackId !== "") {
+      writer.uint32(34).string(message.trackId);
+    }
+    if (message.loadingEngine !== "") {
+      writer.uint32(42).string(message.loadingEngine);
+    }
+    if (message.pdfDecryptPassword !== "") {
+      writer.uint32(50).string(message.pdfDecryptPassword);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): DocumentLoadInput {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDocumentLoadInput();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.fileContent = reader.bytes();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.fileName = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.filePath = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.trackId = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.loadingEngine = reader.string();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.pdfDecryptPassword = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create<I extends Exact<DeepPartial<DocumentLoadInput>, I>>(base?: I): DocumentLoadInput {
+    return DocumentLoadInput.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<DocumentLoadInput>, I>>(object: I): DocumentLoadInput {
+    const message = createBaseDocumentLoadInput();
+    message.fileContent = object.fileContent ?? new Uint8Array(0);
+    message.fileName = object.fileName ?? "";
+    message.filePath = object.filePath ?? "";
+    message.trackId = object.trackId ?? "";
+    message.loadingEngine = object.loadingEngine ?? "";
+    message.pdfDecryptPassword = object.pdfDecryptPassword ?? "";
+    return message;
+  },
+};
+
+function createBaseDocumentLoadOutput(): DocumentLoadOutput {
+  return {
+    content: "",
+    fileName: "",
+    filePath: "",
+    contentHash: "",
+    contentLength: 0,
+    fileFormat: "",
+    errorMessage: "",
+  };
+}
+
+export const DocumentLoadOutput: MessageFns<DocumentLoadOutput> = {
+  encode(message: DocumentLoadOutput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.content !== "") {
+      writer.uint32(10).string(message.content);
+    }
+    if (message.fileName !== "") {
+      writer.uint32(18).string(message.fileName);
+    }
+    if (message.filePath !== "") {
+      writer.uint32(26).string(message.filePath);
+    }
+    if (message.contentHash !== "") {
+      writer.uint32(34).string(message.contentHash);
+    }
+    if (message.contentLength !== 0) {
+      writer.uint32(40).int64(message.contentLength);
+    }
+    if (message.fileFormat !== "") {
+      writer.uint32(50).string(message.fileFormat);
+    }
+    if (message.errorMessage !== "") {
+      writer.uint32(58).string(message.errorMessage);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): DocumentLoadOutput {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDocumentLoadOutput();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.content = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.fileName = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.filePath = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.contentHash = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.contentLength = longToNumber(reader.int64());
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.fileFormat = reader.string();
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.errorMessage = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create<I extends Exact<DeepPartial<DocumentLoadOutput>, I>>(base?: I): DocumentLoadOutput {
+    return DocumentLoadOutput.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<DocumentLoadOutput>, I>>(object: I): DocumentLoadOutput {
+    const message = createBaseDocumentLoadOutput();
+    message.content = object.content ?? "";
+    message.fileName = object.fileName ?? "";
+    message.filePath = object.filePath ?? "";
+    message.contentHash = object.contentHash ?? "";
+    message.contentLength = object.contentLength ?? 0;
+    message.fileFormat = object.fileFormat ?? "";
+    message.errorMessage = object.errorMessage ?? "";
+    return message;
+  },
+};
+
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
 export type DeepPartial<T> = T extends Builtin ? T
@@ -497,6 +768,17 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function longToNumber(int64: { toString(): string }): number {
+  const num = globalThis.Number(int64.toString());
+  if (num > globalThis.Number.MAX_SAFE_INTEGER) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  if (num < globalThis.Number.MIN_SAFE_INTEGER) {
+    throw new globalThis.Error("Value is smaller than Number.MIN_SAFE_INTEGER");
+  }
+  return num;
+}
 
 export interface MessageFns<T> {
   encode(message: T, writer?: BinaryWriter): BinaryWriter;
