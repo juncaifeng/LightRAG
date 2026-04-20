@@ -40,6 +40,10 @@ go-eventbus/proto/topics/
 ├── index/                        # domain = "index"
 │   ├── builder.proto             # pipeline = "builder"  → index.builder.xxx
 │   └── retriever.proto           # pipeline = "retriever" → index.retriever.xxx
+├── llm/                          # domain = "llm"
+│   └── completion.proto          # pipeline = "completion" → llm.completion.complete
+├── kg/                           # domain = "kg"
+│   └── merge.proto               # pipeline = "merge"     → kg.merge.entity
 └── {domain}/                     # future domains...
     └── {pipeline}.proto
 ```
@@ -55,6 +59,9 @@ go-eventbus/proto/topics/
 | `rag/query.proto` + `VectorSearchInput` | `rag.query.vector_search` |
 | `index/builder.proto` + `IndexBuildInput` | `index.builder.index_build` |
 | `index/retriever.proto` + `RetrieveInput` | `index.retriever.retrieve` |
+| `llm/completion.proto` + `CompleteInput` | `llm.completion.complete` |
+| `kg/merge.proto` + `EntityMergeInput` | `kg.merge.entity` |
+| `kg/merge.proto` + `RelationMergeInput` | `kg.merge.relation` |
 
 ---
 

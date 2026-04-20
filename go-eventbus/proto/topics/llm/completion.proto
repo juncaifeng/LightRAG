@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package lightrag.eventbus.topics.v1;
+
+option go_package = "github.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go/topics;topics";
+
+// ==========================================
+// llm.completion.complete
+// ==========================================
+
+message CompleteInput {
+    string prompt = 1;                              // 主提示词（user role 内容）
+    string system_prompt = 2;                       // 系统提示词（可选，空字符串=无）
+    repeated ChatMessage history_messages = 3;      // 对话历史（可选，gleaning / 多轮场景）
+    bool enable_cot = 4;                            // 是否启用 Chain-of-Thought（默认 false）
+    bool stream = 5;                                // 是否流式输出（默认 false）
+    int32 priority = 6;                             // 优先级：5=查询, 8=摘要, 10=索引（默认 10）
+    string cache_type = 7;                          // 缓存类型标识（如 "extract", "summary", "keywords"）
+    string chunk_id = 8;                            // 关联的 chunk ID（用于缓存 key 生成，可选）
+    map<string, string> extra_kwargs = 9;           // 额外参数（如 keyword_extraction=true）
+}
+
+message ChatMessage {
+    string role = 1;                                // "user" 或 "assistant"
+    string content = 2;                             // 消息内容
+}
+
+message CompleteOutput {
+    string response = 1;                            // 生成的文本响应（非流式）
+    int32 token_count = 2;                          // 响应 token 数（可选，用于监控）
+    string model = 3;                               // 实际使用的模型名（可选）
+}

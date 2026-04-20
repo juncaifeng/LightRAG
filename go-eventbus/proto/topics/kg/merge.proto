@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package lightrag.eventbus.topics.v1;
+
+option go_package = "github.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go/topics;topics";
+
+// ==========================================
+// kg.merge.entity
+// ==========================================
+
+message EntityMergeInput {
+    string entity_name = 1;                         // 实体名称（合并 key）
+    repeated EntityData new_entities = 2;           // 新提取的实体数据列表
+    MergeConfig merge_config = 3;                   // 合并配置
+}
+
+message EntityData {
+    string entity_type = 1;                         // 实体类型
+    string description = 2;                         // 实体描述
+    string source_id = 3;                           // 来源 chunk ID
+    string file_path = 4;                           // 来源文件路径
+    int64 timestamp = 5;                            // 提取时间戳
+}
+
+message MergeConfig {
+    int32 max_source_ids = 1;                       // source_id 最大保留数（默认 20）
+    string limit_method = 2;                        // 截断策略："FIFO" 或 "KEEP"（默认 "FIFO"）
+    int32 summary_max_tokens = 3;                   // LLM 摘要最大 token 数
+    int32 summary_context_size = 4;                 // 摘要上下文窗口 token 数
+    int32 force_llm_summary_on_merge = 5;           // 超过此描述数强制 LLM 摘要
+    string language = 6;                            // 摘要语言（如 "Chinese", "English"）
+    int32 max_file_paths = 7;                       // file_path 最大保留数
+}
+
+message EntityMergeOutput {
+    string entity_name = 1;                         // 回显实体名
+    string entity_type = 2;                         // 最终实体类型（众数）
+    string description = 3;                         // 合并后的描述（LLM 摘要或拼接）
+    string source_id = 4;                           // 合并后的 source_id（GRAPH_FIELD_SEP 分隔）
+    string file_path = 5;                           // 合并后的 file_path
+    string truncate = 6;                            // 截断信息（如 "FIFO 20/35"）
+    string content = 7;                             // 向量存储内容："{entity_name}\n{description}"
+    repeated string full_source_ids = 8;            // 完整未截断的 source_id 列表
+    bool llm_used = 9;                              // 是否调用了 LLM 摘要
+}
+
+// ==========================================
+// kg.merge.relation
+// ==========================================
+
+message RelationMergeInput {
+    string src_id = 1;                              // 源实体名称
+    string tgt_id = 2;                              // 目标实体名称
+    repeated RelationData new_relations = 3;        // 新提取的关系数据列表
+    MergeConfig merge_config = 4;                   // 合并配置（复用同一结构）
+}
+
+message RelationData {
+    float weight = 1;                               // 关系权重
+    string description = 2;                         // 关系描述
+    string keywords = 3;                            // 关键词（逗号分隔）
+    string source_id = 4;                           // 来源 chunk ID
+    string file_path = 5;                           // 来源文件路径
+    int64 timestamp = 6;                            // 提取时间戳
+}
+
+message RelationMergeOutput {
+    string src_id = 1;                              // 源实体
+    string tgt_id = 2;                              // 目标实体
+    float weight = 3;                               // 合并后权重（累加）
+    string description = 4;                         // 合并后的描述（LLM 摘要或拼接）
+    string keywords = 5;                            // 合并后的关键词（排序去重）
+    string source_id = 6;                           // 合并后的 source_id
+    string file_path = 7;                           // 合并后的 file_path
+    string truncate = 8;                            // 截断信息
+    string content = 9;                             // 向量存储内容："{keywords}\t{src}\n{tgt}\n{description}"
+    repeated string full_source_ids = 10;           // 完整未截断的 source_id 列表
+    bool llm_used = 11;                             // 是否调用了 LLM 摘要
+    repeated CreatedEntity created_entities = 12;   // 新创建的实体（关系合并的副作用）
+}
+
+message CreatedEntity {
+    string entity_name = 1;
+    string entity_type = 2;                         // 通常 "UNKNOWN"
+    string description = 3;
+    string source_id = 4;
+    string file_path = 5;
+    string content = 6;                             // 向量存储内容
+}

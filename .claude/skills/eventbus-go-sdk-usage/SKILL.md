@@ -40,6 +40,9 @@ Go import: 固定路径（扁平包，所有 topic 共享）
 | `rag.query.response` | `ResponseInput` | `ResponseOutput` |
 | `index.builder.index_build` | `IndexBuildInput` | `IndexBuildOutput` |
 | `index.retriever.retrieve` | `RetrieveInput` | `RetrieveOutput` |
+| `llm.completion.complete` | `CompleteInput` | `CompleteOutput` |
+| `kg.merge.entity` | `EntityMergeInput` | `EntityMergeOutput` |
+| `kg.merge.relation` | `RelationMergeInput` | `RelationMergeOutput` |
 
 ### 验证 SDK 是否包含目标 Topic 类型
 

@@ -41,6 +41,9 @@ Python import: from topics.{domain}.{pipeline}_pb2 import {PascalCase}Input, {Pa
 | `rag.query.response` | `proto/topics/rag/query.proto` | `from topics.rag.query_pb2 import ResponseInput` |
 | `index.builder.index_build` | `proto/topics/index/builder.proto` | `from topics.index.builder_pb2 import IndexBuildInput` |
 | `index.retriever.retrieve` | `proto/topics/index/retriever.proto` | `from topics.index.retriever_pb2 import RetrieveInput` |
+| `llm.completion.complete` | `proto/topics/llm/completion.proto` | `from topics.llm.completion_pb2 import CompleteInput` |
+| `kg.merge.entity` | `proto/topics/kg/merge.proto` | `from topics.kg.merge_pb2 import EntityMergeInput` |
+| `kg.merge.relation` | `proto/topics/kg/merge.proto` | `from topics.kg.merge_pb2 import RelationMergeInput` |
 
 **Python 推导公式：**
 - import 模块 = `topics.{domain}.{pipeline}_pb2`

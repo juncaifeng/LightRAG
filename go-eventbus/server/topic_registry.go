@@ -71,6 +71,19 @@ func init() {
 		(*topicspb.RetrieveInput)(nil),
 		(*topicspb.RetrieveOutput)(nil),
 		(*topicspb.RetrieveResult)(nil),
+		// llm domain
+		(*topicspb.CompleteInput)(nil),
+		(*topicspb.CompleteOutput)(nil),
+		(*topicspb.ChatMessage)(nil),
+		// kg domain
+		(*topicspb.EntityMergeInput)(nil),
+		(*topicspb.EntityMergeOutput)(nil),
+		(*topicspb.RelationMergeInput)(nil),
+		(*topicspb.RelationMergeOutput)(nil),
+		(*topicspb.MergeConfig)(nil),
+		(*topicspb.EntityData)(nil),
+		(*topicspb.RelationData)(nil),
+		(*topicspb.CreatedEntity)(nil),
 	} {
 		t := reflect.TypeOf(msg).Elem()
 		allProtoMessages[t.Name()] = t
@@ -89,6 +102,11 @@ var topicStrategyOverrides = map[string]string{
 	"rag.query.kg_search":           "APPEND",
 	"rag.query.rerank":              "REPLACE",
 	"rag.query.response":            "FIRST",
+	// llm domain
+	"llm.completion.complete": "FIRST",
+	// kg domain
+	"kg.merge.entity":   "FIRST",
+	"kg.merge.relation": "FIRST",
 }
 
 // camelToSnake converts CamelCase to snake_case.
