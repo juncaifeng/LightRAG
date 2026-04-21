@@ -220,4 +220,4 @@ members = [
 ]
 
 [tool.uv.sources]
-lightrag-eventbus-sdk = { workspace = true, editable = true }
+lightrag-eventbus-sdk = { workspace = true }
