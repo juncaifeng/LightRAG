@@ -61,22 +61,18 @@ export interface OcrOutput {
   text: string;
 }
 
-export interface DocumentLoadInput {
+export interface LoadTextInput {
   /** 文件二进制内容 */
   fileContent: Uint8Array;
-  /** 文件名（含扩展名，用于格式判断） */
+  /** 文件名（含扩展名） */
   fileName: string;
-  /** 原始文件路径（可选，用于日志/citation） */
+  /** 原始文件路径（可选） */
   filePath: string;
   /** 追踪 ID（可选） */
   trackId: string;
-  /** 加载引擎偏好："native" / "docling"（默认 "native"） */
-  loadingEngine: string;
-  /** PDF 解密密码（可选） */
-  pdfDecryptPassword: string;
 }
 
-export interface DocumentLoadOutput {
+export interface LoadTextOutput {
   /** 提取的纯文本内容 */
   content: string;
   /** 回显文件名 */
@@ -87,8 +83,64 @@ export interface DocumentLoadOutput {
   contentHash: string;
   /** 提取文本长度 */
   contentLength: number;
-  /** 识别的文件格式（如 "pdf", "docx", "txt"） */
-  fileFormat: string;
+  /** 错误信息（空字符串=成功） */
+  errorMessage: string;
+}
+
+export interface LoadPdfInput {
+  /** PDF 文件二进制内容 */
+  fileContent: Uint8Array;
+  /** 文件名（含扩展名） */
+  fileName: string;
+  /** 原始文件路径（可选） */
+  filePath: string;
+  /** 追踪 ID（可选） */
+  trackId: string;
+  /** 加载引擎："native"（pypdf）/ "docling"（默认 "native"） */
+  loadingEngine: string;
+  /** PDF 解密密码（可选） */
+  decryptPassword: string;
+}
+
+export interface LoadPdfOutput {
+  /** 提取的纯文本内容 */
+  content: string;
+  /** 回显文件名 */
+  fileName: string;
+  /** 回显文件路径 */
+  filePath: string;
+  /** 内容 MD5 hash（用于去重） */
+  contentHash: string;
+  /** 提取文本长度 */
+  contentLength: number;
+  /** 错误信息（空字符串=成功） */
+  errorMessage: string;
+}
+
+export interface LoadDocxInput {
+  /** DOCX 文件二进制内容 */
+  fileContent: Uint8Array;
+  /** 文件名（含扩展名） */
+  fileName: string;
+  /** 原始文件路径（可选） */
+  filePath: string;
+  /** 追踪 ID（可选） */
+  trackId: string;
+  /** 加载引擎："native"（python-docx）/ "docling"（默认 "native"） */
+  loadingEngine: string;
+}
+
+export interface LoadDocxOutput {
+  /** 提取的纯文本内容 */
+  content: string;
+  /** 回显文件名 */
+  fileName: string;
+  /** 回显文件路径 */
+  filePath: string;
+  /** 内容 MD5 hash（用于去重） */
+  contentHash: string;
+  /** 提取文本长度 */
+  contentLength: number;
   /** 错误信息（空字符串=成功） */
   errorMessage: string;
 }
@@ -518,19 +570,12 @@ export const OcrOutput: MessageFns<OcrOutput> = {
   },
 };
 
-function createBaseDocumentLoadInput(): DocumentLoadInput {
-  return {
-    fileContent: new Uint8Array(0),
-    fileName: "",
-    filePath: "",
-    trackId: "",
-    loadingEngine: "",
-    pdfDecryptPassword: "",
-  };
+function createBaseLoadTextInput(): LoadTextInput {
+  return { fileContent: new Uint8Array(0), fileName: "", filePath: "", trackId: "" };
 }
 
-export const DocumentLoadInput: MessageFns<DocumentLoadInput> = {
-  encode(message: DocumentLoadInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const LoadTextInput: MessageFns<LoadTextInput> = {
+  encode(message: LoadTextInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.fileContent.length !== 0) {
       writer.uint32(10).bytes(message.fileContent);
     }
@@ -543,19 +588,13 @@ export const DocumentLoadInput: MessageFns<DocumentLoadInput> = {
     if (message.trackId !== "") {
       writer.uint32(34).string(message.trackId);
     }
-    if (message.loadingEngine !== "") {
-      writer.uint32(42).string(message.loadingEngine);
-    }
-    if (message.pdfDecryptPassword !== "") {
-      writer.uint32(50).string(message.pdfDecryptPassword);
-    }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): DocumentLoadInput {
+  decode(input: BinaryReader | Uint8Array, length?: number): LoadTextInput {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseDocumentLoadInput();
+    const message = createBaseLoadTextInput();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -591,22 +630,6 @@ export const DocumentLoadInput: MessageFns<DocumentLoadInput> = {
           message.trackId = reader.string();
           continue;
         }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.loadingEngine = reader.string();
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.pdfDecryptPassword = reader.string();
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -616,35 +639,25 @@ export const DocumentLoadInput: MessageFns<DocumentLoadInput> = {
     return message;
   },
 
-  create<I extends Exact<DeepPartial<DocumentLoadInput>, I>>(base?: I): DocumentLoadInput {
-    return DocumentLoadInput.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<LoadTextInput>, I>>(base?: I): LoadTextInput {
+    return LoadTextInput.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<DocumentLoadInput>, I>>(object: I): DocumentLoadInput {
-    const message = createBaseDocumentLoadInput();
+  fromPartial<I extends Exact<DeepPartial<LoadTextInput>, I>>(object: I): LoadTextInput {
+    const message = createBaseLoadTextInput();
     message.fileContent = object.fileContent ?? new Uint8Array(0);
     message.fileName = object.fileName ?? "";
     message.filePath = object.filePath ?? "";
     message.trackId = object.trackId ?? "";
-    message.loadingEngine = object.loadingEngine ?? "";
-    message.pdfDecryptPassword = object.pdfDecryptPassword ?? "";
     return message;
   },
 };
 
-function createBaseDocumentLoadOutput(): DocumentLoadOutput {
-  return {
-    content: "",
-    fileName: "",
-    filePath: "",
-    contentHash: "",
-    contentLength: 0,
-    fileFormat: "",
-    errorMessage: "",
-  };
+function createBaseLoadTextOutput(): LoadTextOutput {
+  return { content: "", fileName: "", filePath: "", contentHash: "", contentLength: 0, errorMessage: "" };
 }
 
-export const DocumentLoadOutput: MessageFns<DocumentLoadOutput> = {
-  encode(message: DocumentLoadOutput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const LoadTextOutput: MessageFns<LoadTextOutput> = {
+  encode(message: LoadTextOutput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.content !== "") {
       writer.uint32(10).string(message.content);
     }
@@ -660,19 +673,16 @@ export const DocumentLoadOutput: MessageFns<DocumentLoadOutput> = {
     if (message.contentLength !== 0) {
       writer.uint32(40).int64(message.contentLength);
     }
-    if (message.fileFormat !== "") {
-      writer.uint32(50).string(message.fileFormat);
-    }
     if (message.errorMessage !== "") {
-      writer.uint32(58).string(message.errorMessage);
+      writer.uint32(50).string(message.errorMessage);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): DocumentLoadOutput {
+  decode(input: BinaryReader | Uint8Array, length?: number): LoadTextOutput {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseDocumentLoadOutput();
+    const message = createBaseLoadTextOutput();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -721,11 +731,222 @@ export const DocumentLoadOutput: MessageFns<DocumentLoadOutput> = {
             break;
           }
 
-          message.fileFormat = reader.string();
+          message.errorMessage = reader.string();
           continue;
         }
-        case 7: {
-          if (tag !== 58) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create<I extends Exact<DeepPartial<LoadTextOutput>, I>>(base?: I): LoadTextOutput {
+    return LoadTextOutput.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<LoadTextOutput>, I>>(object: I): LoadTextOutput {
+    const message = createBaseLoadTextOutput();
+    message.content = object.content ?? "";
+    message.fileName = object.fileName ?? "";
+    message.filePath = object.filePath ?? "";
+    message.contentHash = object.contentHash ?? "";
+    message.contentLength = object.contentLength ?? 0;
+    message.errorMessage = object.errorMessage ?? "";
+    return message;
+  },
+};
+
+function createBaseLoadPdfInput(): LoadPdfInput {
+  return {
+    fileContent: new Uint8Array(0),
+    fileName: "",
+    filePath: "",
+    trackId: "",
+    loadingEngine: "",
+    decryptPassword: "",
+  };
+}
+
+export const LoadPdfInput: MessageFns<LoadPdfInput> = {
+  encode(message: LoadPdfInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.fileContent.length !== 0) {
+      writer.uint32(10).bytes(message.fileContent);
+    }
+    if (message.fileName !== "") {
+      writer.uint32(18).string(message.fileName);
+    }
+    if (message.filePath !== "") {
+      writer.uint32(26).string(message.filePath);
+    }
+    if (message.trackId !== "") {
+      writer.uint32(34).string(message.trackId);
+    }
+    if (message.loadingEngine !== "") {
+      writer.uint32(42).string(message.loadingEngine);
+    }
+    if (message.decryptPassword !== "") {
+      writer.uint32(50).string(message.decryptPassword);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): LoadPdfInput {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseLoadPdfInput();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.fileContent = reader.bytes();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.fileName = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.filePath = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.trackId = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.loadingEngine = reader.string();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.decryptPassword = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create<I extends Exact<DeepPartial<LoadPdfInput>, I>>(base?: I): LoadPdfInput {
+    return LoadPdfInput.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<LoadPdfInput>, I>>(object: I): LoadPdfInput {
+    const message = createBaseLoadPdfInput();
+    message.fileContent = object.fileContent ?? new Uint8Array(0);
+    message.fileName = object.fileName ?? "";
+    message.filePath = object.filePath ?? "";
+    message.trackId = object.trackId ?? "";
+    message.loadingEngine = object.loadingEngine ?? "";
+    message.decryptPassword = object.decryptPassword ?? "";
+    return message;
+  },
+};
+
+function createBaseLoadPdfOutput(): LoadPdfOutput {
+  return { content: "", fileName: "", filePath: "", contentHash: "", contentLength: 0, errorMessage: "" };
+}
+
+export const LoadPdfOutput: MessageFns<LoadPdfOutput> = {
+  encode(message: LoadPdfOutput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.content !== "") {
+      writer.uint32(10).string(message.content);
+    }
+    if (message.fileName !== "") {
+      writer.uint32(18).string(message.fileName);
+    }
+    if (message.filePath !== "") {
+      writer.uint32(26).string(message.filePath);
+    }
+    if (message.contentHash !== "") {
+      writer.uint32(34).string(message.contentHash);
+    }
+    if (message.contentLength !== 0) {
+      writer.uint32(40).int64(message.contentLength);
+    }
+    if (message.errorMessage !== "") {
+      writer.uint32(50).string(message.errorMessage);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): LoadPdfOutput {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseLoadPdfOutput();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.content = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.fileName = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.filePath = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.contentHash = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.contentLength = longToNumber(reader.int64());
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
             break;
           }
 
@@ -741,17 +962,216 @@ export const DocumentLoadOutput: MessageFns<DocumentLoadOutput> = {
     return message;
   },
 
-  create<I extends Exact<DeepPartial<DocumentLoadOutput>, I>>(base?: I): DocumentLoadOutput {
-    return DocumentLoadOutput.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<LoadPdfOutput>, I>>(base?: I): LoadPdfOutput {
+    return LoadPdfOutput.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<DocumentLoadOutput>, I>>(object: I): DocumentLoadOutput {
-    const message = createBaseDocumentLoadOutput();
+  fromPartial<I extends Exact<DeepPartial<LoadPdfOutput>, I>>(object: I): LoadPdfOutput {
+    const message = createBaseLoadPdfOutput();
     message.content = object.content ?? "";
     message.fileName = object.fileName ?? "";
     message.filePath = object.filePath ?? "";
     message.contentHash = object.contentHash ?? "";
     message.contentLength = object.contentLength ?? 0;
-    message.fileFormat = object.fileFormat ?? "";
+    message.errorMessage = object.errorMessage ?? "";
+    return message;
+  },
+};
+
+function createBaseLoadDocxInput(): LoadDocxInput {
+  return { fileContent: new Uint8Array(0), fileName: "", filePath: "", trackId: "", loadingEngine: "" };
+}
+
+export const LoadDocxInput: MessageFns<LoadDocxInput> = {
+  encode(message: LoadDocxInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.fileContent.length !== 0) {
+      writer.uint32(10).bytes(message.fileContent);
+    }
+    if (message.fileName !== "") {
+      writer.uint32(18).string(message.fileName);
+    }
+    if (message.filePath !== "") {
+      writer.uint32(26).string(message.filePath);
+    }
+    if (message.trackId !== "") {
+      writer.uint32(34).string(message.trackId);
+    }
+    if (message.loadingEngine !== "") {
+      writer.uint32(42).string(message.loadingEngine);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): LoadDocxInput {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseLoadDocxInput();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.fileContent = reader.bytes();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.fileName = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.filePath = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.trackId = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.loadingEngine = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create<I extends Exact<DeepPartial<LoadDocxInput>, I>>(base?: I): LoadDocxInput {
+    return LoadDocxInput.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<LoadDocxInput>, I>>(object: I): LoadDocxInput {
+    const message = createBaseLoadDocxInput();
+    message.fileContent = object.fileContent ?? new Uint8Array(0);
+    message.fileName = object.fileName ?? "";
+    message.filePath = object.filePath ?? "";
+    message.trackId = object.trackId ?? "";
+    message.loadingEngine = object.loadingEngine ?? "";
+    return message;
+  },
+};
+
+function createBaseLoadDocxOutput(): LoadDocxOutput {
+  return { content: "", fileName: "", filePath: "", contentHash: "", contentLength: 0, errorMessage: "" };
+}
+
+export const LoadDocxOutput: MessageFns<LoadDocxOutput> = {
+  encode(message: LoadDocxOutput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.content !== "") {
+      writer.uint32(10).string(message.content);
+    }
+    if (message.fileName !== "") {
+      writer.uint32(18).string(message.fileName);
+    }
+    if (message.filePath !== "") {
+      writer.uint32(26).string(message.filePath);
+    }
+    if (message.contentHash !== "") {
+      writer.uint32(34).string(message.contentHash);
+    }
+    if (message.contentLength !== 0) {
+      writer.uint32(40).int64(message.contentLength);
+    }
+    if (message.errorMessage !== "") {
+      writer.uint32(50).string(message.errorMessage);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): LoadDocxOutput {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseLoadDocxOutput();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.content = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.fileName = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.filePath = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.contentHash = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.contentLength = longToNumber(reader.int64());
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.errorMessage = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create<I extends Exact<DeepPartial<LoadDocxOutput>, I>>(base?: I): LoadDocxOutput {
+    return LoadDocxOutput.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<LoadDocxOutput>, I>>(object: I): LoadDocxOutput {
+    const message = createBaseLoadDocxOutput();
+    message.content = object.content ?? "";
+    message.fileName = object.fileName ?? "";
+    message.filePath = object.filePath ?? "";
+    message.contentHash = object.contentHash ?? "";
+    message.contentLength = object.contentLength ?? 0;
     message.errorMessage = object.errorMessage ?? "";
     return message;
   },

@@ -56,7 +56,9 @@ go-eventbus/proto/topics/
 | 路径 | 推导结果 |
 |------|---------|
 | `rag/insert.proto` + `ChunkingInput` | `rag.insert.chunking` |
-| `rag/insert.proto` + `DocumentLoadInput` | `rag.insert.document_load` |
+| `rag/insert.proto` + `LoadTextInput` | `rag.insert.load.text` |
+| `rag/insert.proto` + `LoadPdfInput` | `rag.insert.load.pdf` |
+| `rag/insert.proto` + `LoadDocxInput` | `rag.insert.load.docx` |
 | `rag/query.proto` + `VectorSearchInput` | `rag.query.vector_search` |
 | `index/builder.proto` + `IndexBuildInput` | `index.builder.index_build` |
 | `index/retriever.proto` + `RetrieveInput` | `index.retriever.retrieve` |

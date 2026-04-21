@@ -393,32 +393,30 @@ func (x *OcrOutput) GetText() string {
 	return ""
 }
 
-type DocumentLoadInput struct {
-	state              protoimpl.MessageState `protogen:"open.v1"`
-	FileContent        []byte                 `protobuf:"bytes,1,opt,name=file_content,json=fileContent,proto3" json:"file_content,omitempty"`                        // 文件二进制内容
-	FileName           string                 `protobuf:"bytes,2,opt,name=file_name,json=fileName,proto3" json:"file_name,omitempty"`                                 // 文件名（含扩展名，用于格式判断）
-	FilePath           string                 `protobuf:"bytes,3,opt,name=file_path,json=filePath,proto3" json:"file_path,omitempty"`                                 // 原始文件路径（可选，用于日志/citation）
-	TrackId            string                 `protobuf:"bytes,4,opt,name=track_id,json=trackId,proto3" json:"track_id,omitempty"`                                    // 追踪 ID（可选）
-	LoadingEngine      string                 `protobuf:"bytes,5,opt,name=loading_engine,json=loadingEngine,proto3" json:"loading_engine,omitempty"`                  // 加载引擎偏好："native" / "docling"（默认 "native"）
-	PdfDecryptPassword string                 `protobuf:"bytes,6,opt,name=pdf_decrypt_password,json=pdfDecryptPassword,proto3" json:"pdf_decrypt_password,omitempty"` // PDF 解密密码（可选）
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+type LoadTextInput struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FileContent   []byte                 `protobuf:"bytes,1,opt,name=file_content,json=fileContent,proto3" json:"file_content,omitempty"` // 文件二进制内容
+	FileName      string                 `protobuf:"bytes,2,opt,name=file_name,json=fileName,proto3" json:"file_name,omitempty"`          // 文件名（含扩展名）
+	FilePath      string                 `protobuf:"bytes,3,opt,name=file_path,json=filePath,proto3" json:"file_path,omitempty"`          // 原始文件路径（可选）
+	TrackId       string                 `protobuf:"bytes,4,opt,name=track_id,json=trackId,proto3" json:"track_id,omitempty"`             // 追踪 ID（可选）
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
-func (x *DocumentLoadInput) Reset() {
-	*x = DocumentLoadInput{}
+func (x *LoadTextInput) Reset() {
+	*x = LoadTextInput{}
 	mi := &file_rag_insert_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *DocumentLoadInput) String() string {
+func (x *LoadTextInput) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*DocumentLoadInput) ProtoMessage() {}
+func (*LoadTextInput) ProtoMessage() {}
 
-func (x *DocumentLoadInput) ProtoReflect() protoreflect.Message {
+func (x *LoadTextInput) ProtoReflect() protoreflect.Message {
 	mi := &file_rag_insert_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -430,80 +428,65 @@ func (x *DocumentLoadInput) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DocumentLoadInput.ProtoReflect.Descriptor instead.
-func (*DocumentLoadInput) Descriptor() ([]byte, []int) {
+// Deprecated: Use LoadTextInput.ProtoReflect.Descriptor instead.
+func (*LoadTextInput) Descriptor() ([]byte, []int) {
 	return file_rag_insert_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *DocumentLoadInput) GetFileContent() []byte {
+func (x *LoadTextInput) GetFileContent() []byte {
 	if x != nil {
 		return x.FileContent
 	}
 	return nil
 }
 
-func (x *DocumentLoadInput) GetFileName() string {
+func (x *LoadTextInput) GetFileName() string {
 	if x != nil {
 		return x.FileName
 	}
 	return ""
 }
 
-func (x *DocumentLoadInput) GetFilePath() string {
+func (x *LoadTextInput) GetFilePath() string {
 	if x != nil {
 		return x.FilePath
 	}
 	return ""
 }
 
-func (x *DocumentLoadInput) GetTrackId() string {
+func (x *LoadTextInput) GetTrackId() string {
 	if x != nil {
 		return x.TrackId
 	}
 	return ""
 }
 
-func (x *DocumentLoadInput) GetLoadingEngine() string {
-	if x != nil {
-		return x.LoadingEngine
-	}
-	return ""
-}
-
-func (x *DocumentLoadInput) GetPdfDecryptPassword() string {
-	if x != nil {
-		return x.PdfDecryptPassword
-	}
-	return ""
-}
-
-type DocumentLoadOutput struct {
+type LoadTextOutput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Content       string                 `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`                                   // 提取的纯文本内容
 	FileName      string                 `protobuf:"bytes,2,opt,name=file_name,json=fileName,proto3" json:"file_name,omitempty"`                 // 回显文件名
 	FilePath      string                 `protobuf:"bytes,3,opt,name=file_path,json=filePath,proto3" json:"file_path,omitempty"`                 // 回显文件路径
 	ContentHash   string                 `protobuf:"bytes,4,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`        // 内容 MD5 hash（用于去重）
 	ContentLength int64                  `protobuf:"varint,5,opt,name=content_length,json=contentLength,proto3" json:"content_length,omitempty"` // 提取文本长度
-	FileFormat    string                 `protobuf:"bytes,6,opt,name=file_format,json=fileFormat,proto3" json:"file_format,omitempty"`           // 识别的文件格式（如 "pdf", "docx", "txt"）
-	ErrorMessage  string                 `protobuf:"bytes,7,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`     // 错误信息（空字符串=成功）
+	ErrorMessage  string                 `protobuf:"bytes,6,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`     // 错误信息（空字符串=成功）
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *DocumentLoadOutput) Reset() {
-	*x = DocumentLoadOutput{}
+func (x *LoadTextOutput) Reset() {
+	*x = LoadTextOutput{}
 	mi := &file_rag_insert_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *DocumentLoadOutput) String() string {
+func (x *LoadTextOutput) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*DocumentLoadOutput) ProtoMessage() {}
+func (*LoadTextOutput) ProtoMessage() {}
 
-func (x *DocumentLoadOutput) ProtoReflect() protoreflect.Message {
+func (x *LoadTextOutput) ProtoReflect() protoreflect.Message {
 	mi := &file_rag_insert_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -515,54 +498,375 @@ func (x *DocumentLoadOutput) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DocumentLoadOutput.ProtoReflect.Descriptor instead.
-func (*DocumentLoadOutput) Descriptor() ([]byte, []int) {
+// Deprecated: Use LoadTextOutput.ProtoReflect.Descriptor instead.
+func (*LoadTextOutput) Descriptor() ([]byte, []int) {
 	return file_rag_insert_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *DocumentLoadOutput) GetContent() string {
+func (x *LoadTextOutput) GetContent() string {
 	if x != nil {
 		return x.Content
 	}
 	return ""
 }
 
-func (x *DocumentLoadOutput) GetFileName() string {
+func (x *LoadTextOutput) GetFileName() string {
 	if x != nil {
 		return x.FileName
 	}
 	return ""
 }
 
-func (x *DocumentLoadOutput) GetFilePath() string {
+func (x *LoadTextOutput) GetFilePath() string {
 	if x != nil {
 		return x.FilePath
 	}
 	return ""
 }
 
-func (x *DocumentLoadOutput) GetContentHash() string {
+func (x *LoadTextOutput) GetContentHash() string {
 	if x != nil {
 		return x.ContentHash
 	}
 	return ""
 }
 
-func (x *DocumentLoadOutput) GetContentLength() int64 {
+func (x *LoadTextOutput) GetContentLength() int64 {
 	if x != nil {
 		return x.ContentLength
 	}
 	return 0
 }
 
-func (x *DocumentLoadOutput) GetFileFormat() string {
+func (x *LoadTextOutput) GetErrorMessage() string {
 	if x != nil {
-		return x.FileFormat
+		return x.ErrorMessage
 	}
 	return ""
 }
 
-func (x *DocumentLoadOutput) GetErrorMessage() string {
+type LoadPdfInput struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	FileContent     []byte                 `protobuf:"bytes,1,opt,name=file_content,json=fileContent,proto3" json:"file_content,omitempty"`             // PDF 文件二进制内容
+	FileName        string                 `protobuf:"bytes,2,opt,name=file_name,json=fileName,proto3" json:"file_name,omitempty"`                      // 文件名（含扩展名）
+	FilePath        string                 `protobuf:"bytes,3,opt,name=file_path,json=filePath,proto3" json:"file_path,omitempty"`                      // 原始文件路径（可选）
+	TrackId         string                 `protobuf:"bytes,4,opt,name=track_id,json=trackId,proto3" json:"track_id,omitempty"`                         // 追踪 ID（可选）
+	LoadingEngine   string                 `protobuf:"bytes,5,opt,name=loading_engine,json=loadingEngine,proto3" json:"loading_engine,omitempty"`       // 加载引擎："native"（pypdf）/ "docling"（默认 "native"）
+	DecryptPassword string                 `protobuf:"bytes,6,opt,name=decrypt_password,json=decryptPassword,proto3" json:"decrypt_password,omitempty"` // PDF 解密密码（可选）
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *LoadPdfInput) Reset() {
+	*x = LoadPdfInput{}
+	mi := &file_rag_insert_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LoadPdfInput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LoadPdfInput) ProtoMessage() {}
+
+func (x *LoadPdfInput) ProtoReflect() protoreflect.Message {
+	mi := &file_rag_insert_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LoadPdfInput.ProtoReflect.Descriptor instead.
+func (*LoadPdfInput) Descriptor() ([]byte, []int) {
+	return file_rag_insert_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *LoadPdfInput) GetFileContent() []byte {
+	if x != nil {
+		return x.FileContent
+	}
+	return nil
+}
+
+func (x *LoadPdfInput) GetFileName() string {
+	if x != nil {
+		return x.FileName
+	}
+	return ""
+}
+
+func (x *LoadPdfInput) GetFilePath() string {
+	if x != nil {
+		return x.FilePath
+	}
+	return ""
+}
+
+func (x *LoadPdfInput) GetTrackId() string {
+	if x != nil {
+		return x.TrackId
+	}
+	return ""
+}
+
+func (x *LoadPdfInput) GetLoadingEngine() string {
+	if x != nil {
+		return x.LoadingEngine
+	}
+	return ""
+}
+
+func (x *LoadPdfInput) GetDecryptPassword() string {
+	if x != nil {
+		return x.DecryptPassword
+	}
+	return ""
+}
+
+type LoadPdfOutput struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Content       string                 `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`                                   // 提取的纯文本内容
+	FileName      string                 `protobuf:"bytes,2,opt,name=file_name,json=fileName,proto3" json:"file_name,omitempty"`                 // 回显文件名
+	FilePath      string                 `protobuf:"bytes,3,opt,name=file_path,json=filePath,proto3" json:"file_path,omitempty"`                 // 回显文件路径
+	ContentHash   string                 `protobuf:"bytes,4,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`        // 内容 MD5 hash（用于去重）
+	ContentLength int64                  `protobuf:"varint,5,opt,name=content_length,json=contentLength,proto3" json:"content_length,omitempty"` // 提取文本长度
+	ErrorMessage  string                 `protobuf:"bytes,6,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`     // 错误信息（空字符串=成功）
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LoadPdfOutput) Reset() {
+	*x = LoadPdfOutput{}
+	mi := &file_rag_insert_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LoadPdfOutput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LoadPdfOutput) ProtoMessage() {}
+
+func (x *LoadPdfOutput) ProtoReflect() protoreflect.Message {
+	mi := &file_rag_insert_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LoadPdfOutput.ProtoReflect.Descriptor instead.
+func (*LoadPdfOutput) Descriptor() ([]byte, []int) {
+	return file_rag_insert_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *LoadPdfOutput) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+func (x *LoadPdfOutput) GetFileName() string {
+	if x != nil {
+		return x.FileName
+	}
+	return ""
+}
+
+func (x *LoadPdfOutput) GetFilePath() string {
+	if x != nil {
+		return x.FilePath
+	}
+	return ""
+}
+
+func (x *LoadPdfOutput) GetContentHash() string {
+	if x != nil {
+		return x.ContentHash
+	}
+	return ""
+}
+
+func (x *LoadPdfOutput) GetContentLength() int64 {
+	if x != nil {
+		return x.ContentLength
+	}
+	return 0
+}
+
+func (x *LoadPdfOutput) GetErrorMessage() string {
+	if x != nil {
+		return x.ErrorMessage
+	}
+	return ""
+}
+
+type LoadDocxInput struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FileContent   []byte                 `protobuf:"bytes,1,opt,name=file_content,json=fileContent,proto3" json:"file_content,omitempty"`       // DOCX 文件二进制内容
+	FileName      string                 `protobuf:"bytes,2,opt,name=file_name,json=fileName,proto3" json:"file_name,omitempty"`                // 文件名（含扩展名）
+	FilePath      string                 `protobuf:"bytes,3,opt,name=file_path,json=filePath,proto3" json:"file_path,omitempty"`                // 原始文件路径（可选）
+	TrackId       string                 `protobuf:"bytes,4,opt,name=track_id,json=trackId,proto3" json:"track_id,omitempty"`                   // 追踪 ID（可选）
+	LoadingEngine string                 `protobuf:"bytes,5,opt,name=loading_engine,json=loadingEngine,proto3" json:"loading_engine,omitempty"` // 加载引擎："native"（python-docx）/ "docling"（默认 "native"）
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LoadDocxInput) Reset() {
+	*x = LoadDocxInput{}
+	mi := &file_rag_insert_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LoadDocxInput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LoadDocxInput) ProtoMessage() {}
+
+func (x *LoadDocxInput) ProtoReflect() protoreflect.Message {
+	mi := &file_rag_insert_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LoadDocxInput.ProtoReflect.Descriptor instead.
+func (*LoadDocxInput) Descriptor() ([]byte, []int) {
+	return file_rag_insert_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *LoadDocxInput) GetFileContent() []byte {
+	if x != nil {
+		return x.FileContent
+	}
+	return nil
+}
+
+func (x *LoadDocxInput) GetFileName() string {
+	if x != nil {
+		return x.FileName
+	}
+	return ""
+}
+
+func (x *LoadDocxInput) GetFilePath() string {
+	if x != nil {
+		return x.FilePath
+	}
+	return ""
+}
+
+func (x *LoadDocxInput) GetTrackId() string {
+	if x != nil {
+		return x.TrackId
+	}
+	return ""
+}
+
+func (x *LoadDocxInput) GetLoadingEngine() string {
+	if x != nil {
+		return x.LoadingEngine
+	}
+	return ""
+}
+
+type LoadDocxOutput struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Content       string                 `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`                                   // 提取的纯文本内容
+	FileName      string                 `protobuf:"bytes,2,opt,name=file_name,json=fileName,proto3" json:"file_name,omitempty"`                 // 回显文件名
+	FilePath      string                 `protobuf:"bytes,3,opt,name=file_path,json=filePath,proto3" json:"file_path,omitempty"`                 // 回显文件路径
+	ContentHash   string                 `protobuf:"bytes,4,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`        // 内容 MD5 hash（用于去重）
+	ContentLength int64                  `protobuf:"varint,5,opt,name=content_length,json=contentLength,proto3" json:"content_length,omitempty"` // 提取文本长度
+	ErrorMessage  string                 `protobuf:"bytes,6,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`     // 错误信息（空字符串=成功）
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LoadDocxOutput) Reset() {
+	*x = LoadDocxOutput{}
+	mi := &file_rag_insert_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LoadDocxOutput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LoadDocxOutput) ProtoMessage() {}
+
+func (x *LoadDocxOutput) ProtoReflect() protoreflect.Message {
+	mi := &file_rag_insert_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LoadDocxOutput.ProtoReflect.Descriptor instead.
+func (*LoadDocxOutput) Descriptor() ([]byte, []int) {
+	return file_rag_insert_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *LoadDocxOutput) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+func (x *LoadDocxOutput) GetFileName() string {
+	if x != nil {
+		return x.FileName
+	}
+	return ""
+}
+
+func (x *LoadDocxOutput) GetFilePath() string {
+	if x != nil {
+		return x.FilePath
+	}
+	return ""
+}
+
+func (x *LoadDocxOutput) GetContentHash() string {
+	if x != nil {
+		return x.ContentHash
+	}
+	return ""
+}
+
+func (x *LoadDocxOutput) GetContentLength() int64 {
+	if x != nil {
+		return x.ContentLength
+	}
+	return 0
+}
+
+func (x *LoadDocxOutput) GetErrorMessage() string {
 	if x != nil {
 		return x.ErrorMessage
 	}
@@ -597,23 +901,46 @@ const file_rag_insert_proto_rawDesc = "" +
 	"\x05image\x18\x01 \x01(\fR\x05image\x12\x1a\n" +
 	"\blanguage\x18\x02 \x01(\tR\blanguage\"\x1f\n" +
 	"\tOcrOutput\x12\x12\n" +
-	"\x04text\x18\x01 \x01(\tR\x04text\"\xe4\x01\n" +
-	"\x11DocumentLoadInput\x12!\n" +
+	"\x04text\x18\x01 \x01(\tR\x04text\"\x87\x01\n" +
+	"\rLoadTextInput\x12!\n" +
 	"\ffile_content\x18\x01 \x01(\fR\vfileContent\x12\x1b\n" +
 	"\tfile_name\x18\x02 \x01(\tR\bfileName\x12\x1b\n" +
 	"\tfile_path\x18\x03 \x01(\tR\bfilePath\x12\x19\n" +
-	"\btrack_id\x18\x04 \x01(\tR\atrackId\x12%\n" +
-	"\x0eloading_engine\x18\x05 \x01(\tR\rloadingEngine\x120\n" +
-	"\x14pdf_decrypt_password\x18\x06 \x01(\tR\x12pdfDecryptPassword\"\xf8\x01\n" +
-	"\x12DocumentLoadOutput\x12\x18\n" +
+	"\btrack_id\x18\x04 \x01(\tR\atrackId\"\xd3\x01\n" +
+	"\x0eLoadTextOutput\x12\x18\n" +
 	"\acontent\x18\x01 \x01(\tR\acontent\x12\x1b\n" +
 	"\tfile_name\x18\x02 \x01(\tR\bfileName\x12\x1b\n" +
 	"\tfile_path\x18\x03 \x01(\tR\bfilePath\x12!\n" +
 	"\fcontent_hash\x18\x04 \x01(\tR\vcontentHash\x12%\n" +
-	"\x0econtent_length\x18\x05 \x01(\x03R\rcontentLength\x12\x1f\n" +
-	"\vfile_format\x18\x06 \x01(\tR\n" +
-	"fileFormat\x12#\n" +
-	"\rerror_message\x18\a \x01(\tR\ferrorMessageBDZBgithub.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go/topics;topicsb\x06proto3"
+	"\x0econtent_length\x18\x05 \x01(\x03R\rcontentLength\x12#\n" +
+	"\rerror_message\x18\x06 \x01(\tR\ferrorMessage\"\xd8\x01\n" +
+	"\fLoadPdfInput\x12!\n" +
+	"\ffile_content\x18\x01 \x01(\fR\vfileContent\x12\x1b\n" +
+	"\tfile_name\x18\x02 \x01(\tR\bfileName\x12\x1b\n" +
+	"\tfile_path\x18\x03 \x01(\tR\bfilePath\x12\x19\n" +
+	"\btrack_id\x18\x04 \x01(\tR\atrackId\x12%\n" +
+	"\x0eloading_engine\x18\x05 \x01(\tR\rloadingEngine\x12)\n" +
+	"\x10decrypt_password\x18\x06 \x01(\tR\x0fdecryptPassword\"\xd2\x01\n" +
+	"\rLoadPdfOutput\x12\x18\n" +
+	"\acontent\x18\x01 \x01(\tR\acontent\x12\x1b\n" +
+	"\tfile_name\x18\x02 \x01(\tR\bfileName\x12\x1b\n" +
+	"\tfile_path\x18\x03 \x01(\tR\bfilePath\x12!\n" +
+	"\fcontent_hash\x18\x04 \x01(\tR\vcontentHash\x12%\n" +
+	"\x0econtent_length\x18\x05 \x01(\x03R\rcontentLength\x12#\n" +
+	"\rerror_message\x18\x06 \x01(\tR\ferrorMessage\"\xae\x01\n" +
+	"\rLoadDocxInput\x12!\n" +
+	"\ffile_content\x18\x01 \x01(\fR\vfileContent\x12\x1b\n" +
+	"\tfile_name\x18\x02 \x01(\tR\bfileName\x12\x1b\n" +
+	"\tfile_path\x18\x03 \x01(\tR\bfilePath\x12\x19\n" +
+	"\btrack_id\x18\x04 \x01(\tR\atrackId\x12%\n" +
+	"\x0eloading_engine\x18\x05 \x01(\tR\rloadingEngine\"\xd3\x01\n" +
+	"\x0eLoadDocxOutput\x12\x18\n" +
+	"\acontent\x18\x01 \x01(\tR\acontent\x12\x1b\n" +
+	"\tfile_name\x18\x02 \x01(\tR\bfileName\x12\x1b\n" +
+	"\tfile_path\x18\x03 \x01(\tR\bfilePath\x12!\n" +
+	"\fcontent_hash\x18\x04 \x01(\tR\vcontentHash\x12%\n" +
+	"\x0econtent_length\x18\x05 \x01(\x03R\rcontentLength\x12#\n" +
+	"\rerror_message\x18\x06 \x01(\tR\ferrorMessageBDZBgithub.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go/topics;topicsb\x06proto3"
 
 var (
 	file_rag_insert_proto_rawDescOnce sync.Once
@@ -627,27 +954,31 @@ func file_rag_insert_proto_rawDescGZIP() []byte {
 	return file_rag_insert_proto_rawDescData
 }
 
-var file_rag_insert_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_rag_insert_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_rag_insert_proto_goTypes = []any{
-	(*ChunkingInput)(nil),      // 0: lightrag.eventbus.topics.v1.ChunkingInput
-	(*ChunkingOutput)(nil),     // 1: lightrag.eventbus.topics.v1.ChunkingOutput
-	(*ChunkItem)(nil),          // 2: lightrag.eventbus.topics.v1.ChunkItem
-	(*EmbeddingInput)(nil),     // 3: lightrag.eventbus.topics.v1.EmbeddingInput
-	(*EmbeddingOutput)(nil),    // 4: lightrag.eventbus.topics.v1.EmbeddingOutput
-	(*OcrInput)(nil),           // 5: lightrag.eventbus.topics.v1.OcrInput
-	(*OcrOutput)(nil),          // 6: lightrag.eventbus.topics.v1.OcrOutput
-	(*DocumentLoadInput)(nil),  // 7: lightrag.eventbus.topics.v1.DocumentLoadInput
-	(*DocumentLoadOutput)(nil), // 8: lightrag.eventbus.topics.v1.DocumentLoadOutput
-	(*EmbeddingVector)(nil),    // 9: lightrag.eventbus.topics.v1.EmbeddingVector
+	(*ChunkingInput)(nil),   // 0: lightrag.eventbus.topics.v1.ChunkingInput
+	(*ChunkingOutput)(nil),  // 1: lightrag.eventbus.topics.v1.ChunkingOutput
+	(*ChunkItem)(nil),       // 2: lightrag.eventbus.topics.v1.ChunkItem
+	(*EmbeddingInput)(nil),  // 3: lightrag.eventbus.topics.v1.EmbeddingInput
+	(*EmbeddingOutput)(nil), // 4: lightrag.eventbus.topics.v1.EmbeddingOutput
+	(*OcrInput)(nil),        // 5: lightrag.eventbus.topics.v1.OcrInput
+	(*OcrOutput)(nil),       // 6: lightrag.eventbus.topics.v1.OcrOutput
+	(*LoadTextInput)(nil),   // 7: lightrag.eventbus.topics.v1.LoadTextInput
+	(*LoadTextOutput)(nil),  // 8: lightrag.eventbus.topics.v1.LoadTextOutput
+	(*LoadPdfInput)(nil),    // 9: lightrag.eventbus.topics.v1.LoadPdfInput
+	(*LoadPdfOutput)(nil),   // 10: lightrag.eventbus.topics.v1.LoadPdfOutput
+	(*LoadDocxInput)(nil),   // 11: lightrag.eventbus.topics.v1.LoadDocxInput
+	(*LoadDocxOutput)(nil),  // 12: lightrag.eventbus.topics.v1.LoadDocxOutput
+	(*EmbeddingVector)(nil), // 13: lightrag.eventbus.topics.v1.EmbeddingVector
 }
 var file_rag_insert_proto_depIdxs = []int32{
-	2, // 0: lightrag.eventbus.topics.v1.ChunkingOutput.chunks:type_name -> lightrag.eventbus.topics.v1.ChunkItem
-	9, // 1: lightrag.eventbus.topics.v1.EmbeddingOutput.embeddings:type_name -> lightrag.eventbus.topics.v1.EmbeddingVector
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	2,  // 0: lightrag.eventbus.topics.v1.ChunkingOutput.chunks:type_name -> lightrag.eventbus.topics.v1.ChunkItem
+	13, // 1: lightrag.eventbus.topics.v1.EmbeddingOutput.embeddings:type_name -> lightrag.eventbus.topics.v1.EmbeddingVector
+	2,  // [2:2] is the sub-list for method output_type
+	2,  // [2:2] is the sub-list for method input_type
+	2,  // [2:2] is the sub-list for extension type_name
+	2,  // [2:2] is the sub-list for extension extendee
+	0,  // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_rag_insert_proto_init() }
@@ -662,7 +993,7 @@ func file_rag_insert_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_rag_insert_proto_rawDesc), len(file_rag_insert_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

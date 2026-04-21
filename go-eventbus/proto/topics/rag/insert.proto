@@ -55,24 +55,64 @@ message OcrOutput {
 }
 
 // ==========================================
-// rag.insert.document_load
+// rag.insert.load.text
 // ==========================================
 
-message DocumentLoadInput {
+message LoadTextInput {
     bytes file_content = 1;                         // 文件二进制内容
-    string file_name = 2;                           // 文件名（含扩展名，用于格式判断）
-    string file_path = 3;                           // 原始文件路径（可选，用于日志/citation）
+    string file_name = 2;                           // 文件名（含扩展名）
+    string file_path = 3;                           // 原始文件路径（可选）
     string track_id = 4;                            // 追踪 ID（可选）
-    string loading_engine = 5;                      // 加载引擎偏好："native" / "docling"（默认 "native"）
-    string pdf_decrypt_password = 6;                // PDF 解密密码（可选）
 }
 
-message DocumentLoadOutput {
+message LoadTextOutput {
     string content = 1;                             // 提取的纯文本内容
     string file_name = 2;                           // 回显文件名
     string file_path = 3;                           // 回显文件路径
     string content_hash = 4;                        // 内容 MD5 hash（用于去重）
     int64 content_length = 5;                       // 提取文本长度
-    string file_format = 6;                         // 识别的文件格式（如 "pdf", "docx", "txt"）
-    string error_message = 7;                       // 错误信息（空字符串=成功）
+    string error_message = 6;                       // 错误信息（空字符串=成功）
+}
+
+// ==========================================
+// rag.insert.load.pdf
+// ==========================================
+
+message LoadPdfInput {
+    bytes file_content = 1;                         // PDF 文件二进制内容
+    string file_name = 2;                           // 文件名（含扩展名）
+    string file_path = 3;                           // 原始文件路径（可选）
+    string track_id = 4;                            // 追踪 ID（可选）
+    string loading_engine = 5;                      // 加载引擎："native"（pypdf）/ "docling"（默认 "native"）
+    string decrypt_password = 6;                    // PDF 解密密码（可选）
+}
+
+message LoadPdfOutput {
+    string content = 1;                             // 提取的纯文本内容
+    string file_name = 2;                           // 回显文件名
+    string file_path = 3;                           // 回显文件路径
+    string content_hash = 4;                        // 内容 MD5 hash（用于去重）
+    int64 content_length = 5;                       // 提取文本长度
+    string error_message = 6;                       // 错误信息（空字符串=成功）
+}
+
+// ==========================================
+// rag.insert.load.docx
+// ==========================================
+
+message LoadDocxInput {
+    bytes file_content = 1;                         // DOCX 文件二进制内容
+    string file_name = 2;                           // 文件名（含扩展名）
+    string file_path = 3;                           // 原始文件路径（可选）
+    string track_id = 4;                            // 追踪 ID（可选）
+    string loading_engine = 5;                      // 加载引擎："native"（python-docx）/ "docling"（默认 "native"）
+}
+
+message LoadDocxOutput {
+    string content = 1;                             // 提取的纯文本内容
+    string file_name = 2;                           // 回显文件名
+    string file_path = 3;                           // 回显文件路径
+    string content_hash = 4;                        // 内容 MD5 hash（用于去重）
+    int64 content_length = 5;                       // 提取文本长度
+    string error_message = 6;                       // 错误信息（空字符串=成功）
 }

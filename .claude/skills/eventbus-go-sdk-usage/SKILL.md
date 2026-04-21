@@ -32,7 +32,9 @@ Go import: 固定路径（扁平包，所有 topic 共享）
 | `rag.insert.chunking` | `ChunkingInput` | `ChunkingOutput` |
 | `rag.insert.embedding` | `EmbeddingInput` | `EmbeddingOutput` |
 | `rag.insert.ocr` | `OcrInput` | `OcrOutput` |
-| `rag.insert.document_load` | `DocumentLoadInput` | `DocumentLoadOutput` |
+| `rag.insert.load.text` | `LoadTextInput` | `LoadTextOutput` |
+| `rag.insert.load.pdf` | `LoadPdfInput` | `LoadPdfOutput` |
+| `rag.insert.load.docx` | `LoadDocxInput` | `LoadDocxOutput` |
 | `rag.query.keyword_extraction` | `KeywordExtractionInput` | `KeywordExtractionOutput` |
 | `rag.query.query_expansion` | `QueryExpansionInput` | `QueryExpansionOutput` |
 | `rag.query.vector_search` | `VectorSearchInput` | `VectorSearchOutput` |
