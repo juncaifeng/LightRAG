@@ -25,7 +25,7 @@ _sym_db = _symbol_database.Default()
 from index import builder_pb2 as index_dot_builder__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10rag/insert.proto\x12\x1blightrag.eventbus.topics.v1\x1a\x13index/builder.proto\"\xac\x01\n\rChunkingInput\x12\x0f\n\x07\x63ontent\x18\x01 \x01(\t\x12\x11\n\ttokenizer\x18\x02 \x01(\x0c\x12\x18\n\x10\x63hunk_token_size\x18\x03 \x01(\x05\x12 \n\x18\x63hunk_overlap_token_size\x18\x04 \x01(\x05\x12\x1a\n\x12split_by_character\x18\x05 \x01(\t\x12\x1f\n\x17split_by_character_only\x18\x06 \x01(\x08\"H\n\x0e\x43hunkingOutput\x12\x36\n\x06\x63hunks\x18\x01 \x03(\x0b\x32&.lightrag.eventbus.topics.v1.ChunkItem\"G\n\tChunkItem\x12\x0f\n\x07\x63ontent\x18\x01 \x01(\t\x12\x0e\n\x06tokens\x18\x02 \x01(\x05\x12\x19\n\x11\x63hunk_order_index\x18\x03 \x01(\x05\"\x1f\n\x0e\x45mbeddingInput\x12\r\n\x05texts\x18\x01 \x03(\t\"S\n\x0f\x45mbeddingOutput\x12@\n\nembeddings\x18\x01 \x03(\x0b\x32,.lightrag.eventbus.topics.v1.EmbeddingVector\"+\n\x08OcrInput\x12\r\n\x05image\x18\x01 \x01(\x0c\x12\x10\n\x08language\x18\x02 \x01(\t\"\x19\n\tOcrOutput\x12\x0c\n\x04text\x18\x01 \x01(\t\"]\n\rLoadTextInput\x12\x14\n\x0c\x66ile_content\x18\x01 \x01(\x0c\x12\x11\n\tfile_name\x18\x02 \x01(\t\x12\x11\n\tfile_path\x18\x03 \x01(\t\x12\x10\n\x08track_id\x18\x04 \x01(\t\"\x8c\x01\n\x0eLoadTextOutput\x12\x0f\n\x07\x63ontent\x18\x01 \x01(\t\x12\x11\n\tfile_name\x18\x02 \x01(\t\x12\x11\n\tfile_path\x18\x03 \x01(\t\x12\x14\n\x0c\x63ontent_hash\x18\x04 \x01(\t\x12\x16\n\x0e\x63ontent_length\x18\x05 \x01(\x03\x12\x15\n\rerror_message\x18\x06 \x01(\t\"\x8e\x01\n\x0cLoadPdfInput\x12\x14\n\x0c\x66ile_content\x18\x01 \x01(\x0c\x12\x11\n\tfile_name\x18\x02 \x01(\t\x12\x11\n\tfile_path\x18\x03 \x01(\t\x12\x10\n\x08track_id\x18\x04 \x01(\t\x12\x16\n\x0eloading_engine\x18\x05 \x01(\t\x12\x18\n\x10\x64\x65\x63rypt_password\x18\x06 \x01(\t\"\x8b\x01\n\rLoadPdfOutput\x12\x0f\n\x07\x63ontent\x18\x01 \x01(\t\x12\x11\n\tfile_name\x18\x02 \x01(\t\x12\x11\n\tfile_path\x18\x03 \x01(\t\x12\x14\n\x0c\x63ontent_hash\x18\x04 \x01(\t\x12\x16\n\x0e\x63ontent_length\x18\x05 \x01(\x03\x12\x15\n\rerror_message\x18\x06 \x01(\t\"u\n\rLoadDocxInput\x12\x14\n\x0c\x66ile_content\x18\x01 \x01(\x0c\x12\x11\n\tfile_name\x18\x02 \x01(\t\x12\x11\n\tfile_path\x18\x03 \x01(\t\x12\x10\n\x08track_id\x18\x04 \x01(\t\x12\x16\n\x0eloading_engine\x18\x05 \x01(\t\"\x8c\x01\n\x0eLoadDocxOutput\x12\x0f\n\x07\x63ontent\x18\x01 \x01(\t\x12\x11\n\tfile_name\x18\x02 \x01(\t\x12\x11\n\tfile_path\x18\x03 \x01(\t\x12\x14\n\x0c\x63ontent_hash\x18\x04 \x01(\t\x12\x16\n\x0e\x63ontent_length\x18\x05 \x01(\x03\x12\x15\n\rerror_message\x18\x06 \x01(\tBDZBgithub.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go/topics;topicsb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10rag/insert.proto\x12\x1blightrag.eventbus.topics.v1\x1a\x13index/builder.proto\"\xac\x01\n\rChunkingInput\x12\x0f\n\x07\x63ontent\x18\x01 \x01(\t\x12\x11\n\ttokenizer\x18\x02 \x01(\x0c\x12\x18\n\x10\x63hunk_token_size\x18\x03 \x01(\x05\x12 \n\x18\x63hunk_overlap_token_size\x18\x04 \x01(\x05\x12\x1a\n\x12split_by_character\x18\x05 \x01(\t\x12\x1f\n\x17split_by_character_only\x18\x06 \x01(\x08\"H\n\x0e\x43hunkingOutput\x12\x36\n\x06\x63hunks\x18\x01 \x03(\x0b\x32&.lightrag.eventbus.topics.v1.ChunkItem\"G\n\tChunkItem\x12\x0f\n\x07\x63ontent\x18\x01 \x01(\t\x12\x0e\n\x06tokens\x18\x02 \x01(\x05\x12\x19\n\x11\x63hunk_order_index\x18\x03 \x01(\x05\"\x1f\n\x0e\x45mbeddingInput\x12\r\n\x05texts\x18\x01 \x03(\t\"S\n\x0f\x45mbeddingOutput\x12@\n\nembeddings\x18\x01 \x03(\x0b\x32,.lightrag.eventbus.topics.v1.EmbeddingVector\"+\n\x08OcrInput\x12\r\n\x05image\x18\x01 \x01(\x0c\x12\x10\n\x08language\x18\x02 \x01(\t\"\x19\n\tOcrOutput\x12\x0c\n\x04text\x18\x01 \x01(\t\"p\n\nStorageRef\x12\x0e\n\x06\x62ucket\x18\x01 \x01(\t\x12\x12\n\nobject_key\x18\x02 \x01(\t\x12\x12\n\nsize_bytes\x18\x03 \x01(\x03\x12\x14\n\x0c\x63ontent_hash\x18\x04 \x01(\t\x12\x14\n\x0c\x63ontent_type\x18\x05 \x01(\t\"t\n\rLoadTextInput\x12\x16\n\x0estorage_bucket\x18\x01 \x01(\t\x12\x13\n\x0bstorage_key\x18\x02 \x01(\t\x12\x11\n\tfile_name\x18\x03 \x01(\t\x12\x11\n\tfile_path\x18\x04 \x01(\t\x12\x10\n\x08track_id\x18\x05 \x01(\t\"\xf6\x01\n\x0eLoadTextOutput\x12\x39\n\x08json_ref\x18\x01 \x01(\x0b\x32\'.lightrag.eventbus.topics.v1.StorageRef\x12\x11\n\tfile_name\x18\x02 \x01(\t\x12\x11\n\tfile_path\x18\x03 \x01(\t\x12\x14\n\x0c\x63ontent_hash\x18\x04 \x01(\t\x12\x13\n\x0btotal_pages\x18\x05 \x01(\x03\x12\x14\n\x0ctotal_blocks\x18\x06 \x01(\x03\x12\x13\n\x0b\x62lock_types\x18\x07 \x03(\t\x12\x16\n\x0einline_preview\x18\x08 \x01(\t\x12\x15\n\rerror_message\x18\t \x01(\t\"\xa5\x01\n\x0cLoadPdfInput\x12\x16\n\x0estorage_bucket\x18\x01 \x01(\t\x12\x13\n\x0bstorage_key\x18\x02 \x01(\t\x12\x11\n\tfile_name\x18\x03 \x01(\t\x12\x11\n\tfile_path\x18\x04 \x01(\t\x12\x10\n\x08track_id\x18\x05 \x01(\t\x12\x16\n\x0eloading_engine\x18\x06 \x01(\t\x12\x18\n\x10\x64\x65\x63rypt_password\x18\x07 \x01(\t\"\x8b\x02\n\rLoadPdfOutput\x12\x39\n\x08json_ref\x18\x01 \x01(\x0b\x32\'.lightrag.eventbus.topics.v1.StorageRef\x12\x11\n\tfile_name\x18\x02 \x01(\t\x12\x11\n\tfile_path\x18\x03 \x01(\t\x12\x14\n\x0c\x63ontent_hash\x18\x04 \x01(\t\x12\x13\n\x0btotal_pages\x18\x05 \x01(\x03\x12\x14\n\x0ctotal_blocks\x18\x06 \x01(\x03\x12\x13\n\x0b\x62lock_types\x18\x07 \x03(\t\x12\x14\n\x0cpending_jobs\x18\x08 \x03(\t\x12\x16\n\x0einline_preview\x18\t \x01(\t\x12\x15\n\rerror_message\x18\n \x01(\t\"\x8c\x01\n\rLoadDocxInput\x12\x16\n\x0estorage_bucket\x18\x01 \x01(\t\x12\x13\n\x0bstorage_key\x18\x02 \x01(\t\x12\x11\n\tfile_name\x18\x03 \x01(\t\x12\x11\n\tfile_path\x18\x04 \x01(\t\x12\x10\n\x08track_id\x18\x05 \x01(\t\x12\x16\n\x0eloading_engine\x18\x06 \x01(\t\"\xf6\x01\n\x0eLoadDocxOutput\x12\x39\n\x08json_ref\x18\x01 \x01(\x0b\x32\'.lightrag.eventbus.topics.v1.StorageRef\x12\x11\n\tfile_name\x18\x02 \x01(\t\x12\x11\n\tfile_path\x18\x03 \x01(\t\x12\x14\n\x0c\x63ontent_hash\x18\x04 \x01(\t\x12\x13\n\x0btotal_pages\x18\x05 \x01(\x03\x12\x14\n\x0ctotal_blocks\x18\x06 \x01(\x03\x12\x13\n\x0b\x62lock_types\x18\x07 \x03(\t\x12\x16\n\x0einline_preview\x18\x08 \x01(\t\x12\x15\n\rerror_message\x18\t \x01(\tBDZBgithub.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go/topics;topicsb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -47,16 +47,18 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_OCRINPUT']._serialized_end=553
   _globals['_OCROUTPUT']._serialized_start=555
   _globals['_OCROUTPUT']._serialized_end=580
-  _globals['_LOADTEXTINPUT']._serialized_start=582
-  _globals['_LOADTEXTINPUT']._serialized_end=675
-  _globals['_LOADTEXTOUTPUT']._serialized_start=678
-  _globals['_LOADTEXTOUTPUT']._serialized_end=818
-  _globals['_LOADPDFINPUT']._serialized_start=821
-  _globals['_LOADPDFINPUT']._serialized_end=963
-  _globals['_LOADPDFOUTPUT']._serialized_start=966
-  _globals['_LOADPDFOUTPUT']._serialized_end=1105
-  _globals['_LOADDOCXINPUT']._serialized_start=1107
-  _globals['_LOADDOCXINPUT']._serialized_end=1224
-  _globals['_LOADDOCXOUTPUT']._serialized_start=1227
-  _globals['_LOADDOCXOUTPUT']._serialized_end=1367
+  _globals['_STORAGEREF']._serialized_start=582
+  _globals['_STORAGEREF']._serialized_end=694
+  _globals['_LOADTEXTINPUT']._serialized_start=696
+  _globals['_LOADTEXTINPUT']._serialized_end=812
+  _globals['_LOADTEXTOUTPUT']._serialized_start=815
+  _globals['_LOADTEXTOUTPUT']._serialized_end=1061
+  _globals['_LOADPDFINPUT']._serialized_start=1064
+  _globals['_LOADPDFINPUT']._serialized_end=1229
+  _globals['_LOADPDFOUTPUT']._serialized_start=1232
+  _globals['_LOADPDFOUTPUT']._serialized_end=1499
+  _globals['_LOADDOCXINPUT']._serialized_start=1502
+  _globals['_LOADDOCXINPUT']._serialized_end=1642
+  _globals['_LOADDOCXOUTPUT']._serialized_start=1645
+  _globals['_LOADDOCXOUTPUT']._serialized_end=1891
 # @@protoc_insertion_point(module_scope)

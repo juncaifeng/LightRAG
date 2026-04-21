@@ -90,6 +90,8 @@ func init() {
 		(*topicspb.EntityData)(nil),
 		(*topicspb.RelationData)(nil),
 		(*topicspb.CreatedEntity)(nil),
+		// rag.insert common types
+		(*topicspb.StorageRef)(nil),
 	} {
 		t := reflect.TypeOf(msg).Elem()
 		allProtoMessages[t.Name()] = t

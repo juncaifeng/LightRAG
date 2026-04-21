@@ -61,35 +61,60 @@ export interface OcrOutput {
   text: string;
 }
 
+export interface StorageRef {
+  /** MinIO bucket 名称 */
+  bucket: string;
+  /** 对象唯一键（含路径前缀） */
+  objectKey: string;
+  /** 对象大小（字节） */
+  sizeBytes: number;
+  /** 内容 MD5 hash（用于去重和校验） */
+  contentHash: string;
+  /** MIME 类型（如 "application/json"） */
+  contentType: string;
+}
+
 export interface LoadTextInput {
-  /** 文件二进制内容 */
-  fileContent: Uint8Array;
+  /** MinIO bucket（存放原始文件） */
+  storageBucket: string;
+  /** MinIO 对象键（原始文件路径） */
+  storageKey: string;
   /** 文件名（含扩展名） */
   fileName: string;
-  /** 原始文件路径（可选） */
+  /** 原始文件路径（可选，用于日志/citation） */
   filePath: string;
   /** 追踪 ID（可选） */
   trackId: string;
 }
 
 export interface LoadTextOutput {
-  /** 提取的纯文本内容 */
-  content: string;
+  /** 解析后的结构化 JSON 存储引用 */
+  jsonRef:
+    | StorageRef
+    | undefined;
   /** 回显文件名 */
   fileName: string;
   /** 回显文件路径 */
   filePath: string;
-  /** 内容 MD5 hash（用于去重） */
+  /** 原始文件 MD5 hash（用于去重） */
   contentHash: string;
-  /** 提取文本长度 */
-  contentLength: number;
+  /** 页数（纯文本通常为 1） */
+  totalPages: number;
+  /** 解析出的 block 数量 */
+  totalBlocks: number;
+  /** 包含的 block 类型列表（如 "text"） */
+  blockTypes: string[];
+  /** 前 2KB 文本预览（调试/快速决策用） */
+  inlinePreview: string;
   /** 错误信息（空字符串=成功） */
   errorMessage: string;
 }
 
 export interface LoadPdfInput {
-  /** PDF 文件二进制内容 */
-  fileContent: Uint8Array;
+  /** MinIO bucket（存放原始 PDF） */
+  storageBucket: string;
+  /** MinIO 对象键（原始 PDF 路径） */
+  storageKey: string;
   /** 文件名（含扩展名） */
   fileName: string;
   /** 原始文件路径（可选） */
@@ -103,23 +128,35 @@ export interface LoadPdfInput {
 }
 
 export interface LoadPdfOutput {
-  /** 提取的纯文本内容 */
-  content: string;
+  /** 解析后的结构化 JSON 存储引用 */
+  jsonRef:
+    | StorageRef
+    | undefined;
   /** 回显文件名 */
   fileName: string;
   /** 回显文件路径 */
   filePath: string;
-  /** 内容 MD5 hash（用于去重） */
+  /** 原始文件 MD5 hash（用于去重） */
   contentHash: string;
-  /** 提取文本长度 */
-  contentLength: number;
+  /** PDF 总页数 */
+  totalPages: number;
+  /** 解析出的 block 数量 */
+  totalBlocks: number;
+  /** 包含的 block 类型列表（如 "text", "image", "table"） */
+  blockTypes: string[];
+  /** 下游待处理任务（如 "ocr", "formula_check"） */
+  pendingJobs: string[];
+  /** 前 2KB 文本预览（调试/快速决策用） */
+  inlinePreview: string;
   /** 错误信息（空字符串=成功） */
   errorMessage: string;
 }
 
 export interface LoadDocxInput {
-  /** DOCX 文件二进制内容 */
-  fileContent: Uint8Array;
+  /** MinIO bucket（存放原始 DOCX） */
+  storageBucket: string;
+  /** MinIO 对象键（原始 DOCX 路径） */
+  storageKey: string;
   /** 文件名（含扩展名） */
   fileName: string;
   /** 原始文件路径（可选） */
@@ -131,16 +168,24 @@ export interface LoadDocxInput {
 }
 
 export interface LoadDocxOutput {
-  /** 提取的纯文本内容 */
-  content: string;
+  /** 解析后的结构化 JSON 存储引用 */
+  jsonRef:
+    | StorageRef
+    | undefined;
   /** 回显文件名 */
   fileName: string;
   /** 回显文件路径 */
   filePath: string;
-  /** 内容 MD5 hash（用于去重） */
+  /** 原始文件 MD5 hash（用于去重） */
   contentHash: string;
-  /** 提取文本长度 */
-  contentLength: number;
+  /** 页数（DOCX 通常为 1） */
+  totalPages: number;
+  /** 解析出的 block 数量 */
+  totalBlocks: number;
+  /** 包含的 block 类型列表 */
+  blockTypes: string[];
+  /** 前 2KB 文本预览（调试/快速决策用） */
+  inlinePreview: string;
   /** 错误信息（空字符串=成功） */
   errorMessage: string;
 }
@@ -570,23 +615,120 @@ export const OcrOutput: MessageFns<OcrOutput> = {
   },
 };
 
+function createBaseStorageRef(): StorageRef {
+  return { bucket: "", objectKey: "", sizeBytes: 0, contentHash: "", contentType: "" };
+}
+
+export const StorageRef: MessageFns<StorageRef> = {
+  encode(message: StorageRef, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.bucket !== "") {
+      writer.uint32(10).string(message.bucket);
+    }
+    if (message.objectKey !== "") {
+      writer.uint32(18).string(message.objectKey);
+    }
+    if (message.sizeBytes !== 0) {
+      writer.uint32(24).int64(message.sizeBytes);
+    }
+    if (message.contentHash !== "") {
+      writer.uint32(34).string(message.contentHash);
+    }
+    if (message.contentType !== "") {
+      writer.uint32(42).string(message.contentType);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): StorageRef {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseStorageRef();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.bucket = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.objectKey = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.sizeBytes = longToNumber(reader.int64());
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.contentHash = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.contentType = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create<I extends Exact<DeepPartial<StorageRef>, I>>(base?: I): StorageRef {
+    return StorageRef.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<StorageRef>, I>>(object: I): StorageRef {
+    const message = createBaseStorageRef();
+    message.bucket = object.bucket ?? "";
+    message.objectKey = object.objectKey ?? "";
+    message.sizeBytes = object.sizeBytes ?? 0;
+    message.contentHash = object.contentHash ?? "";
+    message.contentType = object.contentType ?? "";
+    return message;
+  },
+};
+
 function createBaseLoadTextInput(): LoadTextInput {
-  return { fileContent: new Uint8Array(0), fileName: "", filePath: "", trackId: "" };
+  return { storageBucket: "", storageKey: "", fileName: "", filePath: "", trackId: "" };
 }
 
 export const LoadTextInput: MessageFns<LoadTextInput> = {
   encode(message: LoadTextInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.fileContent.length !== 0) {
-      writer.uint32(10).bytes(message.fileContent);
+    if (message.storageBucket !== "") {
+      writer.uint32(10).string(message.storageBucket);
+    }
+    if (message.storageKey !== "") {
+      writer.uint32(18).string(message.storageKey);
     }
     if (message.fileName !== "") {
-      writer.uint32(18).string(message.fileName);
+      writer.uint32(26).string(message.fileName);
     }
     if (message.filePath !== "") {
-      writer.uint32(26).string(message.filePath);
+      writer.uint32(34).string(message.filePath);
     }
     if (message.trackId !== "") {
-      writer.uint32(34).string(message.trackId);
+      writer.uint32(42).string(message.trackId);
     }
     return writer;
   },
@@ -603,7 +745,7 @@ export const LoadTextInput: MessageFns<LoadTextInput> = {
             break;
           }
 
-          message.fileContent = reader.bytes();
+          message.storageBucket = reader.string();
           continue;
         }
         case 2: {
@@ -611,7 +753,7 @@ export const LoadTextInput: MessageFns<LoadTextInput> = {
             break;
           }
 
-          message.fileName = reader.string();
+          message.storageKey = reader.string();
           continue;
         }
         case 3: {
@@ -619,11 +761,19 @@ export const LoadTextInput: MessageFns<LoadTextInput> = {
             break;
           }
 
-          message.filePath = reader.string();
+          message.fileName = reader.string();
           continue;
         }
         case 4: {
           if (tag !== 34) {
+            break;
+          }
+
+          message.filePath = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
             break;
           }
 
@@ -644,7 +794,8 @@ export const LoadTextInput: MessageFns<LoadTextInput> = {
   },
   fromPartial<I extends Exact<DeepPartial<LoadTextInput>, I>>(object: I): LoadTextInput {
     const message = createBaseLoadTextInput();
-    message.fileContent = object.fileContent ?? new Uint8Array(0);
+    message.storageBucket = object.storageBucket ?? "";
+    message.storageKey = object.storageKey ?? "";
     message.fileName = object.fileName ?? "";
     message.filePath = object.filePath ?? "";
     message.trackId = object.trackId ?? "";
@@ -653,13 +804,23 @@ export const LoadTextInput: MessageFns<LoadTextInput> = {
 };
 
 function createBaseLoadTextOutput(): LoadTextOutput {
-  return { content: "", fileName: "", filePath: "", contentHash: "", contentLength: 0, errorMessage: "" };
+  return {
+    jsonRef: undefined,
+    fileName: "",
+    filePath: "",
+    contentHash: "",
+    totalPages: 0,
+    totalBlocks: 0,
+    blockTypes: [],
+    inlinePreview: "",
+    errorMessage: "",
+  };
 }
 
 export const LoadTextOutput: MessageFns<LoadTextOutput> = {
   encode(message: LoadTextOutput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.content !== "") {
-      writer.uint32(10).string(message.content);
+    if (message.jsonRef !== undefined) {
+      StorageRef.encode(message.jsonRef, writer.uint32(10).fork()).join();
     }
     if (message.fileName !== "") {
       writer.uint32(18).string(message.fileName);
@@ -670,11 +831,20 @@ export const LoadTextOutput: MessageFns<LoadTextOutput> = {
     if (message.contentHash !== "") {
       writer.uint32(34).string(message.contentHash);
     }
-    if (message.contentLength !== 0) {
-      writer.uint32(40).int64(message.contentLength);
+    if (message.totalPages !== 0) {
+      writer.uint32(40).int64(message.totalPages);
+    }
+    if (message.totalBlocks !== 0) {
+      writer.uint32(48).int64(message.totalBlocks);
+    }
+    for (const v of message.blockTypes) {
+      writer.uint32(58).string(v!);
+    }
+    if (message.inlinePreview !== "") {
+      writer.uint32(66).string(message.inlinePreview);
     }
     if (message.errorMessage !== "") {
-      writer.uint32(50).string(message.errorMessage);
+      writer.uint32(74).string(message.errorMessage);
     }
     return writer;
   },
@@ -691,7 +861,7 @@ export const LoadTextOutput: MessageFns<LoadTextOutput> = {
             break;
           }
 
-          message.content = reader.string();
+          message.jsonRef = StorageRef.decode(reader, reader.uint32());
           continue;
         }
         case 2: {
@@ -723,11 +893,35 @@ export const LoadTextOutput: MessageFns<LoadTextOutput> = {
             break;
           }
 
-          message.contentLength = longToNumber(reader.int64());
+          message.totalPages = longToNumber(reader.int64());
           continue;
         }
         case 6: {
-          if (tag !== 50) {
+          if (tag !== 48) {
+            break;
+          }
+
+          message.totalBlocks = longToNumber(reader.int64());
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.blockTypes.push(reader.string());
+          continue;
+        }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.inlinePreview = reader.string();
+          continue;
+        }
+        case 9: {
+          if (tag !== 74) {
             break;
           }
 
@@ -748,11 +942,16 @@ export const LoadTextOutput: MessageFns<LoadTextOutput> = {
   },
   fromPartial<I extends Exact<DeepPartial<LoadTextOutput>, I>>(object: I): LoadTextOutput {
     const message = createBaseLoadTextOutput();
-    message.content = object.content ?? "";
+    message.jsonRef = (object.jsonRef !== undefined && object.jsonRef !== null)
+      ? StorageRef.fromPartial(object.jsonRef)
+      : undefined;
     message.fileName = object.fileName ?? "";
     message.filePath = object.filePath ?? "";
     message.contentHash = object.contentHash ?? "";
-    message.contentLength = object.contentLength ?? 0;
+    message.totalPages = object.totalPages ?? 0;
+    message.totalBlocks = object.totalBlocks ?? 0;
+    message.blockTypes = object.blockTypes?.map((e) => e) || [];
+    message.inlinePreview = object.inlinePreview ?? "";
     message.errorMessage = object.errorMessage ?? "";
     return message;
   },
@@ -760,7 +959,8 @@ export const LoadTextOutput: MessageFns<LoadTextOutput> = {
 
 function createBaseLoadPdfInput(): LoadPdfInput {
   return {
-    fileContent: new Uint8Array(0),
+    storageBucket: "",
+    storageKey: "",
     fileName: "",
     filePath: "",
     trackId: "",
@@ -771,23 +971,26 @@ function createBaseLoadPdfInput(): LoadPdfInput {
 
 export const LoadPdfInput: MessageFns<LoadPdfInput> = {
   encode(message: LoadPdfInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.fileContent.length !== 0) {
-      writer.uint32(10).bytes(message.fileContent);
+    if (message.storageBucket !== "") {
+      writer.uint32(10).string(message.storageBucket);
+    }
+    if (message.storageKey !== "") {
+      writer.uint32(18).string(message.storageKey);
     }
     if (message.fileName !== "") {
-      writer.uint32(18).string(message.fileName);
+      writer.uint32(26).string(message.fileName);
     }
     if (message.filePath !== "") {
-      writer.uint32(26).string(message.filePath);
+      writer.uint32(34).string(message.filePath);
     }
     if (message.trackId !== "") {
-      writer.uint32(34).string(message.trackId);
+      writer.uint32(42).string(message.trackId);
     }
     if (message.loadingEngine !== "") {
-      writer.uint32(42).string(message.loadingEngine);
+      writer.uint32(50).string(message.loadingEngine);
     }
     if (message.decryptPassword !== "") {
-      writer.uint32(50).string(message.decryptPassword);
+      writer.uint32(58).string(message.decryptPassword);
     }
     return writer;
   },
@@ -804,7 +1007,7 @@ export const LoadPdfInput: MessageFns<LoadPdfInput> = {
             break;
           }
 
-          message.fileContent = reader.bytes();
+          message.storageBucket = reader.string();
           continue;
         }
         case 2: {
@@ -812,7 +1015,7 @@ export const LoadPdfInput: MessageFns<LoadPdfInput> = {
             break;
           }
 
-          message.fileName = reader.string();
+          message.storageKey = reader.string();
           continue;
         }
         case 3: {
@@ -820,7 +1023,7 @@ export const LoadPdfInput: MessageFns<LoadPdfInput> = {
             break;
           }
 
-          message.filePath = reader.string();
+          message.fileName = reader.string();
           continue;
         }
         case 4: {
@@ -828,7 +1031,7 @@ export const LoadPdfInput: MessageFns<LoadPdfInput> = {
             break;
           }
 
-          message.trackId = reader.string();
+          message.filePath = reader.string();
           continue;
         }
         case 5: {
@@ -836,11 +1039,19 @@ export const LoadPdfInput: MessageFns<LoadPdfInput> = {
             break;
           }
 
-          message.loadingEngine = reader.string();
+          message.trackId = reader.string();
           continue;
         }
         case 6: {
           if (tag !== 50) {
+            break;
+          }
+
+          message.loadingEngine = reader.string();
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
             break;
           }
 
@@ -861,7 +1072,8 @@ export const LoadPdfInput: MessageFns<LoadPdfInput> = {
   },
   fromPartial<I extends Exact<DeepPartial<LoadPdfInput>, I>>(object: I): LoadPdfInput {
     const message = createBaseLoadPdfInput();
-    message.fileContent = object.fileContent ?? new Uint8Array(0);
+    message.storageBucket = object.storageBucket ?? "";
+    message.storageKey = object.storageKey ?? "";
     message.fileName = object.fileName ?? "";
     message.filePath = object.filePath ?? "";
     message.trackId = object.trackId ?? "";
@@ -872,13 +1084,24 @@ export const LoadPdfInput: MessageFns<LoadPdfInput> = {
 };
 
 function createBaseLoadPdfOutput(): LoadPdfOutput {
-  return { content: "", fileName: "", filePath: "", contentHash: "", contentLength: 0, errorMessage: "" };
+  return {
+    jsonRef: undefined,
+    fileName: "",
+    filePath: "",
+    contentHash: "",
+    totalPages: 0,
+    totalBlocks: 0,
+    blockTypes: [],
+    pendingJobs: [],
+    inlinePreview: "",
+    errorMessage: "",
+  };
 }
 
 export const LoadPdfOutput: MessageFns<LoadPdfOutput> = {
   encode(message: LoadPdfOutput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.content !== "") {
-      writer.uint32(10).string(message.content);
+    if (message.jsonRef !== undefined) {
+      StorageRef.encode(message.jsonRef, writer.uint32(10).fork()).join();
     }
     if (message.fileName !== "") {
       writer.uint32(18).string(message.fileName);
@@ -889,11 +1112,23 @@ export const LoadPdfOutput: MessageFns<LoadPdfOutput> = {
     if (message.contentHash !== "") {
       writer.uint32(34).string(message.contentHash);
     }
-    if (message.contentLength !== 0) {
-      writer.uint32(40).int64(message.contentLength);
+    if (message.totalPages !== 0) {
+      writer.uint32(40).int64(message.totalPages);
+    }
+    if (message.totalBlocks !== 0) {
+      writer.uint32(48).int64(message.totalBlocks);
+    }
+    for (const v of message.blockTypes) {
+      writer.uint32(58).string(v!);
+    }
+    for (const v of message.pendingJobs) {
+      writer.uint32(66).string(v!);
+    }
+    if (message.inlinePreview !== "") {
+      writer.uint32(74).string(message.inlinePreview);
     }
     if (message.errorMessage !== "") {
-      writer.uint32(50).string(message.errorMessage);
+      writer.uint32(82).string(message.errorMessage);
     }
     return writer;
   },
@@ -910,7 +1145,7 @@ export const LoadPdfOutput: MessageFns<LoadPdfOutput> = {
             break;
           }
 
-          message.content = reader.string();
+          message.jsonRef = StorageRef.decode(reader, reader.uint32());
           continue;
         }
         case 2: {
@@ -942,11 +1177,43 @@ export const LoadPdfOutput: MessageFns<LoadPdfOutput> = {
             break;
           }
 
-          message.contentLength = longToNumber(reader.int64());
+          message.totalPages = longToNumber(reader.int64());
           continue;
         }
         case 6: {
-          if (tag !== 50) {
+          if (tag !== 48) {
+            break;
+          }
+
+          message.totalBlocks = longToNumber(reader.int64());
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.blockTypes.push(reader.string());
+          continue;
+        }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.pendingJobs.push(reader.string());
+          continue;
+        }
+        case 9: {
+          if (tag !== 74) {
+            break;
+          }
+
+          message.inlinePreview = reader.string();
+          continue;
+        }
+        case 10: {
+          if (tag !== 82) {
             break;
           }
 
@@ -967,36 +1234,45 @@ export const LoadPdfOutput: MessageFns<LoadPdfOutput> = {
   },
   fromPartial<I extends Exact<DeepPartial<LoadPdfOutput>, I>>(object: I): LoadPdfOutput {
     const message = createBaseLoadPdfOutput();
-    message.content = object.content ?? "";
+    message.jsonRef = (object.jsonRef !== undefined && object.jsonRef !== null)
+      ? StorageRef.fromPartial(object.jsonRef)
+      : undefined;
     message.fileName = object.fileName ?? "";
     message.filePath = object.filePath ?? "";
     message.contentHash = object.contentHash ?? "";
-    message.contentLength = object.contentLength ?? 0;
+    message.totalPages = object.totalPages ?? 0;
+    message.totalBlocks = object.totalBlocks ?? 0;
+    message.blockTypes = object.blockTypes?.map((e) => e) || [];
+    message.pendingJobs = object.pendingJobs?.map((e) => e) || [];
+    message.inlinePreview = object.inlinePreview ?? "";
     message.errorMessage = object.errorMessage ?? "";
     return message;
   },
 };
 
 function createBaseLoadDocxInput(): LoadDocxInput {
-  return { fileContent: new Uint8Array(0), fileName: "", filePath: "", trackId: "", loadingEngine: "" };
+  return { storageBucket: "", storageKey: "", fileName: "", filePath: "", trackId: "", loadingEngine: "" };
 }
 
 export const LoadDocxInput: MessageFns<LoadDocxInput> = {
   encode(message: LoadDocxInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.fileContent.length !== 0) {
-      writer.uint32(10).bytes(message.fileContent);
+    if (message.storageBucket !== "") {
+      writer.uint32(10).string(message.storageBucket);
+    }
+    if (message.storageKey !== "") {
+      writer.uint32(18).string(message.storageKey);
     }
     if (message.fileName !== "") {
-      writer.uint32(18).string(message.fileName);
+      writer.uint32(26).string(message.fileName);
     }
     if (message.filePath !== "") {
-      writer.uint32(26).string(message.filePath);
+      writer.uint32(34).string(message.filePath);
     }
     if (message.trackId !== "") {
-      writer.uint32(34).string(message.trackId);
+      writer.uint32(42).string(message.trackId);
     }
     if (message.loadingEngine !== "") {
-      writer.uint32(42).string(message.loadingEngine);
+      writer.uint32(50).string(message.loadingEngine);
     }
     return writer;
   },
@@ -1013,7 +1289,7 @@ export const LoadDocxInput: MessageFns<LoadDocxInput> = {
             break;
           }
 
-          message.fileContent = reader.bytes();
+          message.storageBucket = reader.string();
           continue;
         }
         case 2: {
@@ -1021,7 +1297,7 @@ export const LoadDocxInput: MessageFns<LoadDocxInput> = {
             break;
           }
 
-          message.fileName = reader.string();
+          message.storageKey = reader.string();
           continue;
         }
         case 3: {
@@ -1029,7 +1305,7 @@ export const LoadDocxInput: MessageFns<LoadDocxInput> = {
             break;
           }
 
-          message.filePath = reader.string();
+          message.fileName = reader.string();
           continue;
         }
         case 4: {
@@ -1037,11 +1313,19 @@ export const LoadDocxInput: MessageFns<LoadDocxInput> = {
             break;
           }
 
-          message.trackId = reader.string();
+          message.filePath = reader.string();
           continue;
         }
         case 5: {
           if (tag !== 42) {
+            break;
+          }
+
+          message.trackId = reader.string();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
             break;
           }
 
@@ -1062,7 +1346,8 @@ export const LoadDocxInput: MessageFns<LoadDocxInput> = {
   },
   fromPartial<I extends Exact<DeepPartial<LoadDocxInput>, I>>(object: I): LoadDocxInput {
     const message = createBaseLoadDocxInput();
-    message.fileContent = object.fileContent ?? new Uint8Array(0);
+    message.storageBucket = object.storageBucket ?? "";
+    message.storageKey = object.storageKey ?? "";
     message.fileName = object.fileName ?? "";
     message.filePath = object.filePath ?? "";
     message.trackId = object.trackId ?? "";
@@ -1072,13 +1357,23 @@ export const LoadDocxInput: MessageFns<LoadDocxInput> = {
 };
 
 function createBaseLoadDocxOutput(): LoadDocxOutput {
-  return { content: "", fileName: "", filePath: "", contentHash: "", contentLength: 0, errorMessage: "" };
+  return {
+    jsonRef: undefined,
+    fileName: "",
+    filePath: "",
+    contentHash: "",
+    totalPages: 0,
+    totalBlocks: 0,
+    blockTypes: [],
+    inlinePreview: "",
+    errorMessage: "",
+  };
 }
 
 export const LoadDocxOutput: MessageFns<LoadDocxOutput> = {
   encode(message: LoadDocxOutput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.content !== "") {
-      writer.uint32(10).string(message.content);
+    if (message.jsonRef !== undefined) {
+      StorageRef.encode(message.jsonRef, writer.uint32(10).fork()).join();
     }
     if (message.fileName !== "") {
       writer.uint32(18).string(message.fileName);
@@ -1089,11 +1384,20 @@ export const LoadDocxOutput: MessageFns<LoadDocxOutput> = {
     if (message.contentHash !== "") {
       writer.uint32(34).string(message.contentHash);
     }
-    if (message.contentLength !== 0) {
-      writer.uint32(40).int64(message.contentLength);
+    if (message.totalPages !== 0) {
+      writer.uint32(40).int64(message.totalPages);
+    }
+    if (message.totalBlocks !== 0) {
+      writer.uint32(48).int64(message.totalBlocks);
+    }
+    for (const v of message.blockTypes) {
+      writer.uint32(58).string(v!);
+    }
+    if (message.inlinePreview !== "") {
+      writer.uint32(66).string(message.inlinePreview);
     }
     if (message.errorMessage !== "") {
-      writer.uint32(50).string(message.errorMessage);
+      writer.uint32(74).string(message.errorMessage);
     }
     return writer;
   },
@@ -1110,7 +1414,7 @@ export const LoadDocxOutput: MessageFns<LoadDocxOutput> = {
             break;
           }
 
-          message.content = reader.string();
+          message.jsonRef = StorageRef.decode(reader, reader.uint32());
           continue;
         }
         case 2: {
@@ -1142,11 +1446,35 @@ export const LoadDocxOutput: MessageFns<LoadDocxOutput> = {
             break;
           }
 
-          message.contentLength = longToNumber(reader.int64());
+          message.totalPages = longToNumber(reader.int64());
           continue;
         }
         case 6: {
-          if (tag !== 50) {
+          if (tag !== 48) {
+            break;
+          }
+
+          message.totalBlocks = longToNumber(reader.int64());
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.blockTypes.push(reader.string());
+          continue;
+        }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.inlinePreview = reader.string();
+          continue;
+        }
+        case 9: {
+          if (tag !== 74) {
             break;
           }
 
@@ -1167,11 +1495,16 @@ export const LoadDocxOutput: MessageFns<LoadDocxOutput> = {
   },
   fromPartial<I extends Exact<DeepPartial<LoadDocxOutput>, I>>(object: I): LoadDocxOutput {
     const message = createBaseLoadDocxOutput();
-    message.content = object.content ?? "";
+    message.jsonRef = (object.jsonRef !== undefined && object.jsonRef !== null)
+      ? StorageRef.fromPartial(object.jsonRef)
+      : undefined;
     message.fileName = object.fileName ?? "";
     message.filePath = object.filePath ?? "";
     message.contentHash = object.contentHash ?? "";
-    message.contentLength = object.contentLength ?? 0;
+    message.totalPages = object.totalPages ?? 0;
+    message.totalBlocks = object.totalBlocks ?? 0;
+    message.blockTypes = object.blockTypes?.map((e) => e) || [];
+    message.inlinePreview = object.inlinePreview ?? "";
     message.errorMessage = object.errorMessage ?? "";
     return message;
   },
