@@ -6,6 +6,7 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
+import { EmbeddingVector } from "../embedding/embed";
 
 export const protobufPackage = "lightrag.eventbus.topics.v1";
 
@@ -18,10 +19,6 @@ export enum IndexBuildAction {
   /** INDEX_BUILD_ACTION_REBUILD - 清空索引后重建（慎用） */
   INDEX_BUILD_ACTION_REBUILD = 3,
   UNRECOGNIZED = -1,
-}
-
-export interface EmbeddingVector {
-  values: number[];
 }
 
 export interface IndexDocument {
@@ -69,64 +66,6 @@ export interface IndexBuildOutput {
   /** 错误摘要或成功提示 */
   message: string;
 }
-
-function createBaseEmbeddingVector(): EmbeddingVector {
-  return { values: [] };
-}
-
-export const EmbeddingVector: MessageFns<EmbeddingVector> = {
-  encode(message: EmbeddingVector, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    writer.uint32(10).fork();
-    for (const v of message.values) {
-      writer.float(v);
-    }
-    writer.join();
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): EmbeddingVector {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseEmbeddingVector();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag === 13) {
-            message.values.push(reader.float());
-
-            continue;
-          }
-
-          if (tag === 10) {
-            const end2 = reader.uint32() + reader.pos;
-            while (reader.pos < end2) {
-              message.values.push(reader.float());
-            }
-
-            continue;
-          }
-
-          break;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  create<I extends Exact<DeepPartial<EmbeddingVector>, I>>(base?: I): EmbeddingVector {
-    return EmbeddingVector.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<EmbeddingVector>, I>>(object: I): EmbeddingVector {
-    const message = createBaseEmbeddingVector();
-    message.values = object.values?.map((e) => e) || [];
-    return message;
-  },
-};
 
 function createBaseIndexDocument(): IndexDocument {
   return { documentId: "", content: "", fields: {}, vectors: {} };

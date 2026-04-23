@@ -49,6 +49,8 @@ func init() {
 	for _, msg := range []any{
 		(*topicspb.ChunkingInput)(nil),
 		(*topicspb.ChunkingOutput)(nil),
+		// embedding domain
+		(*topicspb.EmbeddingVector)(nil),
 		(*topicspb.EmbeddingInput)(nil),
 		(*topicspb.EmbeddingOutput)(nil),
 		(*topicspb.OcrInput)(nil),
@@ -102,7 +104,7 @@ func init() {
 // doesn't fit. Most topics default to APPEND (scatter-gather merge semantics).
 var topicStrategyOverrides = map[string]string{
 	"rag.insert.chunking":           "FIRST",
-	"rag.insert.embedding":          "FIRST",
+	"embedding.embed.embedding":     "FIRST",
 	"rag.insert.ocr":                "FIRST",
 	"rag.query.keyword_extraction":  "FIRST",
 	"rag.query.query_expansion":     "APPEND",

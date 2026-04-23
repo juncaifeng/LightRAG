@@ -42,6 +42,8 @@ go-eventbus/proto/topics/
 │   └── retriever.proto           # pipeline = "retriever" → index.retriever.xxx
 ├── llm/                          # domain = "llm"
 │   └── completion.proto          # pipeline = "completion" → llm.completion.complete
+├── embedding/                    # domain = "embedding"
+│   └── embed.proto               # pipeline = "embed"    → embedding.embed.embedding
 ├── kg/                           # domain = "kg"
 │   └── merge.proto               # pipeline = "merge"     → kg.merge.entity
 └── {domain}/                     # future domains...
@@ -60,6 +62,7 @@ go-eventbus/proto/topics/
 | `rag/insert.proto` + `LoadPdfInput` | `rag.insert.load.pdf` |
 | `rag/insert.proto` + `LoadDocxInput` | `rag.insert.load.docx` |
 | `rag/query.proto` + `VectorSearchInput` | `rag.query.vector_search` |
+| `embedding/embed.proto` + `EmbeddingInput` | `embedding.embed.embedding` |
 | `index/builder.proto` + `IndexBuildInput` | `index.builder.index_build` |
 | `index/retriever.proto` + `RetrieveInput` | `index.retriever.retrieve` |
 | `llm/completion.proto` + `CompleteInput` | `llm.completion.complete` |

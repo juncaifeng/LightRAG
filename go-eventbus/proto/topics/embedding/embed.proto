@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package lightrag.eventbus.topics.v1;
+
+option go_package = "github.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go/topics;topics";
+
+// ==========================================
+// 共享类型 — 嵌入向量
+// ==========================================
+
+message EmbeddingVector {
+    repeated float values = 1 [packed = true];          // 向量浮点值
+}
+
+// ==========================================
+// embedding.embed.embedding
+// ==========================================
+
+message EmbeddingInput {
+    repeated string texts = 1;                          // 待嵌入的文本列表
+}
+
+message EmbeddingOutput {
+    repeated EmbeddingVector embeddings = 1;            // 嵌入结果列表 (与输入 texts 顺序一一对应)
+}

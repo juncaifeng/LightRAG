@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package lightrag.eventbus.topics.v1;
 
-import "index/builder.proto";
-
 option go_package = "github.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go/topics;topics";
 
 // ==========================================
@@ -27,18 +25,6 @@ message ChunkItem {
     string content = 1;                             // chunk 文本内容
     int32 tokens = 2;                               // token 数量
     int32 chunk_order_index = 3;                    // chunk 在文档中的序号
-}
-
-// ==========================================
-// rag.insert.embedding
-// ==========================================
-
-message EmbeddingInput {
-    repeated string texts = 1;                      // 待嵌入的文本列表
-}
-
-message EmbeddingOutput {
-    repeated EmbeddingVector embeddings = 1;        // 嵌入结果列表 (与输入 texts 顺序一一对应)
 }
 
 // ==========================================

@@ -6,7 +6,6 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { EmbeddingVector } from "../index/builder";
 
 export const protobufPackage = "lightrag.eventbus.topics.v1";
 
@@ -37,16 +36,6 @@ export interface ChunkItem {
   tokens: number;
   /** chunk 在文档中的序号 */
   chunkOrderIndex: number;
-}
-
-export interface EmbeddingInput {
-  /** 待嵌入的文本列表 */
-  texts: string[];
-}
-
-export interface EmbeddingOutput {
-  /** 嵌入结果列表 (与输入 texts 顺序一一对应) */
-  embeddings: EmbeddingVector[];
 }
 
 export interface OcrInput {
@@ -415,98 +404,6 @@ export const ChunkItem: MessageFns<ChunkItem> = {
     message.content = object.content ?? "";
     message.tokens = object.tokens ?? 0;
     message.chunkOrderIndex = object.chunkOrderIndex ?? 0;
-    return message;
-  },
-};
-
-function createBaseEmbeddingInput(): EmbeddingInput {
-  return { texts: [] };
-}
-
-export const EmbeddingInput: MessageFns<EmbeddingInput> = {
-  encode(message: EmbeddingInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    for (const v of message.texts) {
-      writer.uint32(10).string(v!);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): EmbeddingInput {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseEmbeddingInput();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.texts.push(reader.string());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  create<I extends Exact<DeepPartial<EmbeddingInput>, I>>(base?: I): EmbeddingInput {
-    return EmbeddingInput.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<EmbeddingInput>, I>>(object: I): EmbeddingInput {
-    const message = createBaseEmbeddingInput();
-    message.texts = object.texts?.map((e) => e) || [];
-    return message;
-  },
-};
-
-function createBaseEmbeddingOutput(): EmbeddingOutput {
-  return { embeddings: [] };
-}
-
-export const EmbeddingOutput: MessageFns<EmbeddingOutput> = {
-  encode(message: EmbeddingOutput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    for (const v of message.embeddings) {
-      EmbeddingVector.encode(v!, writer.uint32(10).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): EmbeddingOutput {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseEmbeddingOutput();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.embeddings.push(EmbeddingVector.decode(reader, reader.uint32()));
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  create<I extends Exact<DeepPartial<EmbeddingOutput>, I>>(base?: I): EmbeddingOutput {
-    return EmbeddingOutput.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<EmbeddingOutput>, I>>(object: I): EmbeddingOutput {
-    const message = createBaseEmbeddingOutput();
-    message.embeddings = object.embeddings?.map((e) => EmbeddingVector.fromPartial(e)) || [];
     return message;
   },
 };

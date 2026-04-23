@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package lightrag.eventbus.topics.v1;
 
+import "embedding/embed.proto";
+
 option go_package = "github.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go/topics;topics";
 
 // ==========================================
@@ -13,10 +15,6 @@ enum IndexBuildAction {
     INDEX_BUILD_ACTION_UPSERT      = 1;  // 插入或更新
     INDEX_BUILD_ACTION_DELETE      = 2;  // 按 document_id 删除
     INDEX_BUILD_ACTION_REBUILD     = 3;  // 清空索引后重建（慎用）
-}
-
-message EmbeddingVector {
-    repeated float values = 1 [packed = true];
 }
 
 message IndexDocument {

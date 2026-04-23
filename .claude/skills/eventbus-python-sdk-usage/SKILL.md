@@ -31,7 +31,7 @@ Python import: from topics.{domain}.{pipeline}_pb2 import {PascalCase}Input, {Pa
 | Topic | Proto 文件 | Python import |
 |-------|-----------|---------------|
 | `rag.insert.chunking` | `proto/topics/rag/insert.proto` | `from topics.rag.insert_pb2 import ChunkingInput` |
-| `rag.insert.embedding` | `proto/topics/rag/insert.proto` | `from topics.rag.insert_pb2 import EmbeddingInput` |
+| `embedding.embed.embedding` | `proto/topics/embedding/embed.proto` | `from topics.embedding.embed_pb2 import EmbeddingInput` |
 | `rag.insert.ocr` | `proto/topics/rag/insert.proto` | `from topics.rag.insert_pb2 import OcrInput` |
 | `rag.insert.load.text` | `proto/topics/rag/insert.proto` | `from topics.rag.insert_pb2 import LoadTextInput` |
 | `rag.insert.load.pdf` | `proto/topics/rag/insert.proto` | `from topics.rag.insert_pb2 import LoadPdfInput` |
@@ -69,8 +69,8 @@ from lightrag_eventbus_pb2 import EventEnvelope, SubscriberReply, RegisterReques
 # 按推导规则导入 — topic = index.retriever.retrieve
 from topics.index.retriever_pb2 import RetrieveInput, RetrieveOutput
 
-# 或 topic = rag.insert.embedding
-from topics.rag.insert_pb2 import EmbeddingInput, EmbeddingOutput
+# 或 topic = embedding.embed.embedding
+from topics.embedding.embed_pb2 import EmbeddingInput, EmbeddingOutput
 ```
 
 ### 2. 平台通信层（本地适配器）
@@ -229,7 +229,7 @@ gRPC 模式下，dict 自动转为 JSON bytes 编码传输。
 | 类名 | Topic | 功能 |
 |------|-------|------|
 | `NativeChunkingSubscriber` | `rag.insert.chunking` | Token 分块 |
-| `NativeEmbeddingSubscriber` | `rag.insert.embedding` | 向量嵌入 |
+| `NativeEmbeddingSubscriber` | `embedding.embed.embedding` | 向量嵌入 |
 | `NativeKeywordExtractionSubscriber` | `rag.query.keyword_extraction` | 关键词提取 |
 | `NativeQueryExpansionSubscriber` | `rag.query.query_expansion` | 查询扩展（直通） |
 | `NativeVectorSearchSubscriber` | `rag.query.vector_search` | 向量检索 |

@@ -30,7 +30,7 @@ Go import: 固定路径（扁平包，所有 topic 共享）
 | Topic | Go Input | Go Output |
 |-------|----------|-----------|
 | `rag.insert.chunking` | `ChunkingInput` | `ChunkingOutput` |
-| `rag.insert.embedding` | `EmbeddingInput` | `EmbeddingOutput` |
+| `embedding.embed.embedding` | `EmbeddingInput` | `EmbeddingOutput` |
 | `rag.insert.ocr` | `OcrInput` | `OcrOutput` |
 | `rag.insert.load.text` | `LoadTextInput` | `LoadTextOutput` |
 | `rag.insert.load.pdf` | `LoadPdfInput` | `LoadPdfOutput` |
@@ -256,7 +256,7 @@ func publishRetrieve(ctx context.Context, client pb.EventBusClient, indexName, q
 
 ## Subscriber 内嵌套调用另一个 Topic
 
-实际场景：retriever subscriber 收到请求后，如果 `semantic_ratio > 0` 且没有预计算向量，需要内部调用 `rag.insert.embedding` 获取向量。
+实际场景：retriever subscriber 收到请求后，如果 `semantic_ratio > 0` 且没有预计算向量，需要内部调用 `embedding.embed.embedding` 获取向量。
 
 ```go
 func handleRetrieve(ctx context.Context, client pb.EventBusClient, input topicspb.RetrieveInput) *topicspb.RetrieveOutput {
@@ -278,7 +278,7 @@ func callEmbedding(ctx context.Context, client pb.EventBusClient, text string, e
 	inputBytes, _ := proto.Marshal(&topicspb.EmbeddingInput{Texts: []string{text}})
 
 	reply, err := client.PublishAndWait(ctx, &pb.EventEnvelope{
-		Topic:         "rag.insert.embedding",
+		Topic:         "embedding.embed.embedding",
 		CorrelationId: uuid.NewString(),
 		SourceService: "index-retriever",  // SourceService 用于链路追踪
 		Inputs:        map[string][]byte{"result": inputBytes},

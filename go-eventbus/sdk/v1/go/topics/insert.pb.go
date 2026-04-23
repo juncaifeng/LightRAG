@@ -209,94 +209,6 @@ func (x *ChunkItem) GetChunkOrderIndex() int32 {
 	return 0
 }
 
-type EmbeddingInput struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Texts         []string               `protobuf:"bytes,1,rep,name=texts,proto3" json:"texts,omitempty"` // 待嵌入的文本列表
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *EmbeddingInput) Reset() {
-	*x = EmbeddingInput{}
-	mi := &file_rag_insert_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *EmbeddingInput) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*EmbeddingInput) ProtoMessage() {}
-
-func (x *EmbeddingInput) ProtoReflect() protoreflect.Message {
-	mi := &file_rag_insert_proto_msgTypes[3]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use EmbeddingInput.ProtoReflect.Descriptor instead.
-func (*EmbeddingInput) Descriptor() ([]byte, []int) {
-	return file_rag_insert_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *EmbeddingInput) GetTexts() []string {
-	if x != nil {
-		return x.Texts
-	}
-	return nil
-}
-
-type EmbeddingOutput struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Embeddings    []*EmbeddingVector     `protobuf:"bytes,1,rep,name=embeddings,proto3" json:"embeddings,omitempty"` // 嵌入结果列表 (与输入 texts 顺序一一对应)
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *EmbeddingOutput) Reset() {
-	*x = EmbeddingOutput{}
-	mi := &file_rag_insert_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *EmbeddingOutput) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*EmbeddingOutput) ProtoMessage() {}
-
-func (x *EmbeddingOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_rag_insert_proto_msgTypes[4]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use EmbeddingOutput.ProtoReflect.Descriptor instead.
-func (*EmbeddingOutput) Descriptor() ([]byte, []int) {
-	return file_rag_insert_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *EmbeddingOutput) GetEmbeddings() []*EmbeddingVector {
-	if x != nil {
-		return x.Embeddings
-	}
-	return nil
-}
-
 type OcrInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Image         []byte                 `protobuf:"bytes,1,opt,name=image,proto3" json:"image,omitempty"`       // 图片二进制数据
@@ -307,7 +219,7 @@ type OcrInput struct {
 
 func (x *OcrInput) Reset() {
 	*x = OcrInput{}
-	mi := &file_rag_insert_proto_msgTypes[5]
+	mi := &file_rag_insert_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -319,7 +231,7 @@ func (x *OcrInput) String() string {
 func (*OcrInput) ProtoMessage() {}
 
 func (x *OcrInput) ProtoReflect() protoreflect.Message {
-	mi := &file_rag_insert_proto_msgTypes[5]
+	mi := &file_rag_insert_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -332,7 +244,7 @@ func (x *OcrInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OcrInput.ProtoReflect.Descriptor instead.
 func (*OcrInput) Descriptor() ([]byte, []int) {
-	return file_rag_insert_proto_rawDescGZIP(), []int{5}
+	return file_rag_insert_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *OcrInput) GetImage() []byte {
@@ -358,7 +270,7 @@ type OcrOutput struct {
 
 func (x *OcrOutput) Reset() {
 	*x = OcrOutput{}
-	mi := &file_rag_insert_proto_msgTypes[6]
+	mi := &file_rag_insert_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -370,7 +282,7 @@ func (x *OcrOutput) String() string {
 func (*OcrOutput) ProtoMessage() {}
 
 func (x *OcrOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_rag_insert_proto_msgTypes[6]
+	mi := &file_rag_insert_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -383,7 +295,7 @@ func (x *OcrOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OcrOutput.ProtoReflect.Descriptor instead.
 func (*OcrOutput) Descriptor() ([]byte, []int) {
-	return file_rag_insert_proto_rawDescGZIP(), []int{6}
+	return file_rag_insert_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *OcrOutput) GetText() string {
@@ -406,7 +318,7 @@ type StorageRef struct {
 
 func (x *StorageRef) Reset() {
 	*x = StorageRef{}
-	mi := &file_rag_insert_proto_msgTypes[7]
+	mi := &file_rag_insert_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -418,7 +330,7 @@ func (x *StorageRef) String() string {
 func (*StorageRef) ProtoMessage() {}
 
 func (x *StorageRef) ProtoReflect() protoreflect.Message {
-	mi := &file_rag_insert_proto_msgTypes[7]
+	mi := &file_rag_insert_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -431,7 +343,7 @@ func (x *StorageRef) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StorageRef.ProtoReflect.Descriptor instead.
 func (*StorageRef) Descriptor() ([]byte, []int) {
-	return file_rag_insert_proto_rawDescGZIP(), []int{7}
+	return file_rag_insert_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *StorageRef) GetBucket() string {
@@ -482,7 +394,7 @@ type LoadTextInput struct {
 
 func (x *LoadTextInput) Reset() {
 	*x = LoadTextInput{}
-	mi := &file_rag_insert_proto_msgTypes[8]
+	mi := &file_rag_insert_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -494,7 +406,7 @@ func (x *LoadTextInput) String() string {
 func (*LoadTextInput) ProtoMessage() {}
 
 func (x *LoadTextInput) ProtoReflect() protoreflect.Message {
-	mi := &file_rag_insert_proto_msgTypes[8]
+	mi := &file_rag_insert_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -507,7 +419,7 @@ func (x *LoadTextInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoadTextInput.ProtoReflect.Descriptor instead.
 func (*LoadTextInput) Descriptor() ([]byte, []int) {
-	return file_rag_insert_proto_rawDescGZIP(), []int{8}
+	return file_rag_insert_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *LoadTextInput) GetStorageBucket() string {
@@ -562,7 +474,7 @@ type LoadTextOutput struct {
 
 func (x *LoadTextOutput) Reset() {
 	*x = LoadTextOutput{}
-	mi := &file_rag_insert_proto_msgTypes[9]
+	mi := &file_rag_insert_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -574,7 +486,7 @@ func (x *LoadTextOutput) String() string {
 func (*LoadTextOutput) ProtoMessage() {}
 
 func (x *LoadTextOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_rag_insert_proto_msgTypes[9]
+	mi := &file_rag_insert_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -587,7 +499,7 @@ func (x *LoadTextOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoadTextOutput.ProtoReflect.Descriptor instead.
 func (*LoadTextOutput) Descriptor() ([]byte, []int) {
-	return file_rag_insert_proto_rawDescGZIP(), []int{9}
+	return file_rag_insert_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *LoadTextOutput) GetJsonRef() *StorageRef {
@@ -668,7 +580,7 @@ type LoadPdfInput struct {
 
 func (x *LoadPdfInput) Reset() {
 	*x = LoadPdfInput{}
-	mi := &file_rag_insert_proto_msgTypes[10]
+	mi := &file_rag_insert_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -680,7 +592,7 @@ func (x *LoadPdfInput) String() string {
 func (*LoadPdfInput) ProtoMessage() {}
 
 func (x *LoadPdfInput) ProtoReflect() protoreflect.Message {
-	mi := &file_rag_insert_proto_msgTypes[10]
+	mi := &file_rag_insert_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -693,7 +605,7 @@ func (x *LoadPdfInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoadPdfInput.ProtoReflect.Descriptor instead.
 func (*LoadPdfInput) Descriptor() ([]byte, []int) {
-	return file_rag_insert_proto_rawDescGZIP(), []int{10}
+	return file_rag_insert_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *LoadPdfInput) GetStorageBucket() string {
@@ -763,7 +675,7 @@ type LoadPdfOutput struct {
 
 func (x *LoadPdfOutput) Reset() {
 	*x = LoadPdfOutput{}
-	mi := &file_rag_insert_proto_msgTypes[11]
+	mi := &file_rag_insert_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -775,7 +687,7 @@ func (x *LoadPdfOutput) String() string {
 func (*LoadPdfOutput) ProtoMessage() {}
 
 func (x *LoadPdfOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_rag_insert_proto_msgTypes[11]
+	mi := &file_rag_insert_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -788,7 +700,7 @@ func (x *LoadPdfOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoadPdfOutput.ProtoReflect.Descriptor instead.
 func (*LoadPdfOutput) Descriptor() ([]byte, []int) {
-	return file_rag_insert_proto_rawDescGZIP(), []int{11}
+	return file_rag_insert_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *LoadPdfOutput) GetJsonRef() *StorageRef {
@@ -875,7 +787,7 @@ type LoadDocxInput struct {
 
 func (x *LoadDocxInput) Reset() {
 	*x = LoadDocxInput{}
-	mi := &file_rag_insert_proto_msgTypes[12]
+	mi := &file_rag_insert_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -887,7 +799,7 @@ func (x *LoadDocxInput) String() string {
 func (*LoadDocxInput) ProtoMessage() {}
 
 func (x *LoadDocxInput) ProtoReflect() protoreflect.Message {
-	mi := &file_rag_insert_proto_msgTypes[12]
+	mi := &file_rag_insert_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -900,7 +812,7 @@ func (x *LoadDocxInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoadDocxInput.ProtoReflect.Descriptor instead.
 func (*LoadDocxInput) Descriptor() ([]byte, []int) {
-	return file_rag_insert_proto_rawDescGZIP(), []int{12}
+	return file_rag_insert_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *LoadDocxInput) GetStorageBucket() string {
@@ -962,7 +874,7 @@ type LoadDocxOutput struct {
 
 func (x *LoadDocxOutput) Reset() {
 	*x = LoadDocxOutput{}
-	mi := &file_rag_insert_proto_msgTypes[13]
+	mi := &file_rag_insert_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -974,7 +886,7 @@ func (x *LoadDocxOutput) String() string {
 func (*LoadDocxOutput) ProtoMessage() {}
 
 func (x *LoadDocxOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_rag_insert_proto_msgTypes[13]
+	mi := &file_rag_insert_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -987,7 +899,7 @@ func (x *LoadDocxOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoadDocxOutput.ProtoReflect.Descriptor instead.
 func (*LoadDocxOutput) Descriptor() ([]byte, []int) {
-	return file_rag_insert_proto_rawDescGZIP(), []int{13}
+	return file_rag_insert_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *LoadDocxOutput) GetJsonRef() *StorageRef {
@@ -1057,7 +969,7 @@ var File_rag_insert_proto protoreflect.FileDescriptor
 
 const file_rag_insert_proto_rawDesc = "" +
 	"\n" +
-	"\x10rag/insert.proto\x12\x1blightrag.eventbus.topics.v1\x1a\x13index/builder.proto\"\x8f\x02\n" +
+	"\x10rag/insert.proto\x12\x1blightrag.eventbus.topics.v1\"\x8f\x02\n" +
 	"\rChunkingInput\x12\x18\n" +
 	"\acontent\x18\x01 \x01(\tR\acontent\x12\x1c\n" +
 	"\ttokenizer\x18\x02 \x01(\fR\ttokenizer\x12(\n" +
@@ -1070,13 +982,7 @@ const file_rag_insert_proto_rawDesc = "" +
 	"\tChunkItem\x12\x18\n" +
 	"\acontent\x18\x01 \x01(\tR\acontent\x12\x16\n" +
 	"\x06tokens\x18\x02 \x01(\x05R\x06tokens\x12*\n" +
-	"\x11chunk_order_index\x18\x03 \x01(\x05R\x0fchunkOrderIndex\"&\n" +
-	"\x0eEmbeddingInput\x12\x14\n" +
-	"\x05texts\x18\x01 \x03(\tR\x05texts\"_\n" +
-	"\x0fEmbeddingOutput\x12L\n" +
-	"\n" +
-	"embeddings\x18\x01 \x03(\v2,.lightrag.eventbus.topics.v1.EmbeddingVectorR\n" +
-	"embeddings\"<\n" +
+	"\x11chunk_order_index\x18\x03 \x01(\x05R\x0fchunkOrderIndex\"<\n" +
 	"\bOcrInput\x12\x14\n" +
 	"\x05image\x18\x01 \x01(\fR\x05image\x12\x1a\n" +
 	"\blanguage\x18\x02 \x01(\tR\blanguage\"\x1f\n" +
@@ -1166,35 +1072,31 @@ func file_rag_insert_proto_rawDescGZIP() []byte {
 	return file_rag_insert_proto_rawDescData
 }
 
-var file_rag_insert_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_rag_insert_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_rag_insert_proto_goTypes = []any{
-	(*ChunkingInput)(nil),   // 0: lightrag.eventbus.topics.v1.ChunkingInput
-	(*ChunkingOutput)(nil),  // 1: lightrag.eventbus.topics.v1.ChunkingOutput
-	(*ChunkItem)(nil),       // 2: lightrag.eventbus.topics.v1.ChunkItem
-	(*EmbeddingInput)(nil),  // 3: lightrag.eventbus.topics.v1.EmbeddingInput
-	(*EmbeddingOutput)(nil), // 4: lightrag.eventbus.topics.v1.EmbeddingOutput
-	(*OcrInput)(nil),        // 5: lightrag.eventbus.topics.v1.OcrInput
-	(*OcrOutput)(nil),       // 6: lightrag.eventbus.topics.v1.OcrOutput
-	(*StorageRef)(nil),      // 7: lightrag.eventbus.topics.v1.StorageRef
-	(*LoadTextInput)(nil),   // 8: lightrag.eventbus.topics.v1.LoadTextInput
-	(*LoadTextOutput)(nil),  // 9: lightrag.eventbus.topics.v1.LoadTextOutput
-	(*LoadPdfInput)(nil),    // 10: lightrag.eventbus.topics.v1.LoadPdfInput
-	(*LoadPdfOutput)(nil),   // 11: lightrag.eventbus.topics.v1.LoadPdfOutput
-	(*LoadDocxInput)(nil),   // 12: lightrag.eventbus.topics.v1.LoadDocxInput
-	(*LoadDocxOutput)(nil),  // 13: lightrag.eventbus.topics.v1.LoadDocxOutput
-	(*EmbeddingVector)(nil), // 14: lightrag.eventbus.topics.v1.EmbeddingVector
+	(*ChunkingInput)(nil),  // 0: lightrag.eventbus.topics.v1.ChunkingInput
+	(*ChunkingOutput)(nil), // 1: lightrag.eventbus.topics.v1.ChunkingOutput
+	(*ChunkItem)(nil),      // 2: lightrag.eventbus.topics.v1.ChunkItem
+	(*OcrInput)(nil),       // 3: lightrag.eventbus.topics.v1.OcrInput
+	(*OcrOutput)(nil),      // 4: lightrag.eventbus.topics.v1.OcrOutput
+	(*StorageRef)(nil),     // 5: lightrag.eventbus.topics.v1.StorageRef
+	(*LoadTextInput)(nil),  // 6: lightrag.eventbus.topics.v1.LoadTextInput
+	(*LoadTextOutput)(nil), // 7: lightrag.eventbus.topics.v1.LoadTextOutput
+	(*LoadPdfInput)(nil),   // 8: lightrag.eventbus.topics.v1.LoadPdfInput
+	(*LoadPdfOutput)(nil),  // 9: lightrag.eventbus.topics.v1.LoadPdfOutput
+	(*LoadDocxInput)(nil),  // 10: lightrag.eventbus.topics.v1.LoadDocxInput
+	(*LoadDocxOutput)(nil), // 11: lightrag.eventbus.topics.v1.LoadDocxOutput
 }
 var file_rag_insert_proto_depIdxs = []int32{
-	2,  // 0: lightrag.eventbus.topics.v1.ChunkingOutput.chunks:type_name -> lightrag.eventbus.topics.v1.ChunkItem
-	14, // 1: lightrag.eventbus.topics.v1.EmbeddingOutput.embeddings:type_name -> lightrag.eventbus.topics.v1.EmbeddingVector
-	7,  // 2: lightrag.eventbus.topics.v1.LoadTextOutput.json_ref:type_name -> lightrag.eventbus.topics.v1.StorageRef
-	7,  // 3: lightrag.eventbus.topics.v1.LoadPdfOutput.json_ref:type_name -> lightrag.eventbus.topics.v1.StorageRef
-	7,  // 4: lightrag.eventbus.topics.v1.LoadDocxOutput.json_ref:type_name -> lightrag.eventbus.topics.v1.StorageRef
-	5,  // [5:5] is the sub-list for method output_type
-	5,  // [5:5] is the sub-list for method input_type
-	5,  // [5:5] is the sub-list for extension type_name
-	5,  // [5:5] is the sub-list for extension extendee
-	0,  // [0:5] is the sub-list for field type_name
+	2, // 0: lightrag.eventbus.topics.v1.ChunkingOutput.chunks:type_name -> lightrag.eventbus.topics.v1.ChunkItem
+	5, // 1: lightrag.eventbus.topics.v1.LoadTextOutput.json_ref:type_name -> lightrag.eventbus.topics.v1.StorageRef
+	5, // 2: lightrag.eventbus.topics.v1.LoadPdfOutput.json_ref:type_name -> lightrag.eventbus.topics.v1.StorageRef
+	5, // 3: lightrag.eventbus.topics.v1.LoadDocxOutput.json_ref:type_name -> lightrag.eventbus.topics.v1.StorageRef
+	4, // [4:4] is the sub-list for method output_type
+	4, // [4:4] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_rag_insert_proto_init() }
@@ -1202,14 +1104,13 @@ func file_rag_insert_proto_init() {
 	if File_rag_insert_proto != nil {
 		return
 	}
-	file_index_builder_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_rag_insert_proto_rawDesc), len(file_rag_insert_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

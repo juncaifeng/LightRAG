@@ -73,50 +73,6 @@ func (IndexBuildAction) EnumDescriptor() ([]byte, []int) {
 	return file_index_builder_proto_rawDescGZIP(), []int{0}
 }
 
-type EmbeddingVector struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Values        []float32              `protobuf:"fixed32,1,rep,packed,name=values,proto3" json:"values,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *EmbeddingVector) Reset() {
-	*x = EmbeddingVector{}
-	mi := &file_index_builder_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *EmbeddingVector) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*EmbeddingVector) ProtoMessage() {}
-
-func (x *EmbeddingVector) ProtoReflect() protoreflect.Message {
-	mi := &file_index_builder_proto_msgTypes[0]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use EmbeddingVector.ProtoReflect.Descriptor instead.
-func (*EmbeddingVector) Descriptor() ([]byte, []int) {
-	return file_index_builder_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *EmbeddingVector) GetValues() []float32 {
-	if x != nil {
-		return x.Values
-	}
-	return nil
-}
-
 type IndexDocument struct {
 	state         protoimpl.MessageState      `protogen:"open.v1"`
 	DocumentId    string                      `protobuf:"bytes,1,opt,name=document_id,json=documentId,proto3" json:"document_id,omitempty"`                                                   // 文档唯一标识（需符合索引引擎的 ID 规则）
@@ -129,7 +85,7 @@ type IndexDocument struct {
 
 func (x *IndexDocument) Reset() {
 	*x = IndexDocument{}
-	mi := &file_index_builder_proto_msgTypes[1]
+	mi := &file_index_builder_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -141,7 +97,7 @@ func (x *IndexDocument) String() string {
 func (*IndexDocument) ProtoMessage() {}
 
 func (x *IndexDocument) ProtoReflect() protoreflect.Message {
-	mi := &file_index_builder_proto_msgTypes[1]
+	mi := &file_index_builder_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -154,7 +110,7 @@ func (x *IndexDocument) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IndexDocument.ProtoReflect.Descriptor instead.
 func (*IndexDocument) Descriptor() ([]byte, []int) {
-	return file_index_builder_proto_rawDescGZIP(), []int{1}
+	return file_index_builder_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *IndexDocument) GetDocumentId() string {
@@ -197,7 +153,7 @@ type IndexBuildInput struct {
 
 func (x *IndexBuildInput) Reset() {
 	*x = IndexBuildInput{}
-	mi := &file_index_builder_proto_msgTypes[2]
+	mi := &file_index_builder_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -209,7 +165,7 @@ func (x *IndexBuildInput) String() string {
 func (*IndexBuildInput) ProtoMessage() {}
 
 func (x *IndexBuildInput) ProtoReflect() protoreflect.Message {
-	mi := &file_index_builder_proto_msgTypes[2]
+	mi := &file_index_builder_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -222,7 +178,7 @@ func (x *IndexBuildInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IndexBuildInput.ProtoReflect.Descriptor instead.
 func (*IndexBuildInput) Descriptor() ([]byte, []int) {
-	return file_index_builder_proto_rawDescGZIP(), []int{2}
+	return file_index_builder_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *IndexBuildInput) GetIndexName() string {
@@ -266,7 +222,7 @@ type IndexBuildOutput struct {
 
 func (x *IndexBuildOutput) Reset() {
 	*x = IndexBuildOutput{}
-	mi := &file_index_builder_proto_msgTypes[3]
+	mi := &file_index_builder_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -278,7 +234,7 @@ func (x *IndexBuildOutput) String() string {
 func (*IndexBuildOutput) ProtoMessage() {}
 
 func (x *IndexBuildOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_index_builder_proto_msgTypes[3]
+	mi := &file_index_builder_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -291,7 +247,7 @@ func (x *IndexBuildOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IndexBuildOutput.ProtoReflect.Descriptor instead.
 func (*IndexBuildOutput) Descriptor() ([]byte, []int) {
-	return file_index_builder_proto_rawDescGZIP(), []int{3}
+	return file_index_builder_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *IndexBuildOutput) GetIndexName() string {
@@ -333,9 +289,7 @@ var File_index_builder_proto protoreflect.FileDescriptor
 
 const file_index_builder_proto_rawDesc = "" +
 	"\n" +
-	"\x13index/builder.proto\x12\x1blightrag.eventbus.topics.v1\"-\n" +
-	"\x0fEmbeddingVector\x12\x1a\n" +
-	"\x06values\x18\x01 \x03(\x02B\x02\x10\x01R\x06values\"\x92\x03\n" +
+	"\x13index/builder.proto\x12\x1blightrag.eventbus.topics.v1\x1a\x15embedding/embed.proto\"\x92\x03\n" +
 	"\rIndexDocument\x12\x1f\n" +
 	"\vdocument_id\x18\x01 \x01(\tR\n" +
 	"documentId\x12\x18\n" +
@@ -383,24 +337,24 @@ func file_index_builder_proto_rawDescGZIP() []byte {
 }
 
 var file_index_builder_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_index_builder_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_index_builder_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_index_builder_proto_goTypes = []any{
 	(IndexBuildAction)(0),    // 0: lightrag.eventbus.topics.v1.IndexBuildAction
-	(*EmbeddingVector)(nil),  // 1: lightrag.eventbus.topics.v1.EmbeddingVector
-	(*IndexDocument)(nil),    // 2: lightrag.eventbus.topics.v1.IndexDocument
-	(*IndexBuildInput)(nil),  // 3: lightrag.eventbus.topics.v1.IndexBuildInput
-	(*IndexBuildOutput)(nil), // 4: lightrag.eventbus.topics.v1.IndexBuildOutput
-	nil,                      // 5: lightrag.eventbus.topics.v1.IndexDocument.FieldsEntry
-	nil,                      // 6: lightrag.eventbus.topics.v1.IndexDocument.VectorsEntry
-	nil,                      // 7: lightrag.eventbus.topics.v1.IndexBuildInput.ConfigEntry
+	(*IndexDocument)(nil),    // 1: lightrag.eventbus.topics.v1.IndexDocument
+	(*IndexBuildInput)(nil),  // 2: lightrag.eventbus.topics.v1.IndexBuildInput
+	(*IndexBuildOutput)(nil), // 3: lightrag.eventbus.topics.v1.IndexBuildOutput
+	nil,                      // 4: lightrag.eventbus.topics.v1.IndexDocument.FieldsEntry
+	nil,                      // 5: lightrag.eventbus.topics.v1.IndexDocument.VectorsEntry
+	nil,                      // 6: lightrag.eventbus.topics.v1.IndexBuildInput.ConfigEntry
+	(*EmbeddingVector)(nil),  // 7: lightrag.eventbus.topics.v1.EmbeddingVector
 }
 var file_index_builder_proto_depIdxs = []int32{
-	5, // 0: lightrag.eventbus.topics.v1.IndexDocument.fields:type_name -> lightrag.eventbus.topics.v1.IndexDocument.FieldsEntry
-	6, // 1: lightrag.eventbus.topics.v1.IndexDocument.vectors:type_name -> lightrag.eventbus.topics.v1.IndexDocument.VectorsEntry
+	4, // 0: lightrag.eventbus.topics.v1.IndexDocument.fields:type_name -> lightrag.eventbus.topics.v1.IndexDocument.FieldsEntry
+	5, // 1: lightrag.eventbus.topics.v1.IndexDocument.vectors:type_name -> lightrag.eventbus.topics.v1.IndexDocument.VectorsEntry
 	0, // 2: lightrag.eventbus.topics.v1.IndexBuildInput.action:type_name -> lightrag.eventbus.topics.v1.IndexBuildAction
-	2, // 3: lightrag.eventbus.topics.v1.IndexBuildInput.documents:type_name -> lightrag.eventbus.topics.v1.IndexDocument
-	7, // 4: lightrag.eventbus.topics.v1.IndexBuildInput.config:type_name -> lightrag.eventbus.topics.v1.IndexBuildInput.ConfigEntry
-	1, // 5: lightrag.eventbus.topics.v1.IndexDocument.VectorsEntry.value:type_name -> lightrag.eventbus.topics.v1.EmbeddingVector
+	1, // 3: lightrag.eventbus.topics.v1.IndexBuildInput.documents:type_name -> lightrag.eventbus.topics.v1.IndexDocument
+	6, // 4: lightrag.eventbus.topics.v1.IndexBuildInput.config:type_name -> lightrag.eventbus.topics.v1.IndexBuildInput.ConfigEntry
+	7, // 5: lightrag.eventbus.topics.v1.IndexDocument.VectorsEntry.value:type_name -> lightrag.eventbus.topics.v1.EmbeddingVector
 	6, // [6:6] is the sub-list for method output_type
 	6, // [6:6] is the sub-list for method input_type
 	6, // [6:6] is the sub-list for extension type_name
@@ -413,13 +367,14 @@ func file_index_builder_proto_init() {
 	if File_index_builder_proto != nil {
 		return
 	}
+	file_embedding_embed_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_index_builder_proto_rawDesc), len(file_index_builder_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   7,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
