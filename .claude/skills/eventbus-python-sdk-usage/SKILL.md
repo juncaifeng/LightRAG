@@ -47,6 +47,12 @@ Python import: from topics.{domain}.{pipeline}_pb2 import {PascalCase}Input, {Pa
 | `llm.completion.complete` | `proto/topics/llm/completion.proto` | `from topics.llm.completion_pb2 import CompleteInput` |
 | `kg.merge.entity` | `proto/topics/kg/merge.proto` | `from topics.kg.merge_pb2 import EntityMergeInput` |
 | `kg.merge.relation` | `proto/topics/kg/merge.proto` | `from topics.kg.merge_pb2 import RelationMergeInput` |
+| `mcp.server.create_server` | `proto/topics/mcp/server.proto` | `from topics.mcp.server_pb2 import CreateServerInput` |
+| `mcp.server.start_server` | `proto/topics/mcp/server.proto` | `from topics.mcp.server_pb2 import StartServerInput` |
+| `mcp.server.stop_server` | `proto/topics/mcp/server.proto` | `from topics.mcp.server_pb2 import StopServerInput` |
+| `mcp.server.call_tool` | `proto/topics/mcp/server.proto` | `from topics.mcp.server_pb2 import CallToolInput` |
+| `mcp.server.list_tools` | `proto/topics/mcp/server.proto` | `from topics.mcp.server_pb2 import ListToolsInput` |
+| `mcp.server.server_event` | `proto/topics/mcp/server.proto` | `from topics.mcp.server_pb2 import ServerEventInput` |
 
 **Python 推导公式：**
 - import 模块 = `topics.{domain}.{pipeline}_pb2`

@@ -46,6 +46,8 @@ go-eventbus/proto/topics/
 │   └── embed.proto               # pipeline = "embed"    → embedding.embed.embedding
 ├── kg/                           # domain = "kg"
 │   └── merge.proto               # pipeline = "merge"     → kg.merge.entity
+├── mcp/                          # domain = "mcp"
+│   └── server.proto              # pipeline = "server"    → mcp.server.create_server
 └── {domain}/                     # future domains...
     └── {pipeline}.proto
 ```
@@ -68,6 +70,10 @@ go-eventbus/proto/topics/
 | `llm/completion.proto` + `CompleteInput` | `llm.completion.complete` |
 | `kg/merge.proto` + `EntityMergeInput` | `kg.merge.entity` |
 | `kg/merge.proto` + `RelationMergeInput` | `kg.merge.relation` |
+| `mcp/server.proto` + `CreateServerInput` | `mcp.server.create_server` |
+| `mcp/server.proto` + `StartServerInput` | `mcp.server.start_server` |
+| `mcp/server.proto` + `CallToolInput` | `mcp.server.call_tool` |
+| `mcp/server.proto` + `ServerEventInput` | `mcp.server.server_event` |
 
 ---
 

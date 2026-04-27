@@ -46,6 +46,20 @@ Go import: 固定路径（扁平包，所有 topic 共享）
 | `llm.completion.complete` | `CompleteInput` | `CompleteOutput` |
 | `kg.merge.entity` | `EntityMergeInput` | `EntityMergeOutput` |
 | `kg.merge.relation` | `RelationMergeInput` | `RelationMergeOutput` |
+| `mcp.server.create_server` | `CreateServerInput` | `CreateServerOutput` |
+| `mcp.server.get_server` | `GetServerInput` | `GetServerOutput` |
+| `mcp.server.list_servers` | `ListServersInput` | `ListServersOutput` |
+| `mcp.server.update_server` | `UpdateServerInput` | `UpdateServerOutput` |
+| `mcp.server.delete_server` | `DeleteServerInput` | `DeleteServerOutput` |
+| `mcp.server.start_server` | `StartServerInput` | `StartServerOutput` |
+| `mcp.server.stop_server` | `StopServerInput` | `StopServerOutput` |
+| `mcp.server.restart_server` | `RestartServerInput` | `RestartServerOutput` |
+| `mcp.server.get_server_status` | `GetServerStatusInput` | `GetServerStatusOutput` |
+| `mcp.server.list_tools` | `ListToolsInput` | `ListToolsOutput` |
+| `mcp.server.call_tool` | `CallToolInput` | `CallToolOutput` |
+| `mcp.server.batch_start` | `BatchStartInput` | `BatchStartOutput` |
+| `mcp.server.batch_stop` | `BatchStopInput` | `BatchStopOutput` |
+| `mcp.server.server_event` | `ServerEventInput` | `ServerEventOutput` |
 
 ### 验证 SDK 是否包含目标 Topic 类型
 

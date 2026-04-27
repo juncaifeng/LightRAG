@@ -94,6 +94,48 @@ func init() {
 		(*topicspb.CreatedEntity)(nil),
 		// rag.insert common types
 		(*topicspb.StorageRef)(nil),
+		// mcp domain — shared types
+		(*topicspb.ServerConfig)(nil),
+		(*topicspb.StdioConfig)(nil),
+		(*topicspb.HttpConfig)(nil),
+		(*topicspb.ServerStatus)(nil),
+		(*topicspb.ToolInfo)(nil),
+		(*topicspb.ToolCallRequest)(nil),
+		(*topicspb.ToolCallResponse)(nil),
+		(*topicspb.ToolContent)(nil),
+		// mcp domain — server CRUD
+		(*topicspb.CreateServerInput)(nil),
+		(*topicspb.CreateServerOutput)(nil),
+		(*topicspb.GetServerInput)(nil),
+		(*topicspb.GetServerOutput)(nil),
+		(*topicspb.ListServersInput)(nil),
+		(*topicspb.ListServersOutput)(nil),
+		(*topicspb.UpdateServerInput)(nil),
+		(*topicspb.UpdateServerOutput)(nil),
+		(*topicspb.DeleteServerInput)(nil),
+		(*topicspb.DeleteServerOutput)(nil),
+		// mcp domain — lifecycle
+		(*topicspb.StartServerInput)(nil),
+		(*topicspb.StartServerOutput)(nil),
+		(*topicspb.StopServerInput)(nil),
+		(*topicspb.StopServerOutput)(nil),
+		(*topicspb.RestartServerInput)(nil),
+		(*topicspb.RestartServerOutput)(nil),
+		(*topicspb.GetServerStatusInput)(nil),
+		(*topicspb.GetServerStatusOutput)(nil),
+		// mcp domain — tools
+		(*topicspb.ListToolsInput)(nil),
+		(*topicspb.ListToolsOutput)(nil),
+		(*topicspb.CallToolInput)(nil),
+		(*topicspb.CallToolOutput)(nil),
+		// mcp domain — batch
+		(*topicspb.BatchStartInput)(nil),
+		(*topicspb.BatchStartOutput)(nil),
+		(*topicspb.BatchStopInput)(nil),
+		(*topicspb.BatchStopOutput)(nil),
+		// mcp domain — events
+		(*topicspb.ServerEventInput)(nil),
+		(*topicspb.ServerEventOutput)(nil),
 	} {
 		t := reflect.TypeOf(msg).Elem()
 		allProtoMessages[t.Name()] = t
@@ -117,6 +159,21 @@ var topicStrategyOverrides = map[string]string{
 	// kg domain
 	"kg.merge.entity":   "FIRST",
 	"kg.merge.relation": "FIRST",
+	// mcp domain
+	"mcp.server.create_server":      "FIRST",
+	"mcp.server.get_server":         "FIRST",
+	"mcp.server.list_servers":       "APPEND",
+	"mcp.server.update_server":      "FIRST",
+	"mcp.server.delete_server":      "FIRST",
+	"mcp.server.start_server":       "FIRST",
+	"mcp.server.stop_server":        "FIRST",
+	"mcp.server.restart_server":     "FIRST",
+	"mcp.server.get_server_status":  "APPEND",
+	"mcp.server.list_tools":         "APPEND",
+	"mcp.server.call_tool":          "FIRST",
+	"mcp.server.batch_start":        "FIRST",
+	"mcp.server.batch_stop":         "FIRST",
+	"mcp.server.server_event":       "APPEND",
 }
 
 // camelToSnake converts CamelCase to snake_case.

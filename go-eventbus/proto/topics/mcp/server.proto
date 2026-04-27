@@ -1,0 +1,296 @@
+syntax = "proto3";
+
+package lightrag.eventbus.topics.v1;
+
+option go_package = "github.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go/topics;topics";
+
+// ==========================================
+// 共享类型 — 枚举
+// ==========================================
+
+enum ServerState {
+    SERVER_STATE_UNSPECIFIED = 0;
+    SERVER_STATE_STOPPED     = 1;           // 已停止
+    SERVER_STATE_STARTING    = 2;           // 启动中
+    SERVER_STATE_RUNNING     = 3;           // 运行中
+    SERVER_STATE_IDLE        = 4;           // 空闲（进程存活但无活跃连接）
+    SERVER_STATE_STOPPING    = 5;           // 停止中
+    SERVER_STATE_ERROR       = 6;           // 错误状态
+}
+
+enum ServerType {
+    SERVER_TYPE_UNSPECIFIED = 0;
+    SERVER_TYPE_STDIO       = 1;           // 本地进程，通过 stdin/stdout 通信
+    SERVER_TYPE_HTTP        = 2;           // 远程 HTTP/SSE 服务
+}
+
+enum RestartPolicy {
+    RESTART_POLICY_UNSPECIFIED = 0;
+    RESTART_POLICY_NEVER       = 1;        // 不自动重启
+    RESTART_POLICY_ON_FAILURE  = 2;        // 失败时重启
+    RESTART_POLICY_ALWAYS      = 3;        // 始终重启
+}
+
+// ==========================================
+// 共享类型 — 配置与状态
+// ==========================================
+
+message ServerConfig {
+    string name = 1;                        // 服务器名称（唯一标识）
+    ServerType type = 2;                    // 服务器类型
+    oneof transport {
+        StdioConfig stdio = 3;
+        HttpConfig http = 4;
+    }
+    RestartPolicy restart_policy = 10;      // 重启策略
+    int32 max_retries = 11;                 // 最大重试次数
+    int32 retry_delay_ms = 12;              // 重试延迟（毫秒）
+    int32 startup_timeout_ms = 20;          // 启动超时（毫秒）
+    int32 request_timeout_ms = 21;          // 请求超时（毫秒）
+    int32 idle_timeout_ms = 22;             // 空闲超时（毫秒）
+    map<string, string> labels = 30;        // 自定义标签
+}
+
+message StdioConfig {
+    string command = 1;                     // 命令路径
+    repeated string args = 2;               // 命令参数
+    map<string, string> env = 3;            // 环境变量
+    string working_dir = 4;                 // 工作目录
+}
+
+message HttpConfig {
+    string url = 1;                         // 服务 URL
+    map<string, string> headers = 2;        // 自定义请求头
+    bool sse_enabled = 3;                   // 是否启用 SSE
+}
+
+message ServerStatus {
+    string name = 1;                        // 服务器名称
+    ServerType type = 2;                    // 服务器类型
+    ServerState state = 3;                  // 当前状态
+    int64 pid = 4;                          // 进程 ID（stdio 类型）
+    int32 tool_count = 5;                   // 工具数量
+    int64 created_at = 10;                  // 创建时间
+    int64 started_at = 11;                  // 启动时间
+    int64 last_active_at = 12;              // 最后活跃时间
+    string error_message = 20;              // 错误信息
+    int32 restart_count = 21;               // 重启次数
+    map<string, string> labels = 30;
+}
+
+message ToolInfo {
+    string name = 1;                        // 工具名称
+    string description = 2;                 // 工具描述
+    string input_schema = 3;                // 输入参数 JSON Schema
+    string server_name = 4;                 // 所属服务器名称
+    string full_name = 5;                   // 完整名称 (server.tool)
+}
+
+message ToolCallRequest {
+    string server_name = 1;                 // 服务器名称
+    string tool_name = 2;                   // 工具名称
+    map<string, bytes> arguments = 3;       // 工具参数（JSON 编码）
+    int32 timeout_ms = 4;                   // 调用超时
+}
+
+message ToolCallResponse {
+    bool is_error = 1;                      // 是否错误
+    repeated ToolContent content = 2;       // 返回内容
+    int64 duration_ms = 3;                  // 执行耗时
+}
+
+message ToolContent {
+    string type = 1;                        // 内容类型 (text, image, resource)
+    bytes data = 2;                         // 内容数据
+    string mime_type = 3;                   // MIME 类型
+}
+
+// ==========================================
+// mcp.server.create_server — 创建服务器配置
+// ==========================================
+
+message CreateServerInput {
+    ServerConfig config = 1;                // 服务器配置
+}
+
+message CreateServerOutput {
+    ServerStatus status = 1;                // 创建后的状态
+}
+
+// ==========================================
+// mcp.server.get_server — 获取服务器状态
+// ==========================================
+
+message GetServerInput {
+    string name = 1;                        // 服务器名称
+}
+
+message GetServerOutput {
+    ServerStatus status = 1;
+}
+
+// ==========================================
+// mcp.server.list_servers — 列出所有服务器
+// ==========================================
+
+message ListServersInput {
+    bool include_stopped = 1;               // 是否包含已停止的服务器
+    map<string, string> label_filter = 2;   // 标签过滤
+}
+
+message ListServersOutput {
+    repeated ServerStatus servers = 1;
+    int32 total_count = 2;
+}
+
+// ==========================================
+// mcp.server.update_server — 更新服务器配置
+// ==========================================
+
+message UpdateServerInput {
+    ServerConfig config = 1;                // 新的服务器配置
+    bool update_running = 2;                // 是否更新运行中的服务器
+}
+
+message UpdateServerOutput {
+    ServerStatus status = 1;
+    bool requires_restart = 2;              // 是否需要重启生效
+}
+
+// ==========================================
+// mcp.server.delete_server — 删除服务器
+// ==========================================
+
+message DeleteServerInput {
+    string name = 1;                        // 服务器名称
+    bool force = 2;                         // 强制删除（包括停止运行中的服务器）
+}
+
+message DeleteServerOutput {
+    bool success = 1;
+}
+
+// ==========================================
+// mcp.server.start_server — 启动服务器
+// ==========================================
+
+message StartServerInput {
+    string name = 1;                        // 服务器名称
+    int32 timeout_ms = 2;                   // 启动超时
+    bool lazy = 3;                          // 懒加载（启动后立即进入空闲）
+}
+
+message StartServerOutput {
+    ServerStatus status = 1;
+}
+
+// ==========================================
+// mcp.server.stop_server — 停止服务器
+// ==========================================
+
+message StopServerInput {
+    string name = 1;                        // 服务器名称
+    bool graceful = 2;                      // 优雅停止
+    int32 timeout_ms = 3;                   // 停止超时
+}
+
+message StopServerOutput {
+    ServerStatus status = 1;
+}
+
+// ==========================================
+// mcp.server.restart_server — 重启服务器
+// ==========================================
+
+message RestartServerInput {
+    string name = 1;                        // 服务器名称
+    int32 timeout_ms = 2;                   // 重启超时
+}
+
+message RestartServerOutput {
+    ServerStatus status = 1;
+}
+
+// ==========================================
+// mcp.server.get_server_status — 获取服务器详细状态
+// ==========================================
+
+message GetServerStatusInput {
+    string name = 1;                        // 服务器名称
+    bool include_tools = 2;                 // 是否包含工具列表
+}
+
+message GetServerStatusOutput {
+    ServerStatus status = 1;
+    repeated ToolInfo tools = 2;            // 工具列表（可选）
+}
+
+// ==========================================
+// mcp.server.list_tools — 列出服务器工具
+// ==========================================
+
+message ListToolsInput {
+    string server_name = 1;                 // 服务器名称
+    string filter = 2;                      // 工具名称过滤
+}
+
+message ListToolsOutput {
+    repeated ToolInfo tools = 1;
+    int32 total_count = 2;
+}
+
+// ==========================================
+// mcp.server.call_tool — 调用工具
+// ==========================================
+
+message CallToolInput {
+    ToolCallRequest request = 1;            // 工具调用请求
+}
+
+message CallToolOutput {
+    ToolCallResponse response = 1;          // 工具调用响应
+}
+
+// ==========================================
+// mcp.server.batch_start — 批量启动
+// ==========================================
+
+message BatchStartInput {
+    repeated string names = 1;              // 服务器名称列表
+    int32 timeout_ms = 2;
+    bool parallel = 3;                      // 是否并行启动
+}
+
+message BatchStartOutput {
+    map<string, ServerStatus> results = 1;  // 每个服务器的启动结果
+    repeated string failed = 2;             // 失败的服务器列表
+}
+
+// ==========================================
+// mcp.server.batch_stop — 批量停止
+// ==========================================
+
+message BatchStopInput {
+    repeated string names = 1;              // 服务器名称列表
+    bool graceful = 2;                      // 优雅停止
+}
+
+message BatchStopOutput {
+    map<string, ServerStatus> results = 1;  // 每个服务器的停止结果
+    repeated string failed = 2;             // 失败的服务器列表
+}
+
+// ==========================================
+// mcp.server.server_event — 服务器状态变更事件
+// ==========================================
+
+message ServerEventInput {
+    string event_type = 1;                  // created, updated, deleted, started, stopped, error
+    ServerStatus status = 2;
+    string message = 3;                     // 事件描述
+    int64 timestamp = 4;                    // 事件时间戳
+}
+
+message ServerEventOutput {
+    bool acknowledged = 1;                  // 事件是否被接收
+}
