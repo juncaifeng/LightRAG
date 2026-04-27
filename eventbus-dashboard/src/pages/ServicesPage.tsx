@@ -231,30 +231,90 @@ export function ServicesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">{t('gRPC 服务定义', 'gRPC Service Schemas')}</h2>
+        <h2 className="text-2xl font-bold">{t('gRPC 服务', 'gRPC Services')}</h2>
         <p className="text-sm text-muted-foreground mt-1">
           {t(
-            '注册的 gRPC 服务协议定义及在线实例。点击服务名展开查看详情。',
-            'Registered gRPC service schemas and live instances. Click to expand.'
+            '服务协议定义及在线实例。',
+            'Service schemas and live instances.'
           )}
         </p>
       </div>
 
-      <div className="space-y-4">
-        {serviceSchemas.map((schema) => (
-          <ServiceCard
-            key={schema.name}
-            schema={schema}
-            instances={getInstancesForService(schema.name)}
-          />
-        ))}
-        {serviceSchemas.length === 0 && (
+      {/* Online Instances Overview */}
+      <div>
+        <h3 className="text-lg font-semibold mb-3">
+          {t('在线实例', 'Online Instances')}
+          {serviceInstances.length > 0 && (
+            <Badge className="ml-2 bg-green-500/15 text-green-700 dark:text-green-400">
+              {serviceInstances.length}
+            </Badge>
+          )}
+        </h3>
+        {serviceInstances.length > 0 ? (
           <Card>
-            <CardContent className="py-8 text-center text-muted-foreground">
-              {t('暂无服务注册', 'No services registered')}
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t('服务', 'Service')}</TableHead>
+                  <TableHead>{t('实例 ID', 'Instance ID')}</TableHead>
+                  <TableHead>{t('地址', 'Address')}</TableHead>
+                  <TableHead>{t('版本', 'Version')}</TableHead>
+                  <TableHead>{t('状态', 'Status')}</TableHead>
+                  <TableHead>{t('最后心跳', 'Last Heartbeat')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {serviceInstances.map((inst) => (
+                  <TableRow key={`${inst.service_name}/${inst.instance_id}`}>
+                    <TableCell>
+                      <Badge variant="outline" className="font-mono text-xs">{inst.service_name}</Badge>
+                    </TableCell>
+                    <TableCell className="font-mono text-sm">{inst.instance_id}</TableCell>
+                    <TableCell className="font-mono text-sm">{inst.address}</TableCell>
+                    <TableCell className="text-sm">{inst.version || '-'}</TableCell>
+                    <TableCell>
+                      <Badge className="bg-green-500/15 text-green-700 dark:text-green-400 text-xs">
+                        {inst.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {new Date(inst.last_heartbeat).toLocaleTimeString()}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
+        ) : (
+          <Card>
+            <CardContent className="py-6 text-center text-muted-foreground text-sm">
+              {t('暂无在线实例', 'No online instances')}
             </CardContent>
           </Card>
         )}
+      </div>
+
+      {/* Service Schemas */}
+      <div>
+        <h3 className="text-lg font-semibold mb-3">
+          {t('服务协议定义', 'Service Schemas')}
+        </h3>
+        <div className="space-y-4">
+          {serviceSchemas.map((schema) => (
+            <ServiceCard
+              key={schema.name}
+              schema={schema}
+              instances={getInstancesForService(schema.name)}
+            />
+          ))}
+          {serviceSchemas.length === 0 && (
+            <Card>
+              <CardContent className="py-8 text-center text-muted-foreground">
+                {t('暂无服务注册', 'No services registered')}
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   )
