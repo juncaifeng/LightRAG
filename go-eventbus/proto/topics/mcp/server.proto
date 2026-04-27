@@ -240,6 +240,56 @@ message ListToolsOutput {
 }
 
 // ==========================================
+// mcp.server.search_tools — 搜索工具索引
+// ==========================================
+
+message SearchResult {
+    string document_id = 1;                     // 文档 ID
+    string content = 2;                         // 匹配的文本内容
+    float score = 3;                            // 匹配分数
+    map<string, string> fields = 4;             // 结构化字段
+}
+
+message SearchToolsInput {
+    string query = 1;                           // 搜索查询
+    string index_name = 2;                      // 索引名称 (default: "mcp_tools")
+    int32 top_k = 3;                            // 返回数量 (default: 10)
+    float semantic_ratio = 4;                   // 语义比例 0=关键词, 1=向量 (default: 0.7)
+    float score_threshold = 5;                  // 最低分数阈值 (default: 0.5)
+    string embedder = 6;                        // 嵌入器名称 (default: "default")
+}
+
+message SearchToolsOutput {
+    repeated SearchResult results = 1;          // 搜索结果
+    int32 total_hits = 2;                       // 总命中数
+    string index_name = 3;                      // 回显索引名称
+}
+
+// ==========================================
+// mcp.server.index_tools — 索引工具到搜索引擎
+// ==========================================
+
+message ToolIndexDocument {
+    string document_id = 1;                     // 文档 ID
+    string content = 2;                         // 用于搜索的文本内容
+    map<string, string> fields = 3;             // 结构化字段 (name, description, server, full_name)
+}
+
+message IndexToolsInput {
+    string index_name = 1;                      // 索引名称 (default: "mcp_tools")
+    repeated ToolIndexDocument documents = 2;   // 待索引的文档列表
+    string action = 3;                          // "upsert" 或 "delete"
+    bool enable_vector = 4;                     // 是否生成向量
+    string embedder = 5;                        // 嵌入器名称 (default: "default")
+}
+
+message IndexToolsOutput {
+    int32 indexed_count = 1;                    // 成功索引数量
+    repeated string indexed = 2;                // 已索引的文档 ID
+    repeated string failed = 3;                 // 失败的文档 ID
+}
+
+// ==========================================
 // mcp.server.call_tool — 调用工具
 // ==========================================
 

@@ -73,6 +73,8 @@ go-eventbus/proto/topics/
 | `mcp/server.proto` + `CreateServerInput` | `mcp.server.create_server` |
 | `mcp/server.proto` + `StartServerInput` | `mcp.server.start_server` |
 | `mcp/server.proto` + `CallToolInput` | `mcp.server.call_tool` |
+| `mcp/server.proto` + `SearchToolsInput` | `mcp.server.search_tools` |
+| `mcp/server.proto` + `IndexToolsInput` | `mcp.server.index_tools` |
 | `mcp/server.proto` + `ServerEventInput` | `mcp.server.server_event` |
 
 ---

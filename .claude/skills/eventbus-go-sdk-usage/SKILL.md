@@ -56,6 +56,8 @@ Go import: 固定路径（扁平包，所有 topic 共享）
 | `mcp.server.restart_server` | `RestartServerInput` | `RestartServerOutput` |
 | `mcp.server.get_server_status` | `GetServerStatusInput` | `GetServerStatusOutput` |
 | `mcp.server.list_tools` | `ListToolsInput` | `ListToolsOutput` |
+| `mcp.server.search_tools` | `SearchToolsInput` | `SearchToolsOutput` |
+| `mcp.server.index_tools` | `IndexToolsInput` | `IndexToolsOutput` |
 | `mcp.server.call_tool` | `CallToolInput` | `CallToolOutput` |
 | `mcp.server.batch_start` | `BatchStartInput` | `BatchStartOutput` |
 | `mcp.server.batch_stop` | `BatchStopInput` | `BatchStopOutput` |

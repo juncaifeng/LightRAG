@@ -1845,6 +1845,414 @@ func (x *ListToolsOutput) GetTotalCount() int32 {
 	return 0
 }
 
+type SearchResult struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	DocumentId    string                 `protobuf:"bytes,1,opt,name=document_id,json=documentId,proto3" json:"document_id,omitempty"`                                                 // 文档 ID
+	Content       string                 `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"`                                                                         // 匹配的文本内容
+	Score         float32                `protobuf:"fixed32,3,opt,name=score,proto3" json:"score,omitempty"`                                                                           // 匹配分数
+	Fields        map[string]string      `protobuf:"bytes,4,rep,name=fields,proto3" json:"fields,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // 结构化字段
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchResult) Reset() {
+	*x = SearchResult{}
+	mi := &file_mcp_server_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchResult) ProtoMessage() {}
+
+func (x *SearchResult) ProtoReflect() protoreflect.Message {
+	mi := &file_mcp_server_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchResult.ProtoReflect.Descriptor instead.
+func (*SearchResult) Descriptor() ([]byte, []int) {
+	return file_mcp_server_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *SearchResult) GetDocumentId() string {
+	if x != nil {
+		return x.DocumentId
+	}
+	return ""
+}
+
+func (x *SearchResult) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+func (x *SearchResult) GetScore() float32 {
+	if x != nil {
+		return x.Score
+	}
+	return 0
+}
+
+func (x *SearchResult) GetFields() map[string]string {
+	if x != nil {
+		return x.Fields
+	}
+	return nil
+}
+
+type SearchToolsInput struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Query          string                 `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`                                           // 搜索查询
+	IndexName      string                 `protobuf:"bytes,2,opt,name=index_name,json=indexName,proto3" json:"index_name,omitempty"`                  // 索引名称 (default: "mcp_tools")
+	TopK           int32                  `protobuf:"varint,3,opt,name=top_k,json=topK,proto3" json:"top_k,omitempty"`                                // 返回数量 (default: 10)
+	SemanticRatio  float32                `protobuf:"fixed32,4,opt,name=semantic_ratio,json=semanticRatio,proto3" json:"semantic_ratio,omitempty"`    // 语义比例 0=关键词, 1=向量 (default: 0.7)
+	ScoreThreshold float32                `protobuf:"fixed32,5,opt,name=score_threshold,json=scoreThreshold,proto3" json:"score_threshold,omitempty"` // 最低分数阈值 (default: 0.5)
+	Embedder       string                 `protobuf:"bytes,6,opt,name=embedder,proto3" json:"embedder,omitempty"`                                     // 嵌入器名称 (default: "default")
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *SearchToolsInput) Reset() {
+	*x = SearchToolsInput{}
+	mi := &file_mcp_server_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchToolsInput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchToolsInput) ProtoMessage() {}
+
+func (x *SearchToolsInput) ProtoReflect() protoreflect.Message {
+	mi := &file_mcp_server_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchToolsInput.ProtoReflect.Descriptor instead.
+func (*SearchToolsInput) Descriptor() ([]byte, []int) {
+	return file_mcp_server_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *SearchToolsInput) GetQuery() string {
+	if x != nil {
+		return x.Query
+	}
+	return ""
+}
+
+func (x *SearchToolsInput) GetIndexName() string {
+	if x != nil {
+		return x.IndexName
+	}
+	return ""
+}
+
+func (x *SearchToolsInput) GetTopK() int32 {
+	if x != nil {
+		return x.TopK
+	}
+	return 0
+}
+
+func (x *SearchToolsInput) GetSemanticRatio() float32 {
+	if x != nil {
+		return x.SemanticRatio
+	}
+	return 0
+}
+
+func (x *SearchToolsInput) GetScoreThreshold() float32 {
+	if x != nil {
+		return x.ScoreThreshold
+	}
+	return 0
+}
+
+func (x *SearchToolsInput) GetEmbedder() string {
+	if x != nil {
+		return x.Embedder
+	}
+	return ""
+}
+
+type SearchToolsOutput struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Results       []*SearchResult        `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`                       // 搜索结果
+	TotalHits     int32                  `protobuf:"varint,2,opt,name=total_hits,json=totalHits,proto3" json:"total_hits,omitempty"` // 总命中数
+	IndexName     string                 `protobuf:"bytes,3,opt,name=index_name,json=indexName,proto3" json:"index_name,omitempty"`  // 回显索引名称
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchToolsOutput) Reset() {
+	*x = SearchToolsOutput{}
+	mi := &file_mcp_server_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchToolsOutput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchToolsOutput) ProtoMessage() {}
+
+func (x *SearchToolsOutput) ProtoReflect() protoreflect.Message {
+	mi := &file_mcp_server_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchToolsOutput.ProtoReflect.Descriptor instead.
+func (*SearchToolsOutput) Descriptor() ([]byte, []int) {
+	return file_mcp_server_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *SearchToolsOutput) GetResults() []*SearchResult {
+	if x != nil {
+		return x.Results
+	}
+	return nil
+}
+
+func (x *SearchToolsOutput) GetTotalHits() int32 {
+	if x != nil {
+		return x.TotalHits
+	}
+	return 0
+}
+
+func (x *SearchToolsOutput) GetIndexName() string {
+	if x != nil {
+		return x.IndexName
+	}
+	return ""
+}
+
+type ToolIndexDocument struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	DocumentId    string                 `protobuf:"bytes,1,opt,name=document_id,json=documentId,proto3" json:"document_id,omitempty"`                                                 // 文档 ID
+	Content       string                 `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"`                                                                         // 用于搜索的文本内容
+	Fields        map[string]string      `protobuf:"bytes,3,rep,name=fields,proto3" json:"fields,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // 结构化字段 (name, description, server, full_name)
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ToolIndexDocument) Reset() {
+	*x = ToolIndexDocument{}
+	mi := &file_mcp_server_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ToolIndexDocument) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ToolIndexDocument) ProtoMessage() {}
+
+func (x *ToolIndexDocument) ProtoReflect() protoreflect.Message {
+	mi := &file_mcp_server_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ToolIndexDocument.ProtoReflect.Descriptor instead.
+func (*ToolIndexDocument) Descriptor() ([]byte, []int) {
+	return file_mcp_server_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *ToolIndexDocument) GetDocumentId() string {
+	if x != nil {
+		return x.DocumentId
+	}
+	return ""
+}
+
+func (x *ToolIndexDocument) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+func (x *ToolIndexDocument) GetFields() map[string]string {
+	if x != nil {
+		return x.Fields
+	}
+	return nil
+}
+
+type IndexToolsInput struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	IndexName     string                 `protobuf:"bytes,1,opt,name=index_name,json=indexName,proto3" json:"index_name,omitempty"`           // 索引名称 (default: "mcp_tools")
+	Documents     []*ToolIndexDocument   `protobuf:"bytes,2,rep,name=documents,proto3" json:"documents,omitempty"`                            // 待索引的文档列表
+	Action        string                 `protobuf:"bytes,3,opt,name=action,proto3" json:"action,omitempty"`                                  // "upsert" 或 "delete"
+	EnableVector  bool                   `protobuf:"varint,4,opt,name=enable_vector,json=enableVector,proto3" json:"enable_vector,omitempty"` // 是否生成向量
+	Embedder      string                 `protobuf:"bytes,5,opt,name=embedder,proto3" json:"embedder,omitempty"`                              // 嵌入器名称 (default: "default")
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *IndexToolsInput) Reset() {
+	*x = IndexToolsInput{}
+	mi := &file_mcp_server_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IndexToolsInput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IndexToolsInput) ProtoMessage() {}
+
+func (x *IndexToolsInput) ProtoReflect() protoreflect.Message {
+	mi := &file_mcp_server_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IndexToolsInput.ProtoReflect.Descriptor instead.
+func (*IndexToolsInput) Descriptor() ([]byte, []int) {
+	return file_mcp_server_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *IndexToolsInput) GetIndexName() string {
+	if x != nil {
+		return x.IndexName
+	}
+	return ""
+}
+
+func (x *IndexToolsInput) GetDocuments() []*ToolIndexDocument {
+	if x != nil {
+		return x.Documents
+	}
+	return nil
+}
+
+func (x *IndexToolsInput) GetAction() string {
+	if x != nil {
+		return x.Action
+	}
+	return ""
+}
+
+func (x *IndexToolsInput) GetEnableVector() bool {
+	if x != nil {
+		return x.EnableVector
+	}
+	return false
+}
+
+func (x *IndexToolsInput) GetEmbedder() string {
+	if x != nil {
+		return x.Embedder
+	}
+	return ""
+}
+
+type IndexToolsOutput struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	IndexedCount  int32                  `protobuf:"varint,1,opt,name=indexed_count,json=indexedCount,proto3" json:"indexed_count,omitempty"` // 成功索引数量
+	Indexed       []string               `protobuf:"bytes,2,rep,name=indexed,proto3" json:"indexed,omitempty"`                                // 已索引的文档 ID
+	Failed        []string               `protobuf:"bytes,3,rep,name=failed,proto3" json:"failed,omitempty"`                                  // 失败的文档 ID
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *IndexToolsOutput) Reset() {
+	*x = IndexToolsOutput{}
+	mi := &file_mcp_server_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IndexToolsOutput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IndexToolsOutput) ProtoMessage() {}
+
+func (x *IndexToolsOutput) ProtoReflect() protoreflect.Message {
+	mi := &file_mcp_server_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IndexToolsOutput.ProtoReflect.Descriptor instead.
+func (*IndexToolsOutput) Descriptor() ([]byte, []int) {
+	return file_mcp_server_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *IndexToolsOutput) GetIndexedCount() int32 {
+	if x != nil {
+		return x.IndexedCount
+	}
+	return 0
+}
+
+func (x *IndexToolsOutput) GetIndexed() []string {
+	if x != nil {
+		return x.Indexed
+	}
+	return nil
+}
+
+func (x *IndexToolsOutput) GetFailed() []string {
+	if x != nil {
+		return x.Failed
+	}
+	return nil
+}
+
 type CallToolInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Request       *ToolCallRequest       `protobuf:"bytes,1,opt,name=request,proto3" json:"request,omitempty"` // 工具调用请求
@@ -1854,7 +2262,7 @@ type CallToolInput struct {
 
 func (x *CallToolInput) Reset() {
 	*x = CallToolInput{}
-	mi := &file_mcp_server_proto_msgTypes[28]
+	mi := &file_mcp_server_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1866,7 +2274,7 @@ func (x *CallToolInput) String() string {
 func (*CallToolInput) ProtoMessage() {}
 
 func (x *CallToolInput) ProtoReflect() protoreflect.Message {
-	mi := &file_mcp_server_proto_msgTypes[28]
+	mi := &file_mcp_server_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1879,7 +2287,7 @@ func (x *CallToolInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CallToolInput.ProtoReflect.Descriptor instead.
 func (*CallToolInput) Descriptor() ([]byte, []int) {
-	return file_mcp_server_proto_rawDescGZIP(), []int{28}
+	return file_mcp_server_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *CallToolInput) GetRequest() *ToolCallRequest {
@@ -1898,7 +2306,7 @@ type CallToolOutput struct {
 
 func (x *CallToolOutput) Reset() {
 	*x = CallToolOutput{}
-	mi := &file_mcp_server_proto_msgTypes[29]
+	mi := &file_mcp_server_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1910,7 +2318,7 @@ func (x *CallToolOutput) String() string {
 func (*CallToolOutput) ProtoMessage() {}
 
 func (x *CallToolOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_mcp_server_proto_msgTypes[29]
+	mi := &file_mcp_server_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1923,7 +2331,7 @@ func (x *CallToolOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CallToolOutput.ProtoReflect.Descriptor instead.
 func (*CallToolOutput) Descriptor() ([]byte, []int) {
-	return file_mcp_server_proto_rawDescGZIP(), []int{29}
+	return file_mcp_server_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *CallToolOutput) GetResponse() *ToolCallResponse {
@@ -1944,7 +2352,7 @@ type BatchStartInput struct {
 
 func (x *BatchStartInput) Reset() {
 	*x = BatchStartInput{}
-	mi := &file_mcp_server_proto_msgTypes[30]
+	mi := &file_mcp_server_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1956,7 +2364,7 @@ func (x *BatchStartInput) String() string {
 func (*BatchStartInput) ProtoMessage() {}
 
 func (x *BatchStartInput) ProtoReflect() protoreflect.Message {
-	mi := &file_mcp_server_proto_msgTypes[30]
+	mi := &file_mcp_server_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1969,7 +2377,7 @@ func (x *BatchStartInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchStartInput.ProtoReflect.Descriptor instead.
 func (*BatchStartInput) Descriptor() ([]byte, []int) {
-	return file_mcp_server_proto_rawDescGZIP(), []int{30}
+	return file_mcp_server_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *BatchStartInput) GetNames() []string {
@@ -2003,7 +2411,7 @@ type BatchStartOutput struct {
 
 func (x *BatchStartOutput) Reset() {
 	*x = BatchStartOutput{}
-	mi := &file_mcp_server_proto_msgTypes[31]
+	mi := &file_mcp_server_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2015,7 +2423,7 @@ func (x *BatchStartOutput) String() string {
 func (*BatchStartOutput) ProtoMessage() {}
 
 func (x *BatchStartOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_mcp_server_proto_msgTypes[31]
+	mi := &file_mcp_server_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2028,7 +2436,7 @@ func (x *BatchStartOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchStartOutput.ProtoReflect.Descriptor instead.
 func (*BatchStartOutput) Descriptor() ([]byte, []int) {
-	return file_mcp_server_proto_rawDescGZIP(), []int{31}
+	return file_mcp_server_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *BatchStartOutput) GetResults() map[string]*ServerStatus {
@@ -2055,7 +2463,7 @@ type BatchStopInput struct {
 
 func (x *BatchStopInput) Reset() {
 	*x = BatchStopInput{}
-	mi := &file_mcp_server_proto_msgTypes[32]
+	mi := &file_mcp_server_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2067,7 +2475,7 @@ func (x *BatchStopInput) String() string {
 func (*BatchStopInput) ProtoMessage() {}
 
 func (x *BatchStopInput) ProtoReflect() protoreflect.Message {
-	mi := &file_mcp_server_proto_msgTypes[32]
+	mi := &file_mcp_server_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2080,7 +2488,7 @@ func (x *BatchStopInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchStopInput.ProtoReflect.Descriptor instead.
 func (*BatchStopInput) Descriptor() ([]byte, []int) {
-	return file_mcp_server_proto_rawDescGZIP(), []int{32}
+	return file_mcp_server_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *BatchStopInput) GetNames() []string {
@@ -2107,7 +2515,7 @@ type BatchStopOutput struct {
 
 func (x *BatchStopOutput) Reset() {
 	*x = BatchStopOutput{}
-	mi := &file_mcp_server_proto_msgTypes[33]
+	mi := &file_mcp_server_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2119,7 +2527,7 @@ func (x *BatchStopOutput) String() string {
 func (*BatchStopOutput) ProtoMessage() {}
 
 func (x *BatchStopOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_mcp_server_proto_msgTypes[33]
+	mi := &file_mcp_server_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2132,7 +2540,7 @@ func (x *BatchStopOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchStopOutput.ProtoReflect.Descriptor instead.
 func (*BatchStopOutput) Descriptor() ([]byte, []int) {
-	return file_mcp_server_proto_rawDescGZIP(), []int{33}
+	return file_mcp_server_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *BatchStopOutput) GetResults() map[string]*ServerStatus {
@@ -2161,7 +2569,7 @@ type ServerEventInput struct {
 
 func (x *ServerEventInput) Reset() {
 	*x = ServerEventInput{}
-	mi := &file_mcp_server_proto_msgTypes[34]
+	mi := &file_mcp_server_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2173,7 +2581,7 @@ func (x *ServerEventInput) String() string {
 func (*ServerEventInput) ProtoMessage() {}
 
 func (x *ServerEventInput) ProtoReflect() protoreflect.Message {
-	mi := &file_mcp_server_proto_msgTypes[34]
+	mi := &file_mcp_server_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2186,7 +2594,7 @@ func (x *ServerEventInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServerEventInput.ProtoReflect.Descriptor instead.
 func (*ServerEventInput) Descriptor() ([]byte, []int) {
-	return file_mcp_server_proto_rawDescGZIP(), []int{34}
+	return file_mcp_server_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *ServerEventInput) GetEventType() string {
@@ -2226,7 +2634,7 @@ type ServerEventOutput struct {
 
 func (x *ServerEventOutput) Reset() {
 	*x = ServerEventOutput{}
-	mi := &file_mcp_server_proto_msgTypes[35]
+	mi := &file_mcp_server_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2238,7 +2646,7 @@ func (x *ServerEventOutput) String() string {
 func (*ServerEventOutput) ProtoMessage() {}
 
 func (x *ServerEventOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_mcp_server_proto_msgTypes[35]
+	mi := &file_mcp_server_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2251,7 +2659,7 @@ func (x *ServerEventOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServerEventOutput.ProtoReflect.Descriptor instead.
 func (*ServerEventOutput) Descriptor() ([]byte, []int) {
-	return file_mcp_server_proto_rawDescGZIP(), []int{35}
+	return file_mcp_server_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *ServerEventOutput) GetAcknowledged() bool {
@@ -2409,7 +2817,49 @@ const file_mcp_server_proto_rawDesc = "" +
 	"\x0fListToolsOutput\x12;\n" +
 	"\x05tools\x18\x01 \x03(\v2%.lightrag.eventbus.topics.v1.ToolInfoR\x05tools\x12\x1f\n" +
 	"\vtotal_count\x18\x02 \x01(\x05R\n" +
-	"totalCount\"W\n" +
+	"totalCount\"\xe9\x01\n" +
+	"\fSearchResult\x12\x1f\n" +
+	"\vdocument_id\x18\x01 \x01(\tR\n" +
+	"documentId\x12\x18\n" +
+	"\acontent\x18\x02 \x01(\tR\acontent\x12\x14\n" +
+	"\x05score\x18\x03 \x01(\x02R\x05score\x12M\n" +
+	"\x06fields\x18\x04 \x03(\v25.lightrag.eventbus.topics.v1.SearchResult.FieldsEntryR\x06fields\x1a9\n" +
+	"\vFieldsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc8\x01\n" +
+	"\x10SearchToolsInput\x12\x14\n" +
+	"\x05query\x18\x01 \x01(\tR\x05query\x12\x1d\n" +
+	"\n" +
+	"index_name\x18\x02 \x01(\tR\tindexName\x12\x13\n" +
+	"\x05top_k\x18\x03 \x01(\x05R\x04topK\x12%\n" +
+	"\x0esemantic_ratio\x18\x04 \x01(\x02R\rsemanticRatio\x12'\n" +
+	"\x0fscore_threshold\x18\x05 \x01(\x02R\x0escoreThreshold\x12\x1a\n" +
+	"\bembedder\x18\x06 \x01(\tR\bembedder\"\x96\x01\n" +
+	"\x11SearchToolsOutput\x12C\n" +
+	"\aresults\x18\x01 \x03(\v2).lightrag.eventbus.topics.v1.SearchResultR\aresults\x12\x1d\n" +
+	"\n" +
+	"total_hits\x18\x02 \x01(\x05R\ttotalHits\x12\x1d\n" +
+	"\n" +
+	"index_name\x18\x03 \x01(\tR\tindexName\"\xdd\x01\n" +
+	"\x11ToolIndexDocument\x12\x1f\n" +
+	"\vdocument_id\x18\x01 \x01(\tR\n" +
+	"documentId\x12\x18\n" +
+	"\acontent\x18\x02 \x01(\tR\acontent\x12R\n" +
+	"\x06fields\x18\x03 \x03(\v2:.lightrag.eventbus.topics.v1.ToolIndexDocument.FieldsEntryR\x06fields\x1a9\n" +
+	"\vFieldsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd7\x01\n" +
+	"\x0fIndexToolsInput\x12\x1d\n" +
+	"\n" +
+	"index_name\x18\x01 \x01(\tR\tindexName\x12L\n" +
+	"\tdocuments\x18\x02 \x03(\v2..lightrag.eventbus.topics.v1.ToolIndexDocumentR\tdocuments\x12\x16\n" +
+	"\x06action\x18\x03 \x01(\tR\x06action\x12#\n" +
+	"\renable_vector\x18\x04 \x01(\bR\fenableVector\x12\x1a\n" +
+	"\bembedder\x18\x05 \x01(\tR\bembedder\"i\n" +
+	"\x10IndexToolsOutput\x12#\n" +
+	"\rindexed_count\x18\x01 \x01(\x05R\findexedCount\x12\x18\n" +
+	"\aindexed\x18\x02 \x03(\tR\aindexed\x12\x16\n" +
+	"\x06failed\x18\x03 \x03(\tR\x06failed\"W\n" +
 	"\rCallToolInput\x12F\n" +
 	"\arequest\x18\x01 \x01(\v2,.lightrag.eventbus.topics.v1.ToolCallRequestR\arequest\"[\n" +
 	"\x0eCallToolOutput\x12I\n" +
@@ -2474,7 +2924,7 @@ func file_mcp_server_proto_rawDescGZIP() []byte {
 }
 
 var file_mcp_server_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_mcp_server_proto_msgTypes = make([]protoimpl.MessageInfo, 44)
+var file_mcp_server_proto_msgTypes = make([]protoimpl.MessageInfo, 52)
 var file_mcp_server_proto_goTypes = []any{
 	(ServerState)(0),              // 0: lightrag.eventbus.topics.v1.ServerState
 	(ServerType)(0),               // 1: lightrag.eventbus.topics.v1.ServerType
@@ -2507,40 +2957,48 @@ var file_mcp_server_proto_goTypes = []any{
 	(*GetServerStatusOutput)(nil), // 28: lightrag.eventbus.topics.v1.GetServerStatusOutput
 	(*ListToolsInput)(nil),        // 29: lightrag.eventbus.topics.v1.ListToolsInput
 	(*ListToolsOutput)(nil),       // 30: lightrag.eventbus.topics.v1.ListToolsOutput
-	(*CallToolInput)(nil),         // 31: lightrag.eventbus.topics.v1.CallToolInput
-	(*CallToolOutput)(nil),        // 32: lightrag.eventbus.topics.v1.CallToolOutput
-	(*BatchStartInput)(nil),       // 33: lightrag.eventbus.topics.v1.BatchStartInput
-	(*BatchStartOutput)(nil),      // 34: lightrag.eventbus.topics.v1.BatchStartOutput
-	(*BatchStopInput)(nil),        // 35: lightrag.eventbus.topics.v1.BatchStopInput
-	(*BatchStopOutput)(nil),       // 36: lightrag.eventbus.topics.v1.BatchStopOutput
-	(*ServerEventInput)(nil),      // 37: lightrag.eventbus.topics.v1.ServerEventInput
-	(*ServerEventOutput)(nil),     // 38: lightrag.eventbus.topics.v1.ServerEventOutput
-	nil,                           // 39: lightrag.eventbus.topics.v1.ServerConfig.LabelsEntry
-	nil,                           // 40: lightrag.eventbus.topics.v1.StdioConfig.EnvEntry
-	nil,                           // 41: lightrag.eventbus.topics.v1.HttpConfig.HeadersEntry
-	nil,                           // 42: lightrag.eventbus.topics.v1.ServerStatus.LabelsEntry
-	nil,                           // 43: lightrag.eventbus.topics.v1.ToolCallRequest.ArgumentsEntry
-	nil,                           // 44: lightrag.eventbus.topics.v1.ListServersInput.LabelFilterEntry
-	nil,                           // 45: lightrag.eventbus.topics.v1.BatchStartOutput.ResultsEntry
-	nil,                           // 46: lightrag.eventbus.topics.v1.BatchStopOutput.ResultsEntry
+	(*SearchResult)(nil),          // 31: lightrag.eventbus.topics.v1.SearchResult
+	(*SearchToolsInput)(nil),      // 32: lightrag.eventbus.topics.v1.SearchToolsInput
+	(*SearchToolsOutput)(nil),     // 33: lightrag.eventbus.topics.v1.SearchToolsOutput
+	(*ToolIndexDocument)(nil),     // 34: lightrag.eventbus.topics.v1.ToolIndexDocument
+	(*IndexToolsInput)(nil),       // 35: lightrag.eventbus.topics.v1.IndexToolsInput
+	(*IndexToolsOutput)(nil),      // 36: lightrag.eventbus.topics.v1.IndexToolsOutput
+	(*CallToolInput)(nil),         // 37: lightrag.eventbus.topics.v1.CallToolInput
+	(*CallToolOutput)(nil),        // 38: lightrag.eventbus.topics.v1.CallToolOutput
+	(*BatchStartInput)(nil),       // 39: lightrag.eventbus.topics.v1.BatchStartInput
+	(*BatchStartOutput)(nil),      // 40: lightrag.eventbus.topics.v1.BatchStartOutput
+	(*BatchStopInput)(nil),        // 41: lightrag.eventbus.topics.v1.BatchStopInput
+	(*BatchStopOutput)(nil),       // 42: lightrag.eventbus.topics.v1.BatchStopOutput
+	(*ServerEventInput)(nil),      // 43: lightrag.eventbus.topics.v1.ServerEventInput
+	(*ServerEventOutput)(nil),     // 44: lightrag.eventbus.topics.v1.ServerEventOutput
+	nil,                           // 45: lightrag.eventbus.topics.v1.ServerConfig.LabelsEntry
+	nil,                           // 46: lightrag.eventbus.topics.v1.StdioConfig.EnvEntry
+	nil,                           // 47: lightrag.eventbus.topics.v1.HttpConfig.HeadersEntry
+	nil,                           // 48: lightrag.eventbus.topics.v1.ServerStatus.LabelsEntry
+	nil,                           // 49: lightrag.eventbus.topics.v1.ToolCallRequest.ArgumentsEntry
+	nil,                           // 50: lightrag.eventbus.topics.v1.ListServersInput.LabelFilterEntry
+	nil,                           // 51: lightrag.eventbus.topics.v1.SearchResult.FieldsEntry
+	nil,                           // 52: lightrag.eventbus.topics.v1.ToolIndexDocument.FieldsEntry
+	nil,                           // 53: lightrag.eventbus.topics.v1.BatchStartOutput.ResultsEntry
+	nil,                           // 54: lightrag.eventbus.topics.v1.BatchStopOutput.ResultsEntry
 }
 var file_mcp_server_proto_depIdxs = []int32{
 	1,  // 0: lightrag.eventbus.topics.v1.ServerConfig.type:type_name -> lightrag.eventbus.topics.v1.ServerType
 	4,  // 1: lightrag.eventbus.topics.v1.ServerConfig.stdio:type_name -> lightrag.eventbus.topics.v1.StdioConfig
 	5,  // 2: lightrag.eventbus.topics.v1.ServerConfig.http:type_name -> lightrag.eventbus.topics.v1.HttpConfig
 	2,  // 3: lightrag.eventbus.topics.v1.ServerConfig.restart_policy:type_name -> lightrag.eventbus.topics.v1.RestartPolicy
-	39, // 4: lightrag.eventbus.topics.v1.ServerConfig.labels:type_name -> lightrag.eventbus.topics.v1.ServerConfig.LabelsEntry
-	40, // 5: lightrag.eventbus.topics.v1.StdioConfig.env:type_name -> lightrag.eventbus.topics.v1.StdioConfig.EnvEntry
-	41, // 6: lightrag.eventbus.topics.v1.HttpConfig.headers:type_name -> lightrag.eventbus.topics.v1.HttpConfig.HeadersEntry
+	45, // 4: lightrag.eventbus.topics.v1.ServerConfig.labels:type_name -> lightrag.eventbus.topics.v1.ServerConfig.LabelsEntry
+	46, // 5: lightrag.eventbus.topics.v1.StdioConfig.env:type_name -> lightrag.eventbus.topics.v1.StdioConfig.EnvEntry
+	47, // 6: lightrag.eventbus.topics.v1.HttpConfig.headers:type_name -> lightrag.eventbus.topics.v1.HttpConfig.HeadersEntry
 	1,  // 7: lightrag.eventbus.topics.v1.ServerStatus.type:type_name -> lightrag.eventbus.topics.v1.ServerType
 	0,  // 8: lightrag.eventbus.topics.v1.ServerStatus.state:type_name -> lightrag.eventbus.topics.v1.ServerState
-	42, // 9: lightrag.eventbus.topics.v1.ServerStatus.labels:type_name -> lightrag.eventbus.topics.v1.ServerStatus.LabelsEntry
-	43, // 10: lightrag.eventbus.topics.v1.ToolCallRequest.arguments:type_name -> lightrag.eventbus.topics.v1.ToolCallRequest.ArgumentsEntry
+	48, // 9: lightrag.eventbus.topics.v1.ServerStatus.labels:type_name -> lightrag.eventbus.topics.v1.ServerStatus.LabelsEntry
+	49, // 10: lightrag.eventbus.topics.v1.ToolCallRequest.arguments:type_name -> lightrag.eventbus.topics.v1.ToolCallRequest.ArgumentsEntry
 	10, // 11: lightrag.eventbus.topics.v1.ToolCallResponse.content:type_name -> lightrag.eventbus.topics.v1.ToolContent
 	3,  // 12: lightrag.eventbus.topics.v1.CreateServerInput.config:type_name -> lightrag.eventbus.topics.v1.ServerConfig
 	6,  // 13: lightrag.eventbus.topics.v1.CreateServerOutput.status:type_name -> lightrag.eventbus.topics.v1.ServerStatus
 	6,  // 14: lightrag.eventbus.topics.v1.GetServerOutput.status:type_name -> lightrag.eventbus.topics.v1.ServerStatus
-	44, // 15: lightrag.eventbus.topics.v1.ListServersInput.label_filter:type_name -> lightrag.eventbus.topics.v1.ListServersInput.LabelFilterEntry
+	50, // 15: lightrag.eventbus.topics.v1.ListServersInput.label_filter:type_name -> lightrag.eventbus.topics.v1.ListServersInput.LabelFilterEntry
 	6,  // 16: lightrag.eventbus.topics.v1.ListServersOutput.servers:type_name -> lightrag.eventbus.topics.v1.ServerStatus
 	3,  // 17: lightrag.eventbus.topics.v1.UpdateServerInput.config:type_name -> lightrag.eventbus.topics.v1.ServerConfig
 	6,  // 18: lightrag.eventbus.topics.v1.UpdateServerOutput.status:type_name -> lightrag.eventbus.topics.v1.ServerStatus
@@ -2550,18 +3008,22 @@ var file_mcp_server_proto_depIdxs = []int32{
 	6,  // 22: lightrag.eventbus.topics.v1.GetServerStatusOutput.status:type_name -> lightrag.eventbus.topics.v1.ServerStatus
 	7,  // 23: lightrag.eventbus.topics.v1.GetServerStatusOutput.tools:type_name -> lightrag.eventbus.topics.v1.ToolInfo
 	7,  // 24: lightrag.eventbus.topics.v1.ListToolsOutput.tools:type_name -> lightrag.eventbus.topics.v1.ToolInfo
-	8,  // 25: lightrag.eventbus.topics.v1.CallToolInput.request:type_name -> lightrag.eventbus.topics.v1.ToolCallRequest
-	9,  // 26: lightrag.eventbus.topics.v1.CallToolOutput.response:type_name -> lightrag.eventbus.topics.v1.ToolCallResponse
-	45, // 27: lightrag.eventbus.topics.v1.BatchStartOutput.results:type_name -> lightrag.eventbus.topics.v1.BatchStartOutput.ResultsEntry
-	46, // 28: lightrag.eventbus.topics.v1.BatchStopOutput.results:type_name -> lightrag.eventbus.topics.v1.BatchStopOutput.ResultsEntry
-	6,  // 29: lightrag.eventbus.topics.v1.ServerEventInput.status:type_name -> lightrag.eventbus.topics.v1.ServerStatus
-	6,  // 30: lightrag.eventbus.topics.v1.BatchStartOutput.ResultsEntry.value:type_name -> lightrag.eventbus.topics.v1.ServerStatus
-	6,  // 31: lightrag.eventbus.topics.v1.BatchStopOutput.ResultsEntry.value:type_name -> lightrag.eventbus.topics.v1.ServerStatus
-	32, // [32:32] is the sub-list for method output_type
-	32, // [32:32] is the sub-list for method input_type
-	32, // [32:32] is the sub-list for extension type_name
-	32, // [32:32] is the sub-list for extension extendee
-	0,  // [0:32] is the sub-list for field type_name
+	51, // 25: lightrag.eventbus.topics.v1.SearchResult.fields:type_name -> lightrag.eventbus.topics.v1.SearchResult.FieldsEntry
+	31, // 26: lightrag.eventbus.topics.v1.SearchToolsOutput.results:type_name -> lightrag.eventbus.topics.v1.SearchResult
+	52, // 27: lightrag.eventbus.topics.v1.ToolIndexDocument.fields:type_name -> lightrag.eventbus.topics.v1.ToolIndexDocument.FieldsEntry
+	34, // 28: lightrag.eventbus.topics.v1.IndexToolsInput.documents:type_name -> lightrag.eventbus.topics.v1.ToolIndexDocument
+	8,  // 29: lightrag.eventbus.topics.v1.CallToolInput.request:type_name -> lightrag.eventbus.topics.v1.ToolCallRequest
+	9,  // 30: lightrag.eventbus.topics.v1.CallToolOutput.response:type_name -> lightrag.eventbus.topics.v1.ToolCallResponse
+	53, // 31: lightrag.eventbus.topics.v1.BatchStartOutput.results:type_name -> lightrag.eventbus.topics.v1.BatchStartOutput.ResultsEntry
+	54, // 32: lightrag.eventbus.topics.v1.BatchStopOutput.results:type_name -> lightrag.eventbus.topics.v1.BatchStopOutput.ResultsEntry
+	6,  // 33: lightrag.eventbus.topics.v1.ServerEventInput.status:type_name -> lightrag.eventbus.topics.v1.ServerStatus
+	6,  // 34: lightrag.eventbus.topics.v1.BatchStartOutput.ResultsEntry.value:type_name -> lightrag.eventbus.topics.v1.ServerStatus
+	6,  // 35: lightrag.eventbus.topics.v1.BatchStopOutput.ResultsEntry.value:type_name -> lightrag.eventbus.topics.v1.ServerStatus
+	36, // [36:36] is the sub-list for method output_type
+	36, // [36:36] is the sub-list for method input_type
+	36, // [36:36] is the sub-list for extension type_name
+	36, // [36:36] is the sub-list for extension extendee
+	0,  // [0:36] is the sub-list for field type_name
 }
 
 func init() { file_mcp_server_proto_init() }
@@ -2579,7 +3041,7 @@ func file_mcp_server_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mcp_server_proto_rawDesc), len(file_mcp_server_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   44,
+			NumMessages:   52,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

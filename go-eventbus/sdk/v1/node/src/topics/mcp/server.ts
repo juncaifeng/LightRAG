@@ -310,6 +310,82 @@ export interface ListToolsOutput {
   totalCount: number;
 }
 
+export interface SearchResult {
+  /** 文档 ID */
+  documentId: string;
+  /** 匹配的文本内容 */
+  content: string;
+  /** 匹配分数 */
+  score: number;
+  /** 结构化字段 */
+  fields: { [key: string]: string };
+}
+
+export interface SearchResult_FieldsEntry {
+  key: string;
+  value: string;
+}
+
+export interface SearchToolsInput {
+  /** 搜索查询 */
+  query: string;
+  /** 索引名称 (default: "mcp_tools") */
+  indexName: string;
+  /** 返回数量 (default: 10) */
+  topK: number;
+  /** 语义比例 0=关键词, 1=向量 (default: 0.7) */
+  semanticRatio: number;
+  /** 最低分数阈值 (default: 0.5) */
+  scoreThreshold: number;
+  /** 嵌入器名称 (default: "default") */
+  embedder: string;
+}
+
+export interface SearchToolsOutput {
+  /** 搜索结果 */
+  results: SearchResult[];
+  /** 总命中数 */
+  totalHits: number;
+  /** 回显索引名称 */
+  indexName: string;
+}
+
+export interface ToolIndexDocument {
+  /** 文档 ID */
+  documentId: string;
+  /** 用于搜索的文本内容 */
+  content: string;
+  /** 结构化字段 (name, description, server, full_name) */
+  fields: { [key: string]: string };
+}
+
+export interface ToolIndexDocument_FieldsEntry {
+  key: string;
+  value: string;
+}
+
+export interface IndexToolsInput {
+  /** 索引名称 (default: "mcp_tools") */
+  indexName: string;
+  /** 待索引的文档列表 */
+  documents: ToolIndexDocument[];
+  /** "upsert" 或 "delete" */
+  action: string;
+  /** 是否生成向量 */
+  enableVector: boolean;
+  /** 嵌入器名称 (default: "default") */
+  embedder: string;
+}
+
+export interface IndexToolsOutput {
+  /** 成功索引数量 */
+  indexedCount: number;
+  /** 已索引的文档 ID */
+  indexed: string[];
+  /** 失败的文档 ID */
+  failed: string[];
+}
+
 export interface CallToolInput {
   /** 工具调用请求 */
   request: ToolCallRequest | undefined;
@@ -2726,6 +2802,638 @@ export const ListToolsOutput: MessageFns<ListToolsOutput> = {
     const message = createBaseListToolsOutput();
     message.tools = object.tools?.map((e) => ToolInfo.fromPartial(e)) || [];
     message.totalCount = object.totalCount ?? 0;
+    return message;
+  },
+};
+
+function createBaseSearchResult(): SearchResult {
+  return { documentId: "", content: "", score: 0, fields: {} };
+}
+
+export const SearchResult: MessageFns<SearchResult> = {
+  encode(message: SearchResult, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.documentId !== "") {
+      writer.uint32(10).string(message.documentId);
+    }
+    if (message.content !== "") {
+      writer.uint32(18).string(message.content);
+    }
+    if (message.score !== 0) {
+      writer.uint32(29).float(message.score);
+    }
+    globalThis.Object.entries(message.fields).forEach(([key, value]: [string, string]) => {
+      SearchResult_FieldsEntry.encode({ key: key as any, value }, writer.uint32(34).fork()).join();
+    });
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): SearchResult {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSearchResult();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.documentId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.content = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 29) {
+            break;
+          }
+
+          message.score = reader.float();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          const entry4 = SearchResult_FieldsEntry.decode(reader, reader.uint32());
+          if (entry4.value !== undefined) {
+            message.fields[entry4.key] = entry4.value;
+          }
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create<I extends Exact<DeepPartial<SearchResult>, I>>(base?: I): SearchResult {
+    return SearchResult.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<SearchResult>, I>>(object: I): SearchResult {
+    const message = createBaseSearchResult();
+    message.documentId = object.documentId ?? "";
+    message.content = object.content ?? "";
+    message.score = object.score ?? 0;
+    message.fields = (globalThis.Object.entries(object.fields ?? {}) as [string, string][]).reduce(
+      (acc: { [key: string]: string }, [key, value]: [string, string]) => {
+        if (value !== undefined) {
+          acc[key] = globalThis.String(value);
+        }
+        return acc;
+      },
+      {},
+    );
+    return message;
+  },
+};
+
+function createBaseSearchResult_FieldsEntry(): SearchResult_FieldsEntry {
+  return { key: "", value: "" };
+}
+
+export const SearchResult_FieldsEntry: MessageFns<SearchResult_FieldsEntry> = {
+  encode(message: SearchResult_FieldsEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): SearchResult_FieldsEntry {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSearchResult_FieldsEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.key = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create<I extends Exact<DeepPartial<SearchResult_FieldsEntry>, I>>(base?: I): SearchResult_FieldsEntry {
+    return SearchResult_FieldsEntry.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<SearchResult_FieldsEntry>, I>>(object: I): SearchResult_FieldsEntry {
+    const message = createBaseSearchResult_FieldsEntry();
+    message.key = object.key ?? "";
+    message.value = object.value ?? "";
+    return message;
+  },
+};
+
+function createBaseSearchToolsInput(): SearchToolsInput {
+  return { query: "", indexName: "", topK: 0, semanticRatio: 0, scoreThreshold: 0, embedder: "" };
+}
+
+export const SearchToolsInput: MessageFns<SearchToolsInput> = {
+  encode(message: SearchToolsInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.query !== "") {
+      writer.uint32(10).string(message.query);
+    }
+    if (message.indexName !== "") {
+      writer.uint32(18).string(message.indexName);
+    }
+    if (message.topK !== 0) {
+      writer.uint32(24).int32(message.topK);
+    }
+    if (message.semanticRatio !== 0) {
+      writer.uint32(37).float(message.semanticRatio);
+    }
+    if (message.scoreThreshold !== 0) {
+      writer.uint32(45).float(message.scoreThreshold);
+    }
+    if (message.embedder !== "") {
+      writer.uint32(50).string(message.embedder);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): SearchToolsInput {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSearchToolsInput();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.query = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.indexName = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.topK = reader.int32();
+          continue;
+        }
+        case 4: {
+          if (tag !== 37) {
+            break;
+          }
+
+          message.semanticRatio = reader.float();
+          continue;
+        }
+        case 5: {
+          if (tag !== 45) {
+            break;
+          }
+
+          message.scoreThreshold = reader.float();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.embedder = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create<I extends Exact<DeepPartial<SearchToolsInput>, I>>(base?: I): SearchToolsInput {
+    return SearchToolsInput.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<SearchToolsInput>, I>>(object: I): SearchToolsInput {
+    const message = createBaseSearchToolsInput();
+    message.query = object.query ?? "";
+    message.indexName = object.indexName ?? "";
+    message.topK = object.topK ?? 0;
+    message.semanticRatio = object.semanticRatio ?? 0;
+    message.scoreThreshold = object.scoreThreshold ?? 0;
+    message.embedder = object.embedder ?? "";
+    return message;
+  },
+};
+
+function createBaseSearchToolsOutput(): SearchToolsOutput {
+  return { results: [], totalHits: 0, indexName: "" };
+}
+
+export const SearchToolsOutput: MessageFns<SearchToolsOutput> = {
+  encode(message: SearchToolsOutput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.results) {
+      SearchResult.encode(v!, writer.uint32(10).fork()).join();
+    }
+    if (message.totalHits !== 0) {
+      writer.uint32(16).int32(message.totalHits);
+    }
+    if (message.indexName !== "") {
+      writer.uint32(26).string(message.indexName);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): SearchToolsOutput {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSearchToolsOutput();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.results.push(SearchResult.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.totalHits = reader.int32();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.indexName = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create<I extends Exact<DeepPartial<SearchToolsOutput>, I>>(base?: I): SearchToolsOutput {
+    return SearchToolsOutput.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<SearchToolsOutput>, I>>(object: I): SearchToolsOutput {
+    const message = createBaseSearchToolsOutput();
+    message.results = object.results?.map((e) => SearchResult.fromPartial(e)) || [];
+    message.totalHits = object.totalHits ?? 0;
+    message.indexName = object.indexName ?? "";
+    return message;
+  },
+};
+
+function createBaseToolIndexDocument(): ToolIndexDocument {
+  return { documentId: "", content: "", fields: {} };
+}
+
+export const ToolIndexDocument: MessageFns<ToolIndexDocument> = {
+  encode(message: ToolIndexDocument, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.documentId !== "") {
+      writer.uint32(10).string(message.documentId);
+    }
+    if (message.content !== "") {
+      writer.uint32(18).string(message.content);
+    }
+    globalThis.Object.entries(message.fields).forEach(([key, value]: [string, string]) => {
+      ToolIndexDocument_FieldsEntry.encode({ key: key as any, value }, writer.uint32(26).fork()).join();
+    });
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ToolIndexDocument {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseToolIndexDocument();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.documentId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.content = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          const entry3 = ToolIndexDocument_FieldsEntry.decode(reader, reader.uint32());
+          if (entry3.value !== undefined) {
+            message.fields[entry3.key] = entry3.value;
+          }
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create<I extends Exact<DeepPartial<ToolIndexDocument>, I>>(base?: I): ToolIndexDocument {
+    return ToolIndexDocument.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ToolIndexDocument>, I>>(object: I): ToolIndexDocument {
+    const message = createBaseToolIndexDocument();
+    message.documentId = object.documentId ?? "";
+    message.content = object.content ?? "";
+    message.fields = (globalThis.Object.entries(object.fields ?? {}) as [string, string][]).reduce(
+      (acc: { [key: string]: string }, [key, value]: [string, string]) => {
+        if (value !== undefined) {
+          acc[key] = globalThis.String(value);
+        }
+        return acc;
+      },
+      {},
+    );
+    return message;
+  },
+};
+
+function createBaseToolIndexDocument_FieldsEntry(): ToolIndexDocument_FieldsEntry {
+  return { key: "", value: "" };
+}
+
+export const ToolIndexDocument_FieldsEntry: MessageFns<ToolIndexDocument_FieldsEntry> = {
+  encode(message: ToolIndexDocument_FieldsEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ToolIndexDocument_FieldsEntry {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseToolIndexDocument_FieldsEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.key = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create<I extends Exact<DeepPartial<ToolIndexDocument_FieldsEntry>, I>>(base?: I): ToolIndexDocument_FieldsEntry {
+    return ToolIndexDocument_FieldsEntry.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ToolIndexDocument_FieldsEntry>, I>>(
+    object: I,
+  ): ToolIndexDocument_FieldsEntry {
+    const message = createBaseToolIndexDocument_FieldsEntry();
+    message.key = object.key ?? "";
+    message.value = object.value ?? "";
+    return message;
+  },
+};
+
+function createBaseIndexToolsInput(): IndexToolsInput {
+  return { indexName: "", documents: [], action: "", enableVector: false, embedder: "" };
+}
+
+export const IndexToolsInput: MessageFns<IndexToolsInput> = {
+  encode(message: IndexToolsInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.indexName !== "") {
+      writer.uint32(10).string(message.indexName);
+    }
+    for (const v of message.documents) {
+      ToolIndexDocument.encode(v!, writer.uint32(18).fork()).join();
+    }
+    if (message.action !== "") {
+      writer.uint32(26).string(message.action);
+    }
+    if (message.enableVector !== false) {
+      writer.uint32(32).bool(message.enableVector);
+    }
+    if (message.embedder !== "") {
+      writer.uint32(42).string(message.embedder);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): IndexToolsInput {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseIndexToolsInput();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.indexName = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.documents.push(ToolIndexDocument.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.action = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.enableVector = reader.bool();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.embedder = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create<I extends Exact<DeepPartial<IndexToolsInput>, I>>(base?: I): IndexToolsInput {
+    return IndexToolsInput.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<IndexToolsInput>, I>>(object: I): IndexToolsInput {
+    const message = createBaseIndexToolsInput();
+    message.indexName = object.indexName ?? "";
+    message.documents = object.documents?.map((e) => ToolIndexDocument.fromPartial(e)) || [];
+    message.action = object.action ?? "";
+    message.enableVector = object.enableVector ?? false;
+    message.embedder = object.embedder ?? "";
+    return message;
+  },
+};
+
+function createBaseIndexToolsOutput(): IndexToolsOutput {
+  return { indexedCount: 0, indexed: [], failed: [] };
+}
+
+export const IndexToolsOutput: MessageFns<IndexToolsOutput> = {
+  encode(message: IndexToolsOutput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.indexedCount !== 0) {
+      writer.uint32(8).int32(message.indexedCount);
+    }
+    for (const v of message.indexed) {
+      writer.uint32(18).string(v!);
+    }
+    for (const v of message.failed) {
+      writer.uint32(26).string(v!);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): IndexToolsOutput {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseIndexToolsOutput();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.indexedCount = reader.int32();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.indexed.push(reader.string());
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.failed.push(reader.string());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create<I extends Exact<DeepPartial<IndexToolsOutput>, I>>(base?: I): IndexToolsOutput {
+    return IndexToolsOutput.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<IndexToolsOutput>, I>>(object: I): IndexToolsOutput {
+    const message = createBaseIndexToolsOutput();
+    message.indexedCount = object.indexedCount ?? 0;
+    message.indexed = object.indexed?.map((e) => e) || [];
+    message.failed = object.failed?.map((e) => e) || [];
     return message;
   },
 };

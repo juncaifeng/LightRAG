@@ -126,6 +126,12 @@ func init() {
 		// mcp domain — tools
 		(*topicspb.ListToolsInput)(nil),
 		(*topicspb.ListToolsOutput)(nil),
+		(*topicspb.SearchToolsInput)(nil),
+		(*topicspb.SearchToolsOutput)(nil),
+		(*topicspb.SearchResult)(nil),
+		(*topicspb.ToolIndexDocument)(nil),
+		(*topicspb.IndexToolsInput)(nil),
+		(*topicspb.IndexToolsOutput)(nil),
 		(*topicspb.CallToolInput)(nil),
 		(*topicspb.CallToolOutput)(nil),
 		// mcp domain — batch
@@ -170,6 +176,8 @@ var topicStrategyOverrides = map[string]string{
 	"mcp.server.restart_server":     "FIRST",
 	"mcp.server.get_server_status":  "APPEND",
 	"mcp.server.list_tools":         "APPEND",
+	"mcp.server.search_tools":       "APPEND",
+	"mcp.server.index_tools":        "FIRST",
 	"mcp.server.call_tool":          "FIRST",
 	"mcp.server.batch_start":        "FIRST",
 	"mcp.server.batch_stop":         "FIRST",

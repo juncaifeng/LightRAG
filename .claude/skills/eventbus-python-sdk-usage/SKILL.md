@@ -51,6 +51,8 @@ Python import: from topics.{domain}.{pipeline}_pb2 import {PascalCase}Input, {Pa
 | `mcp.server.start_server` | `proto/topics/mcp/server.proto` | `from topics.mcp.server_pb2 import StartServerInput` |
 | `mcp.server.stop_server` | `proto/topics/mcp/server.proto` | `from topics.mcp.server_pb2 import StopServerInput` |
 | `mcp.server.call_tool` | `proto/topics/mcp/server.proto` | `from topics.mcp.server_pb2 import CallToolInput` |
+| `mcp.server.search_tools` | `proto/topics/mcp/server.proto` | `from topics.mcp.server_pb2 import SearchToolsInput` |
+| `mcp.server.index_tools` | `proto/topics/mcp/server.proto` | `from topics.mcp.server_pb2 import IndexToolsInput` |
 | `mcp.server.list_tools` | `proto/topics/mcp/server.proto` | `from topics.mcp.server_pb2 import ListToolsInput` |
 | `mcp.server.server_event` | `proto/topics/mcp/server.proto` | `from topics.mcp.server_pb2 import ServerEventInput` |
 
