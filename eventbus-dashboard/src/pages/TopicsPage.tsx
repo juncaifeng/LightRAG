@@ -22,6 +22,8 @@ const pipelineColors: Record<string, string> = {
   retriever: 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-400',
   completion: 'bg-rose-500/15 text-rose-700 dark:text-rose-400',
   merge: 'bg-amber-500/15 text-amber-700 dark:text-amber-400',
+  server: 'bg-violet-500/15 text-violet-700 dark:text-violet-400',
+  embed: 'bg-pink-500/15 text-pink-700 dark:text-pink-400',
 }
 
 const domainColors: Record<string, string> = {
@@ -29,6 +31,8 @@ const domainColors: Record<string, string> = {
   index: 'bg-teal-500/15 text-teal-700 dark:text-teal-400 border-teal-500/30',
   llm: 'bg-rose-500/15 text-rose-700 dark:text-rose-400 border-rose-500/30',
   kg: 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30',
+  mcp: 'bg-violet-500/15 text-violet-700 dark:text-violet-400 border-violet-500/30',
+  embedding: 'bg-pink-500/15 text-pink-700 dark:text-pink-400 border-pink-500/30',
 }
 
 function desc(f: FieldSchema, lang: 'zh' | 'en') {
