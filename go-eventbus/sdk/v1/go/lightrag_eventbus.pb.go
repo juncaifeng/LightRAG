@@ -68,7 +68,7 @@ func (x SubscriberReply_MergeStrategy) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SubscriberReply_MergeStrategy.Descriptor instead.
 func (SubscriberReply_MergeStrategy) EnumDescriptor() ([]byte, []int) {
-	return file_lightrag_eventbus_proto_rawDescGZIP(), []int{3, 0}
+	return file_lightrag_eventbus_proto_rawDescGZIP(), []int{11, 0}
 }
 
 // 健康状态与熔断建议
@@ -121,7 +121,7 @@ func (x SubscriberReply_HealthStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SubscriberReply_HealthStatus.Descriptor instead.
 func (SubscriberReply_HealthStatus) EnumDescriptor() ([]byte, []int) {
-	return file_lightrag_eventbus_proto_rawDescGZIP(), []int{3, 1}
+	return file_lightrag_eventbus_proto_rawDescGZIP(), []int{11, 1}
 }
 
 type SubscriberReply_AdvisoryAction int32
@@ -173,7 +173,7 @@ func (x SubscriberReply_AdvisoryAction) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SubscriberReply_AdvisoryAction.Descriptor instead.
 func (SubscriberReply_AdvisoryAction) EnumDescriptor() ([]byte, []int) {
-	return file_lightrag_eventbus_proto_rawDescGZIP(), []int{3, 2}
+	return file_lightrag_eventbus_proto_rawDescGZIP(), []int{11, 2}
 }
 
 type RegisterRequest struct {
@@ -304,6 +304,438 @@ func (x *RegisterResponse) GetMessage() string {
 	return ""
 }
 
+type ServiceInstance struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ServiceName   string                 `protobuf:"bytes,1,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`                                                  // 服务名，如 "session"
+	InstanceId    string                 `protobuf:"bytes,2,opt,name=instance_id,json=instanceId,proto3" json:"instance_id,omitempty"`                                                     // 实例唯一标识，如 "session-node1:50052"
+	Address       string                 `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`                                                                             // gRPC 地址，如 "localhost:50052"
+	Version       string                 `protobuf:"bytes,4,opt,name=version,proto3" json:"version,omitempty"`                                                                             // 版本号，如 "1.0.0"
+	Metadata      map[string]string      `protobuf:"bytes,5,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // 扩展元数据
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ServiceInstance) Reset() {
+	*x = ServiceInstance{}
+	mi := &file_lightrag_eventbus_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ServiceInstance) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServiceInstance) ProtoMessage() {}
+
+func (x *ServiceInstance) ProtoReflect() protoreflect.Message {
+	mi := &file_lightrag_eventbus_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ServiceInstance.ProtoReflect.Descriptor instead.
+func (*ServiceInstance) Descriptor() ([]byte, []int) {
+	return file_lightrag_eventbus_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *ServiceInstance) GetServiceName() string {
+	if x != nil {
+		return x.ServiceName
+	}
+	return ""
+}
+
+func (x *ServiceInstance) GetInstanceId() string {
+	if x != nil {
+		return x.InstanceId
+	}
+	return ""
+}
+
+func (x *ServiceInstance) GetAddress() string {
+	if x != nil {
+		return x.Address
+	}
+	return ""
+}
+
+func (x *ServiceInstance) GetVersion() string {
+	if x != nil {
+		return x.Version
+	}
+	return ""
+}
+
+func (x *ServiceInstance) GetMetadata() map[string]string {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+type RegisterServiceRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Instance      *ServiceInstance       `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
+	TtlSeconds    int32                  `protobuf:"varint,2,opt,name=ttl_seconds,json=ttlSeconds,proto3" json:"ttl_seconds,omitempty"` // 注册 TTL（秒，默认 30，需心跳续期）
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RegisterServiceRequest) Reset() {
+	*x = RegisterServiceRequest{}
+	mi := &file_lightrag_eventbus_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RegisterServiceRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegisterServiceRequest) ProtoMessage() {}
+
+func (x *RegisterServiceRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_lightrag_eventbus_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegisterServiceRequest.ProtoReflect.Descriptor instead.
+func (*RegisterServiceRequest) Descriptor() ([]byte, []int) {
+	return file_lightrag_eventbus_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *RegisterServiceRequest) GetInstance() *ServiceInstance {
+	if x != nil {
+		return x.Instance
+	}
+	return nil
+}
+
+func (x *RegisterServiceRequest) GetTtlSeconds() int32 {
+	if x != nil {
+		return x.TtlSeconds
+	}
+	return 0
+}
+
+type RegisterServiceResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	TtlSeconds    int32                  `protobuf:"varint,3,opt,name=ttl_seconds,json=ttlSeconds,proto3" json:"ttl_seconds,omitempty"` // 实际生效的 TTL
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RegisterServiceResponse) Reset() {
+	*x = RegisterServiceResponse{}
+	mi := &file_lightrag_eventbus_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RegisterServiceResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegisterServiceResponse) ProtoMessage() {}
+
+func (x *RegisterServiceResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_lightrag_eventbus_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegisterServiceResponse.ProtoReflect.Descriptor instead.
+func (*RegisterServiceResponse) Descriptor() ([]byte, []int) {
+	return file_lightrag_eventbus_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *RegisterServiceResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *RegisterServiceResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *RegisterServiceResponse) GetTtlSeconds() int32 {
+	if x != nil {
+		return x.TtlSeconds
+	}
+	return 0
+}
+
+type HeartbeatRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ServiceName   string                 `protobuf:"bytes,1,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
+	InstanceId    string                 `protobuf:"bytes,2,opt,name=instance_id,json=instanceId,proto3" json:"instance_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HeartbeatRequest) Reset() {
+	*x = HeartbeatRequest{}
+	mi := &file_lightrag_eventbus_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HeartbeatRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HeartbeatRequest) ProtoMessage() {}
+
+func (x *HeartbeatRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_lightrag_eventbus_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HeartbeatRequest.ProtoReflect.Descriptor instead.
+func (*HeartbeatRequest) Descriptor() ([]byte, []int) {
+	return file_lightrag_eventbus_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *HeartbeatRequest) GetServiceName() string {
+	if x != nil {
+		return x.ServiceName
+	}
+	return ""
+}
+
+func (x *HeartbeatRequest) GetInstanceId() string {
+	if x != nil {
+		return x.InstanceId
+	}
+	return ""
+}
+
+type HeartbeatResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	ExpiresAt     int64                  `protobuf:"varint,2,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"` // 过期时间 (Unix ms)
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HeartbeatResponse) Reset() {
+	*x = HeartbeatResponse{}
+	mi := &file_lightrag_eventbus_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HeartbeatResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HeartbeatResponse) ProtoMessage() {}
+
+func (x *HeartbeatResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_lightrag_eventbus_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HeartbeatResponse.ProtoReflect.Descriptor instead.
+func (*HeartbeatResponse) Descriptor() ([]byte, []int) {
+	return file_lightrag_eventbus_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *HeartbeatResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *HeartbeatResponse) GetExpiresAt() int64 {
+	if x != nil {
+		return x.ExpiresAt
+	}
+	return 0
+}
+
+type UnregisterServiceRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ServiceName   string                 `protobuf:"bytes,1,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
+	InstanceId    string                 `protobuf:"bytes,2,opt,name=instance_id,json=instanceId,proto3" json:"instance_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UnregisterServiceRequest) Reset() {
+	*x = UnregisterServiceRequest{}
+	mi := &file_lightrag_eventbus_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UnregisterServiceRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UnregisterServiceRequest) ProtoMessage() {}
+
+func (x *UnregisterServiceRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_lightrag_eventbus_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UnregisterServiceRequest.ProtoReflect.Descriptor instead.
+func (*UnregisterServiceRequest) Descriptor() ([]byte, []int) {
+	return file_lightrag_eventbus_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *UnregisterServiceRequest) GetServiceName() string {
+	if x != nil {
+		return x.ServiceName
+	}
+	return ""
+}
+
+func (x *UnregisterServiceRequest) GetInstanceId() string {
+	if x != nil {
+		return x.InstanceId
+	}
+	return ""
+}
+
+type ListServiceInstancesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ServiceName   string                 `protobuf:"bytes,1,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"` // 服务名（空 = 列出所有服务的实例）
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListServiceInstancesRequest) Reset() {
+	*x = ListServiceInstancesRequest{}
+	mi := &file_lightrag_eventbus_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListServiceInstancesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListServiceInstancesRequest) ProtoMessage() {}
+
+func (x *ListServiceInstancesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_lightrag_eventbus_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListServiceInstancesRequest.ProtoReflect.Descriptor instead.
+func (*ListServiceInstancesRequest) Descriptor() ([]byte, []int) {
+	return file_lightrag_eventbus_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ListServiceInstancesRequest) GetServiceName() string {
+	if x != nil {
+		return x.ServiceName
+	}
+	return ""
+}
+
+type ListServiceInstancesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Instances     []*ServiceInstance     `protobuf:"bytes,1,rep,name=instances,proto3" json:"instances,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListServiceInstancesResponse) Reset() {
+	*x = ListServiceInstancesResponse{}
+	mi := &file_lightrag_eventbus_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListServiceInstancesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListServiceInstancesResponse) ProtoMessage() {}
+
+func (x *ListServiceInstancesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_lightrag_eventbus_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListServiceInstancesResponse.ProtoReflect.Descriptor instead.
+func (*ListServiceInstancesResponse) Descriptor() ([]byte, []int) {
+	return file_lightrag_eventbus_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ListServiceInstancesResponse) GetInstances() []*ServiceInstance {
+	if x != nil {
+		return x.Instances
+	}
+	return nil
+}
+
 type EventEnvelope struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
 	Topic             string                 `protobuf:"bytes,1,opt,name=topic,proto3" json:"topic,omitempty"`                                                                                  // 路由 Topic (如: "rag.insert.chunking")
@@ -320,7 +752,7 @@ type EventEnvelope struct {
 
 func (x *EventEnvelope) Reset() {
 	*x = EventEnvelope{}
-	mi := &file_lightrag_eventbus_proto_msgTypes[2]
+	mi := &file_lightrag_eventbus_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -332,7 +764,7 @@ func (x *EventEnvelope) String() string {
 func (*EventEnvelope) ProtoMessage() {}
 
 func (x *EventEnvelope) ProtoReflect() protoreflect.Message {
-	mi := &file_lightrag_eventbus_proto_msgTypes[2]
+	mi := &file_lightrag_eventbus_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -345,7 +777,7 @@ func (x *EventEnvelope) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EventEnvelope.ProtoReflect.Descriptor instead.
 func (*EventEnvelope) Descriptor() ([]byte, []int) {
-	return file_lightrag_eventbus_proto_rawDescGZIP(), []int{2}
+	return file_lightrag_eventbus_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *EventEnvelope) GetTopic() string {
@@ -425,7 +857,7 @@ type SubscriberReply struct {
 
 func (x *SubscriberReply) Reset() {
 	*x = SubscriberReply{}
-	mi := &file_lightrag_eventbus_proto_msgTypes[3]
+	mi := &file_lightrag_eventbus_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -437,7 +869,7 @@ func (x *SubscriberReply) String() string {
 func (*SubscriberReply) ProtoMessage() {}
 
 func (x *SubscriberReply) ProtoReflect() protoreflect.Message {
-	mi := &file_lightrag_eventbus_proto_msgTypes[3]
+	mi := &file_lightrag_eventbus_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -450,7 +882,7 @@ func (x *SubscriberReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubscriberReply.ProtoReflect.Descriptor instead.
 func (*SubscriberReply) Descriptor() ([]byte, []int) {
-	return file_lightrag_eventbus_proto_rawDescGZIP(), []int{3}
+	return file_lightrag_eventbus_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *SubscriberReply) GetCorrelationId() string {
@@ -550,7 +982,42 @@ const file_lightrag_eventbus_proto_rawDesc = "" +
 	"\x13expected_latency_ms\x18\x05 \x01(\x05R\x11expectedLatencyMs\"F\n" +
 	"\x10RegisterResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"\xe9\x03\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"\x97\x02\n" +
+	"\x0fServiceInstance\x12!\n" +
+	"\fservice_name\x18\x01 \x01(\tR\vserviceName\x12\x1f\n" +
+	"\vinstance_id\x18\x02 \x01(\tR\n" +
+	"instanceId\x12\x18\n" +
+	"\aaddress\x18\x03 \x01(\tR\aaddress\x12\x18\n" +
+	"\aversion\x18\x04 \x01(\tR\aversion\x12O\n" +
+	"\bmetadata\x18\x05 \x03(\v23.lightrag.eventbus.v1.ServiceInstance.MetadataEntryR\bmetadata\x1a;\n" +
+	"\rMetadataEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"|\n" +
+	"\x16RegisterServiceRequest\x12A\n" +
+	"\binstance\x18\x01 \x01(\v2%.lightrag.eventbus.v1.ServiceInstanceR\binstance\x12\x1f\n" +
+	"\vttl_seconds\x18\x02 \x01(\x05R\n" +
+	"ttlSeconds\"n\n" +
+	"\x17RegisterServiceResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x1f\n" +
+	"\vttl_seconds\x18\x03 \x01(\x05R\n" +
+	"ttlSeconds\"V\n" +
+	"\x10HeartbeatRequest\x12!\n" +
+	"\fservice_name\x18\x01 \x01(\tR\vserviceName\x12\x1f\n" +
+	"\vinstance_id\x18\x02 \x01(\tR\n" +
+	"instanceId\"L\n" +
+	"\x11HeartbeatResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x1d\n" +
+	"\n" +
+	"expires_at\x18\x02 \x01(\x03R\texpiresAt\"^\n" +
+	"\x18UnregisterServiceRequest\x12!\n" +
+	"\fservice_name\x18\x01 \x01(\tR\vserviceName\x12\x1f\n" +
+	"\vinstance_id\x18\x02 \x01(\tR\n" +
+	"instanceId\"@\n" +
+	"\x1bListServiceInstancesRequest\x12!\n" +
+	"\fservice_name\x18\x01 \x01(\tR\vserviceName\"c\n" +
+	"\x1cListServiceInstancesResponse\x12C\n" +
+	"\tinstances\x18\x01 \x03(\v2%.lightrag.eventbus.v1.ServiceInstanceR\tinstances\"\xe9\x03\n" +
 	"\rEventEnvelope\x12\x14\n" +
 	"\x05topic\x18\x01 \x01(\tR\x05topic\x12%\n" +
 	"\x0ecorrelation_id\x18\x02 \x01(\tR\rcorrelationId\x12\x19\n" +
@@ -605,12 +1072,16 @@ const file_lightrag_eventbus_proto_rawDesc = "" +
 	"\bCONTINUE\x10\x00\x12\x11\n" +
 	"\rCIRCUIT_BREAK\x10\x01\x12\t\n" +
 	"\x05RETRY\x10\x02\x12\f\n" +
-	"\bFALLBACK\x10\x032\x82\x03\n" +
+	"\bFALLBACK\x10\x032\xbc\x06\n" +
 	"\bEventBus\x12c\n" +
 	"\x12RegisterSubscriber\x12%.lightrag.eventbus.v1.RegisterRequest\x1a&.lightrag.eventbus.v1.RegisterResponse\x12Y\n" +
 	"\tSubscribe\x12%.lightrag.eventbus.v1.RegisterRequest\x1a#.lightrag.eventbus.v1.EventEnvelope0\x01\x12X\n" +
 	"\aRespond\x12%.lightrag.eventbus.v1.SubscriberReply\x1a&.lightrag.eventbus.v1.RegisterResponse\x12\\\n" +
-	"\x0ePublishAndWait\x12#.lightrag.eventbus.v1.EventEnvelope\x1a%.lightrag.eventbus.v1.SubscriberReplyB[\n" +
+	"\x0ePublishAndWait\x12#.lightrag.eventbus.v1.EventEnvelope\x1a%.lightrag.eventbus.v1.SubscriberReply\x12n\n" +
+	"\x0fRegisterService\x12,.lightrag.eventbus.v1.RegisterServiceRequest\x1a-.lightrag.eventbus.v1.RegisterServiceResponse\x12\\\n" +
+	"\tHeartbeat\x12&.lightrag.eventbus.v1.HeartbeatRequest\x1a'.lightrag.eventbus.v1.HeartbeatResponse\x12k\n" +
+	"\x11UnregisterService\x12..lightrag.eventbus.v1.UnregisterServiceRequest\x1a&.lightrag.eventbus.v1.RegisterResponse\x12}\n" +
+	"\x14ListServiceInstances\x121.lightrag.eventbus.v1.ListServiceInstancesRequest\x1a2.lightrag.eventbus.v1.ListServiceInstancesResponseB[\n" +
 	"\x18com.lightrag.eventbus.v1P\x01Z=github.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go;eventbusb\x06proto3"
 
 var (
@@ -626,41 +1097,61 @@ func file_lightrag_eventbus_proto_rawDescGZIP() []byte {
 }
 
 var file_lightrag_eventbus_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_lightrag_eventbus_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_lightrag_eventbus_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_lightrag_eventbus_proto_goTypes = []any{
-	(SubscriberReply_MergeStrategy)(0),  // 0: lightrag.eventbus.v1.SubscriberReply.MergeStrategy
-	(SubscriberReply_HealthStatus)(0),   // 1: lightrag.eventbus.v1.SubscriberReply.HealthStatus
-	(SubscriberReply_AdvisoryAction)(0), // 2: lightrag.eventbus.v1.SubscriberReply.AdvisoryAction
-	(*RegisterRequest)(nil),             // 3: lightrag.eventbus.v1.RegisterRequest
-	(*RegisterResponse)(nil),            // 4: lightrag.eventbus.v1.RegisterResponse
-	(*EventEnvelope)(nil),               // 5: lightrag.eventbus.v1.EventEnvelope
-	(*SubscriberReply)(nil),             // 6: lightrag.eventbus.v1.SubscriberReply
-	nil,                                 // 7: lightrag.eventbus.v1.EventEnvelope.InputsEntry
-	nil,                                 // 8: lightrag.eventbus.v1.EventEnvelope.MetadataEntry
-	nil,                                 // 9: lightrag.eventbus.v1.SubscriberReply.OutputsEntry
-	nil,                                 // 10: lightrag.eventbus.v1.SubscriberReply.MetadataEntry
+	(SubscriberReply_MergeStrategy)(0),   // 0: lightrag.eventbus.v1.SubscriberReply.MergeStrategy
+	(SubscriberReply_HealthStatus)(0),    // 1: lightrag.eventbus.v1.SubscriberReply.HealthStatus
+	(SubscriberReply_AdvisoryAction)(0),  // 2: lightrag.eventbus.v1.SubscriberReply.AdvisoryAction
+	(*RegisterRequest)(nil),              // 3: lightrag.eventbus.v1.RegisterRequest
+	(*RegisterResponse)(nil),             // 4: lightrag.eventbus.v1.RegisterResponse
+	(*ServiceInstance)(nil),              // 5: lightrag.eventbus.v1.ServiceInstance
+	(*RegisterServiceRequest)(nil),       // 6: lightrag.eventbus.v1.RegisterServiceRequest
+	(*RegisterServiceResponse)(nil),      // 7: lightrag.eventbus.v1.RegisterServiceResponse
+	(*HeartbeatRequest)(nil),             // 8: lightrag.eventbus.v1.HeartbeatRequest
+	(*HeartbeatResponse)(nil),            // 9: lightrag.eventbus.v1.HeartbeatResponse
+	(*UnregisterServiceRequest)(nil),     // 10: lightrag.eventbus.v1.UnregisterServiceRequest
+	(*ListServiceInstancesRequest)(nil),  // 11: lightrag.eventbus.v1.ListServiceInstancesRequest
+	(*ListServiceInstancesResponse)(nil), // 12: lightrag.eventbus.v1.ListServiceInstancesResponse
+	(*EventEnvelope)(nil),                // 13: lightrag.eventbus.v1.EventEnvelope
+	(*SubscriberReply)(nil),              // 14: lightrag.eventbus.v1.SubscriberReply
+	nil,                                  // 15: lightrag.eventbus.v1.ServiceInstance.MetadataEntry
+	nil,                                  // 16: lightrag.eventbus.v1.EventEnvelope.InputsEntry
+	nil,                                  // 17: lightrag.eventbus.v1.EventEnvelope.MetadataEntry
+	nil,                                  // 18: lightrag.eventbus.v1.SubscriberReply.OutputsEntry
+	nil,                                  // 19: lightrag.eventbus.v1.SubscriberReply.MetadataEntry
 }
 var file_lightrag_eventbus_proto_depIdxs = []int32{
-	7,  // 0: lightrag.eventbus.v1.EventEnvelope.inputs:type_name -> lightrag.eventbus.v1.EventEnvelope.InputsEntry
-	8,  // 1: lightrag.eventbus.v1.EventEnvelope.metadata:type_name -> lightrag.eventbus.v1.EventEnvelope.MetadataEntry
-	9,  // 2: lightrag.eventbus.v1.SubscriberReply.outputs:type_name -> lightrag.eventbus.v1.SubscriberReply.OutputsEntry
-	0,  // 3: lightrag.eventbus.v1.SubscriberReply.strategy:type_name -> lightrag.eventbus.v1.SubscriberReply.MergeStrategy
-	10, // 4: lightrag.eventbus.v1.SubscriberReply.metadata:type_name -> lightrag.eventbus.v1.SubscriberReply.MetadataEntry
-	1,  // 5: lightrag.eventbus.v1.SubscriberReply.health:type_name -> lightrag.eventbus.v1.SubscriberReply.HealthStatus
-	2,  // 6: lightrag.eventbus.v1.SubscriberReply.advisory:type_name -> lightrag.eventbus.v1.SubscriberReply.AdvisoryAction
-	3,  // 7: lightrag.eventbus.v1.EventBus.RegisterSubscriber:input_type -> lightrag.eventbus.v1.RegisterRequest
-	3,  // 8: lightrag.eventbus.v1.EventBus.Subscribe:input_type -> lightrag.eventbus.v1.RegisterRequest
-	6,  // 9: lightrag.eventbus.v1.EventBus.Respond:input_type -> lightrag.eventbus.v1.SubscriberReply
-	5,  // 10: lightrag.eventbus.v1.EventBus.PublishAndWait:input_type -> lightrag.eventbus.v1.EventEnvelope
-	4,  // 11: lightrag.eventbus.v1.EventBus.RegisterSubscriber:output_type -> lightrag.eventbus.v1.RegisterResponse
-	5,  // 12: lightrag.eventbus.v1.EventBus.Subscribe:output_type -> lightrag.eventbus.v1.EventEnvelope
-	4,  // 13: lightrag.eventbus.v1.EventBus.Respond:output_type -> lightrag.eventbus.v1.RegisterResponse
-	6,  // 14: lightrag.eventbus.v1.EventBus.PublishAndWait:output_type -> lightrag.eventbus.v1.SubscriberReply
-	11, // [11:15] is the sub-list for method output_type
-	7,  // [7:11] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	15, // 0: lightrag.eventbus.v1.ServiceInstance.metadata:type_name -> lightrag.eventbus.v1.ServiceInstance.MetadataEntry
+	5,  // 1: lightrag.eventbus.v1.RegisterServiceRequest.instance:type_name -> lightrag.eventbus.v1.ServiceInstance
+	5,  // 2: lightrag.eventbus.v1.ListServiceInstancesResponse.instances:type_name -> lightrag.eventbus.v1.ServiceInstance
+	16, // 3: lightrag.eventbus.v1.EventEnvelope.inputs:type_name -> lightrag.eventbus.v1.EventEnvelope.InputsEntry
+	17, // 4: lightrag.eventbus.v1.EventEnvelope.metadata:type_name -> lightrag.eventbus.v1.EventEnvelope.MetadataEntry
+	18, // 5: lightrag.eventbus.v1.SubscriberReply.outputs:type_name -> lightrag.eventbus.v1.SubscriberReply.OutputsEntry
+	0,  // 6: lightrag.eventbus.v1.SubscriberReply.strategy:type_name -> lightrag.eventbus.v1.SubscriberReply.MergeStrategy
+	19, // 7: lightrag.eventbus.v1.SubscriberReply.metadata:type_name -> lightrag.eventbus.v1.SubscriberReply.MetadataEntry
+	1,  // 8: lightrag.eventbus.v1.SubscriberReply.health:type_name -> lightrag.eventbus.v1.SubscriberReply.HealthStatus
+	2,  // 9: lightrag.eventbus.v1.SubscriberReply.advisory:type_name -> lightrag.eventbus.v1.SubscriberReply.AdvisoryAction
+	3,  // 10: lightrag.eventbus.v1.EventBus.RegisterSubscriber:input_type -> lightrag.eventbus.v1.RegisterRequest
+	3,  // 11: lightrag.eventbus.v1.EventBus.Subscribe:input_type -> lightrag.eventbus.v1.RegisterRequest
+	14, // 12: lightrag.eventbus.v1.EventBus.Respond:input_type -> lightrag.eventbus.v1.SubscriberReply
+	13, // 13: lightrag.eventbus.v1.EventBus.PublishAndWait:input_type -> lightrag.eventbus.v1.EventEnvelope
+	6,  // 14: lightrag.eventbus.v1.EventBus.RegisterService:input_type -> lightrag.eventbus.v1.RegisterServiceRequest
+	8,  // 15: lightrag.eventbus.v1.EventBus.Heartbeat:input_type -> lightrag.eventbus.v1.HeartbeatRequest
+	10, // 16: lightrag.eventbus.v1.EventBus.UnregisterService:input_type -> lightrag.eventbus.v1.UnregisterServiceRequest
+	11, // 17: lightrag.eventbus.v1.EventBus.ListServiceInstances:input_type -> lightrag.eventbus.v1.ListServiceInstancesRequest
+	4,  // 18: lightrag.eventbus.v1.EventBus.RegisterSubscriber:output_type -> lightrag.eventbus.v1.RegisterResponse
+	13, // 19: lightrag.eventbus.v1.EventBus.Subscribe:output_type -> lightrag.eventbus.v1.EventEnvelope
+	4,  // 20: lightrag.eventbus.v1.EventBus.Respond:output_type -> lightrag.eventbus.v1.RegisterResponse
+	14, // 21: lightrag.eventbus.v1.EventBus.PublishAndWait:output_type -> lightrag.eventbus.v1.SubscriberReply
+	7,  // 22: lightrag.eventbus.v1.EventBus.RegisterService:output_type -> lightrag.eventbus.v1.RegisterServiceResponse
+	9,  // 23: lightrag.eventbus.v1.EventBus.Heartbeat:output_type -> lightrag.eventbus.v1.HeartbeatResponse
+	4,  // 24: lightrag.eventbus.v1.EventBus.UnregisterService:output_type -> lightrag.eventbus.v1.RegisterResponse
+	12, // 25: lightrag.eventbus.v1.EventBus.ListServiceInstances:output_type -> lightrag.eventbus.v1.ListServiceInstancesResponse
+	18, // [18:26] is the sub-list for method output_type
+	10, // [10:18] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_lightrag_eventbus_proto_init() }
@@ -674,7 +1165,7 @@ func file_lightrag_eventbus_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_lightrag_eventbus_proto_rawDesc), len(file_lightrag_eventbus_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   8,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

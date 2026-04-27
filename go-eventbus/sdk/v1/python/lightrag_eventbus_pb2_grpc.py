@@ -58,6 +58,26 @@ class EventBusStub(object):
                 request_serializer=lightrag__eventbus__pb2.EventEnvelope.SerializeToString,
                 response_deserializer=lightrag__eventbus__pb2.SubscriberReply.FromString,
                 _registered_method=True)
+        self.RegisterService = channel.unary_unary(
+                '/lightrag.eventbus.v1.EventBus/RegisterService',
+                request_serializer=lightrag__eventbus__pb2.RegisterServiceRequest.SerializeToString,
+                response_deserializer=lightrag__eventbus__pb2.RegisterServiceResponse.FromString,
+                _registered_method=True)
+        self.Heartbeat = channel.unary_unary(
+                '/lightrag.eventbus.v1.EventBus/Heartbeat',
+                request_serializer=lightrag__eventbus__pb2.HeartbeatRequest.SerializeToString,
+                response_deserializer=lightrag__eventbus__pb2.HeartbeatResponse.FromString,
+                _registered_method=True)
+        self.UnregisterService = channel.unary_unary(
+                '/lightrag.eventbus.v1.EventBus/UnregisterService',
+                request_serializer=lightrag__eventbus__pb2.UnregisterServiceRequest.SerializeToString,
+                response_deserializer=lightrag__eventbus__pb2.RegisterResponse.FromString,
+                _registered_method=True)
+        self.ListServiceInstances = channel.unary_unary(
+                '/lightrag.eventbus.v1.EventBus/ListServiceInstances',
+                request_serializer=lightrag__eventbus__pb2.ListServiceInstancesRequest.SerializeToString,
+                response_deserializer=lightrag__eventbus__pb2.ListServiceInstancesResponse.FromString,
+                _registered_method=True)
 
 
 class EventBusServicer(object):
@@ -96,6 +116,34 @@ class EventBusServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def RegisterService(self, request, context):
+        """【控制平面】服务实例注册
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def Heartbeat(self, request, context):
+        """【控制平面】服务心跳续期
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def UnregisterService(self, request, context):
+        """【控制平面】服务实例注销
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListServiceInstances(self, request, context):
+        """【控制平面】查询服务实例列表
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_EventBusServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -118,6 +166,26 @@ def add_EventBusServicer_to_server(servicer, server):
                     servicer.PublishAndWait,
                     request_deserializer=lightrag__eventbus__pb2.EventEnvelope.FromString,
                     response_serializer=lightrag__eventbus__pb2.SubscriberReply.SerializeToString,
+            ),
+            'RegisterService': grpc.unary_unary_rpc_method_handler(
+                    servicer.RegisterService,
+                    request_deserializer=lightrag__eventbus__pb2.RegisterServiceRequest.FromString,
+                    response_serializer=lightrag__eventbus__pb2.RegisterServiceResponse.SerializeToString,
+            ),
+            'Heartbeat': grpc.unary_unary_rpc_method_handler(
+                    servicer.Heartbeat,
+                    request_deserializer=lightrag__eventbus__pb2.HeartbeatRequest.FromString,
+                    response_serializer=lightrag__eventbus__pb2.HeartbeatResponse.SerializeToString,
+            ),
+            'UnregisterService': grpc.unary_unary_rpc_method_handler(
+                    servicer.UnregisterService,
+                    request_deserializer=lightrag__eventbus__pb2.UnregisterServiceRequest.FromString,
+                    response_serializer=lightrag__eventbus__pb2.RegisterResponse.SerializeToString,
+            ),
+            'ListServiceInstances': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListServiceInstances,
+                    request_deserializer=lightrag__eventbus__pb2.ListServiceInstancesRequest.FromString,
+                    response_serializer=lightrag__eventbus__pb2.ListServiceInstancesResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -232,6 +300,114 @@ class EventBus(object):
             '/lightrag.eventbus.v1.EventBus/PublishAndWait',
             lightrag__eventbus__pb2.EventEnvelope.SerializeToString,
             lightrag__eventbus__pb2.SubscriberReply.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def RegisterService(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/lightrag.eventbus.v1.EventBus/RegisterService',
+            lightrag__eventbus__pb2.RegisterServiceRequest.SerializeToString,
+            lightrag__eventbus__pb2.RegisterServiceResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def Heartbeat(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/lightrag.eventbus.v1.EventBus/Heartbeat',
+            lightrag__eventbus__pb2.HeartbeatRequest.SerializeToString,
+            lightrag__eventbus__pb2.HeartbeatResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UnregisterService(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/lightrag.eventbus.v1.EventBus/UnregisterService',
+            lightrag__eventbus__pb2.UnregisterServiceRequest.SerializeToString,
+            lightrag__eventbus__pb2.RegisterResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListServiceInstances(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/lightrag.eventbus.v1.EventBus/ListServiceInstances',
+            lightrag__eventbus__pb2.ListServiceInstancesRequest.SerializeToString,
+            lightrag__eventbus__pb2.ListServiceInstancesResponse.FromString,
             options,
             channel_credentials,
             insecure,

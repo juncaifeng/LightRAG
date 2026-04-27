@@ -1,8 +1,8 @@
 import { create } from 'zustand'
-import { fetchStatus, fetchSubscribers, fetchTopics, fetchRecentEvents, fetchTopicSchemas, fetchServiceSchemas } from '@/lib/api'
+import { fetchStatus, fetchSubscribers, fetchTopics, fetchRecentEvents, fetchTopicSchemas, fetchServiceSchemas, fetchServiceInstances } from '@/lib/api'
 import { EventBusWebSocket } from '@/lib/websocket'
 import { WS_URL, POLL_INTERVAL } from '@/lib/constants'
-import type { StatusResponse, SubscriberInfo, TopicInfo, EventRecord, TopicSchema, ServiceSchema } from '@/types/api'
+import type { StatusResponse, SubscriberInfo, TopicInfo, EventRecord, TopicSchema, ServiceSchema, ServiceInstanceInfo } from '@/types/api'
 
 interface DashboardState {
   status: StatusResponse | null
@@ -12,6 +12,7 @@ interface DashboardState {
   liveEvents: EventRecord[]
   topicSchemas: TopicSchema[]
   serviceSchemas: ServiceSchema[]
+  serviceInstances: ServiceInstanceInfo[]
   wsConnected: boolean
 
   // actions
@@ -21,6 +22,7 @@ interface DashboardState {
   fetchRecentEvents: () => Promise<void>
   fetchTopicSchemas: () => Promise<void>
   fetchServiceSchemas: () => Promise<void>
+  fetchServiceInstances: () => Promise<void>
   addLiveEvent: (event: EventRecord) => void
   setWsConnected: (connected: boolean) => void
   startPolling: () => void
@@ -40,6 +42,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
   liveEvents: [],
   topicSchemas: [],
   serviceSchemas: [],
+  serviceInstances: [],
   wsConnected: false,
 
   fetchStatus: async () => {
@@ -96,6 +99,15 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     }
   },
 
+  fetchServiceInstances: async () => {
+    try {
+      const instances = await fetchServiceInstances()
+      set({ serviceInstances: instances })
+    } catch {
+      set({ serviceInstances: [] })
+    }
+  },
+
   addLiveEvent: (event) => {
     set((state) => {
       const liveEvents = [event, ...state.liveEvents].slice(0, 500)
@@ -106,7 +118,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
   setWsConnected: (wsConnected) => set({ wsConnected }),
 
   startPolling: () => {
-    const { fetchStatus, fetchSubscribers, fetchTopics, fetchRecentEvents, fetchTopicSchemas, fetchServiceSchemas } = get()
+    const { fetchStatus, fetchSubscribers, fetchTopics, fetchRecentEvents, fetchTopicSchemas, fetchServiceSchemas, fetchServiceInstances } = get()
     // Immediate fetch
     fetchStatus()
     fetchSubscribers()
@@ -114,6 +126,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     fetchRecentEvents()
     fetchTopicSchemas()
     fetchServiceSchemas()
+    fetchServiceInstances()
     // Periodic polling
     if (pollingTimer) clearInterval(pollingTimer)
     pollingTimer = setInterval(() => {

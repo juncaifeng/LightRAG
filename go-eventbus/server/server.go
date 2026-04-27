@@ -40,13 +40,17 @@ type EventBusServer struct {
 
 	// metrics for observability
 	metrics *EventMetrics
+
+	// serviceCache for service instance registration and discovery
+	serviceCache *ServiceCache
 }
 
-func NewEventBusServer() *EventBusServer {
+func NewEventBusServer(serviceCache *ServiceCache) *EventBusServer {
 	return &EventBusServer{
-		subscribers: make(map[string][]*Subscriber),
-		gatherTasks: make(map[string]*GatherTask),
-		metrics:     NewEventMetrics(),
+		subscribers:  make(map[string][]*Subscriber),
+		gatherTasks:  make(map[string]*GatherTask),
+		metrics:      NewEventMetrics(),
+		serviceCache: serviceCache,
 	}
 }
 
@@ -114,6 +118,104 @@ func (s *EventBusServer) Respond(ctx context.Context, reply *pb.SubscriberReply)
 	}
 
 	return &pb.RegisterResponse{Success: true, Message: "Response received"}, nil
+}
+
+// --- Service Instance Registration RPCs ---
+
+const defaultServiceTTLSeconds int32 = 30
+
+// RegisterService registers a service instance.
+func (s *EventBusServer) RegisterService(ctx context.Context, req *pb.RegisterServiceRequest) (*pb.RegisterServiceResponse, error) {
+	inst := req.Instance
+	if inst == nil || inst.ServiceName == "" || inst.InstanceId == "" || inst.Address == "" {
+		return &pb.RegisterServiceResponse{
+			Success: false,
+			Message: "service_name, instance_id, and address are required",
+		}, nil
+	}
+
+	ttl := req.TtlSeconds
+	if ttl <= 0 {
+		ttl = defaultServiceTTLSeconds
+	}
+
+	now := time.Now()
+	info := &ServiceInstanceInfo{
+		ServiceName:   inst.ServiceName,
+		InstanceID:    inst.InstanceId,
+		Address:       inst.Address,
+		Version:       inst.Version,
+		Metadata:      inst.Metadata,
+		Status:        "healthy",
+		RegisteredAt:  now,
+		LastHeartbeat: now,
+		ExpiresAt:     now.Add(time.Duration(ttl) * time.Second),
+	}
+
+	if err := s.serviceCache.Register(info); err != nil {
+		log.Printf("RegisterService error: %v", err)
+		return &pb.RegisterServiceResponse{
+			Success: false,
+			Message: err.Error(),
+		}, nil
+	}
+
+	log.Printf("Service registered: %s/%s at %s (ttl=%ds)", inst.ServiceName, inst.InstanceId, inst.Address, ttl)
+	return &pb.RegisterServiceResponse{
+		Success:    true,
+		Message:    "Service instance registered",
+		TtlSeconds: ttl,
+	}, nil
+}
+
+// Heartbeat refreshes a service instance's TTL.
+func (s *EventBusServer) Heartbeat(ctx context.Context, req *pb.HeartbeatRequest) (*pb.HeartbeatResponse, error) {
+	if req.ServiceName == "" || req.InstanceId == "" {
+		return &pb.HeartbeatResponse{Success: false}, nil
+	}
+
+	ttl := defaultServiceTTLSeconds
+	if err := s.serviceCache.Heartbeat(req.ServiceName, req.InstanceId, ttl); err != nil {
+		return &pb.HeartbeatResponse{Success: false}, nil
+	}
+
+	expiresAt := time.Now().Add(time.Duration(ttl) * time.Second)
+	return &pb.HeartbeatResponse{
+		Success:   true,
+		ExpiresAt: expiresAt.UnixMilli(),
+	}, nil
+}
+
+// UnregisterService removes a service instance.
+func (s *EventBusServer) UnregisterService(ctx context.Context, req *pb.UnregisterServiceRequest) (*pb.RegisterResponse, error) {
+	if req.ServiceName == "" || req.InstanceId == "" {
+		return &pb.RegisterResponse{Success: false, Message: "service_name and instance_id are required"}, nil
+	}
+
+	if err := s.serviceCache.Unregister(req.ServiceName, req.InstanceId); err != nil {
+		return &pb.RegisterResponse{Success: false, Message: err.Error()}, nil
+	}
+
+	log.Printf("Service unregistered: %s/%s", req.ServiceName, req.InstanceId)
+	return &pb.RegisterResponse{Success: true, Message: "Service instance unregistered"}, nil
+}
+
+// ListServiceInstances returns registered service instances.
+func (s *EventBusServer) ListServiceInstances(ctx context.Context, req *pb.ListServiceInstancesRequest) (*pb.ListServiceInstancesResponse, error) {
+	instances := s.serviceCache.List(req.ServiceName)
+
+	result := make([]*pb.ServiceInstance, 0, len(instances))
+	for _, inst := range instances {
+		result = append(result, &pb.ServiceInstance{
+			ServiceName: inst.ServiceName,
+			InstanceId:  inst.InstanceID,
+			Address:     inst.Address,
+			Version:     inst.Version,
+			Metadata:    inst.Metadata,
+		})
+	}
+
+	return &pb.ListServiceInstancesResponse{Instances: result}, nil
 }
 
 // --- Helper methods for HTTP API ---

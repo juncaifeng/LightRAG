@@ -24,6 +24,52 @@ message RegisterResponse {
 }
 
 // ==========================================
+// 1.1 服务实例注册与发现 (控制平面)
+// ==========================================
+
+message ServiceInstance {
+    string service_name = 1;            // 服务名，如 "session"
+    string instance_id = 2;             // 实例唯一标识，如 "session-node1:50052"
+    string address = 3;                 // gRPC 地址，如 "localhost:50052"
+    string version = 4;                 // 版本号，如 "1.0.0"
+    map<string, string> metadata = 5;   // 扩展元数据
+}
+
+message RegisterServiceRequest {
+    ServiceInstance instance = 1;
+    int32 ttl_seconds = 2;              // 注册 TTL（秒，默认 30，需心跳续期）
+}
+
+message RegisterServiceResponse {
+    bool success = 1;
+    string message = 2;
+    int32 ttl_seconds = 3;              // 实际生效的 TTL
+}
+
+message HeartbeatRequest {
+    string service_name = 1;
+    string instance_id = 2;
+}
+
+message HeartbeatResponse {
+    bool success = 1;
+    int64 expires_at = 2;               // 过期时间 (Unix ms)
+}
+
+message UnregisterServiceRequest {
+    string service_name = 1;
+    string instance_id = 2;
+}
+
+message ListServiceInstancesRequest {
+    string service_name = 1;            // 服务名（空 = 列出所有服务的实例）
+}
+
+message ListServiceInstancesResponse {
+    repeated ServiceInstance instances = 1;
+}
+
+// ==========================================
 // 2. 核心数据传输载体 (数据平面)
 // ==========================================
 
@@ -86,14 +132,26 @@ message SubscriberReply {
 service EventBus {
     // 【控制平面】订阅者启动时注册
     rpc RegisterSubscriber(RegisterRequest) returns (RegisterResponse);
-    
+
     // 【数据平面】数据分发：订阅者只接收事件流 (单向流)
     // 稳定性更高，负载均衡更友好。订阅者需通过独立的 Respond RPC 传回结果。
     rpc Subscribe(RegisterRequest) returns (stream EventEnvelope);
-    
+
     // 【数据平面】数据回传：订阅者处理完毕后通过独立的 RPC 返回结果
     rpc Respond(SubscriberReply) returns (RegisterResponse);
-    
+
     // 【数据平面】主服务(LightRAG)调用接口：发布事件并等待总线聚合结果
     rpc PublishAndWait(EventEnvelope) returns (SubscriberReply);
+
+    // 【控制平面】服务实例注册
+    rpc RegisterService(RegisterServiceRequest) returns (RegisterServiceResponse);
+
+    // 【控制平面】服务心跳续期
+    rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+
+    // 【控制平面】服务实例注销
+    rpc UnregisterService(UnregisterServiceRequest) returns (RegisterResponse);
+
+    // 【控制平面】查询服务实例列表
+    rpc ListServiceInstances(ListServiceInstancesRequest) returns (ListServiceInstancesResponse);
 }

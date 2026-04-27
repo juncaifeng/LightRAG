@@ -19,10 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	EventBus_RegisterSubscriber_FullMethodName = "/lightrag.eventbus.v1.EventBus/RegisterSubscriber"
-	EventBus_Subscribe_FullMethodName          = "/lightrag.eventbus.v1.EventBus/Subscribe"
-	EventBus_Respond_FullMethodName            = "/lightrag.eventbus.v1.EventBus/Respond"
-	EventBus_PublishAndWait_FullMethodName     = "/lightrag.eventbus.v1.EventBus/PublishAndWait"
+	EventBus_RegisterSubscriber_FullMethodName   = "/lightrag.eventbus.v1.EventBus/RegisterSubscriber"
+	EventBus_Subscribe_FullMethodName            = "/lightrag.eventbus.v1.EventBus/Subscribe"
+	EventBus_Respond_FullMethodName              = "/lightrag.eventbus.v1.EventBus/Respond"
+	EventBus_PublishAndWait_FullMethodName       = "/lightrag.eventbus.v1.EventBus/PublishAndWait"
+	EventBus_RegisterService_FullMethodName      = "/lightrag.eventbus.v1.EventBus/RegisterService"
+	EventBus_Heartbeat_FullMethodName            = "/lightrag.eventbus.v1.EventBus/Heartbeat"
+	EventBus_UnregisterService_FullMethodName    = "/lightrag.eventbus.v1.EventBus/UnregisterService"
+	EventBus_ListServiceInstances_FullMethodName = "/lightrag.eventbus.v1.EventBus/ListServiceInstances"
 )
 
 // EventBusClient is the client API for EventBus service.
@@ -38,6 +42,14 @@ type EventBusClient interface {
 	Respond(ctx context.Context, in *SubscriberReply, opts ...grpc.CallOption) (*RegisterResponse, error)
 	// 【数据平面】主服务(LightRAG)调用接口：发布事件并等待总线聚合结果
 	PublishAndWait(ctx context.Context, in *EventEnvelope, opts ...grpc.CallOption) (*SubscriberReply, error)
+	// 【控制平面】服务实例注册
+	RegisterService(ctx context.Context, in *RegisterServiceRequest, opts ...grpc.CallOption) (*RegisterServiceResponse, error)
+	// 【控制平面】服务心跳续期
+	Heartbeat(ctx context.Context, in *HeartbeatRequest, opts ...grpc.CallOption) (*HeartbeatResponse, error)
+	// 【控制平面】服务实例注销
+	UnregisterService(ctx context.Context, in *UnregisterServiceRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
+	// 【控制平面】查询服务实例列表
+	ListServiceInstances(ctx context.Context, in *ListServiceInstancesRequest, opts ...grpc.CallOption) (*ListServiceInstancesResponse, error)
 }
 
 type eventBusClient struct {
@@ -97,6 +109,46 @@ func (c *eventBusClient) PublishAndWait(ctx context.Context, in *EventEnvelope, 
 	return out, nil
 }
 
+func (c *eventBusClient) RegisterService(ctx context.Context, in *RegisterServiceRequest, opts ...grpc.CallOption) (*RegisterServiceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RegisterServiceResponse)
+	err := c.cc.Invoke(ctx, EventBus_RegisterService_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *eventBusClient) Heartbeat(ctx context.Context, in *HeartbeatRequest, opts ...grpc.CallOption) (*HeartbeatResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(HeartbeatResponse)
+	err := c.cc.Invoke(ctx, EventBus_Heartbeat_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *eventBusClient) UnregisterService(ctx context.Context, in *UnregisterServiceRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RegisterResponse)
+	err := c.cc.Invoke(ctx, EventBus_UnregisterService_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *eventBusClient) ListServiceInstances(ctx context.Context, in *ListServiceInstancesRequest, opts ...grpc.CallOption) (*ListServiceInstancesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListServiceInstancesResponse)
+	err := c.cc.Invoke(ctx, EventBus_ListServiceInstances_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EventBusServer is the server API for EventBus service.
 // All implementations must embed UnimplementedEventBusServer
 // for forward compatibility.
@@ -110,6 +162,14 @@ type EventBusServer interface {
 	Respond(context.Context, *SubscriberReply) (*RegisterResponse, error)
 	// 【数据平面】主服务(LightRAG)调用接口：发布事件并等待总线聚合结果
 	PublishAndWait(context.Context, *EventEnvelope) (*SubscriberReply, error)
+	// 【控制平面】服务实例注册
+	RegisterService(context.Context, *RegisterServiceRequest) (*RegisterServiceResponse, error)
+	// 【控制平面】服务心跳续期
+	Heartbeat(context.Context, *HeartbeatRequest) (*HeartbeatResponse, error)
+	// 【控制平面】服务实例注销
+	UnregisterService(context.Context, *UnregisterServiceRequest) (*RegisterResponse, error)
+	// 【控制平面】查询服务实例列表
+	ListServiceInstances(context.Context, *ListServiceInstancesRequest) (*ListServiceInstancesResponse, error)
 	mustEmbedUnimplementedEventBusServer()
 }
 
@@ -131,6 +191,18 @@ func (UnimplementedEventBusServer) Respond(context.Context, *SubscriberReply) (*
 }
 func (UnimplementedEventBusServer) PublishAndWait(context.Context, *EventEnvelope) (*SubscriberReply, error) {
 	return nil, status.Error(codes.Unimplemented, "method PublishAndWait not implemented")
+}
+func (UnimplementedEventBusServer) RegisterService(context.Context, *RegisterServiceRequest) (*RegisterServiceResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RegisterService not implemented")
+}
+func (UnimplementedEventBusServer) Heartbeat(context.Context, *HeartbeatRequest) (*HeartbeatResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Heartbeat not implemented")
+}
+func (UnimplementedEventBusServer) UnregisterService(context.Context, *UnregisterServiceRequest) (*RegisterResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UnregisterService not implemented")
+}
+func (UnimplementedEventBusServer) ListServiceInstances(context.Context, *ListServiceInstancesRequest) (*ListServiceInstancesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListServiceInstances not implemented")
 }
 func (UnimplementedEventBusServer) mustEmbedUnimplementedEventBusServer() {}
 func (UnimplementedEventBusServer) testEmbeddedByValue()                  {}
@@ -218,6 +290,78 @@ func _EventBus_PublishAndWait_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EventBus_RegisterService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterServiceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EventBusServer).RegisterService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EventBus_RegisterService_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EventBusServer).RegisterService(ctx, req.(*RegisterServiceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EventBus_Heartbeat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HeartbeatRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EventBusServer).Heartbeat(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EventBus_Heartbeat_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EventBusServer).Heartbeat(ctx, req.(*HeartbeatRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EventBus_UnregisterService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnregisterServiceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EventBusServer).UnregisterService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EventBus_UnregisterService_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EventBusServer).UnregisterService(ctx, req.(*UnregisterServiceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EventBus_ListServiceInstances_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListServiceInstancesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EventBusServer).ListServiceInstances(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EventBus_ListServiceInstances_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EventBusServer).ListServiceInstances(ctx, req.(*ListServiceInstancesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // EventBus_ServiceDesc is the grpc.ServiceDesc for EventBus service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -236,6 +380,22 @@ var EventBus_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PublishAndWait",
 			Handler:    _EventBus_PublishAndWait_Handler,
+		},
+		{
+			MethodName: "RegisterService",
+			Handler:    _EventBus_RegisterService_Handler,
+		},
+		{
+			MethodName: "Heartbeat",
+			Handler:    _EventBus_Heartbeat_Handler,
+		},
+		{
+			MethodName: "UnregisterService",
+			Handler:    _EventBus_UnregisterService_Handler,
+		},
+		{
+			MethodName: "ListServiceInstances",
+			Handler:    _EventBus_ListServiceInstances_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

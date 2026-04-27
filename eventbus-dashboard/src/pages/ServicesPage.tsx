@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { ChevronDown, ChevronRight, Copy } from 'lucide-react'
-import type { ServiceSchema, MethodSchema, FieldSchema } from '@/types/api'
+import type { ServiceSchema, MethodSchema, FieldSchema, ServiceInstanceInfo } from '@/types/api'
 
 function desc(text: string, textEn: string, lang: 'zh' | 'en') {
   return lang === 'zh' ? text : (textEn || text)
@@ -95,7 +95,7 @@ function MessageCard({ message, t, lang }: { message: { name: string; descriptio
   )
 }
 
-function ServiceCard({ schema }: { schema: ServiceSchema }) {
+function ServiceCard({ schema, instances }: { schema: ServiceSchema; instances: ServiceInstanceInfo[] }) {
   const { lang, t } = useI18n()
   const [expanded, setExpanded] = useState(false)
 
@@ -118,6 +118,11 @@ function ServiceCard({ schema }: { schema: ServiceSchema }) {
                 gRPC
               </Badge>
               <span className="text-xs text-muted-foreground">{schema.methods.length} {t('个方法', 'methods')}</span>
+              {instances.length > 0 && (
+                <Badge className="bg-green-500/15 text-green-700 dark:text-green-400 text-xs">
+                  {instances.length} {t('在线', 'online')}
+                </Badge>
+              )}
             </div>
             {(schema.description || schema.description_en) && (
               <p className="text-xs text-muted-foreground mt-0.5">
@@ -142,6 +147,46 @@ function ServiceCard({ schema }: { schema: ServiceSchema }) {
             <span className="text-xs font-mono">{schema.package}</span>
             <Copy className="h-3 w-3 text-muted-foreground ml-auto" />
           </div>
+
+          {/* Online Instances */}
+          {instances.length > 0 && (
+            <div>
+              <h4 className="text-sm font-semibold mb-2">
+                {t('在线实例', 'Online Instances')}
+                <span className="text-muted-foreground font-normal ml-1">
+                  ({instances.length})
+                </span>
+              </h4>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t('实例 ID', 'Instance ID')}</TableHead>
+                    <TableHead>{t('地址', 'Address')}</TableHead>
+                    <TableHead>{t('版本', 'Version')}</TableHead>
+                    <TableHead>{t('状态', 'Status')}</TableHead>
+                    <TableHead>{t('最后心跳', 'Last Heartbeat')}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {instances.map((inst) => (
+                    <TableRow key={inst.instance_id}>
+                      <TableCell className="font-mono text-sm">{inst.instance_id}</TableCell>
+                      <TableCell className="font-mono text-sm">{inst.address}</TableCell>
+                      <TableCell className="text-sm">{inst.version || '-'}</TableCell>
+                      <TableCell>
+                        <Badge className="bg-green-500/15 text-green-700 dark:text-green-400 text-xs">
+                          {inst.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {new Date(inst.last_heartbeat).toLocaleTimeString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
 
           {/* Methods */}
           <div>
@@ -177,7 +222,11 @@ function ServiceCard({ schema }: { schema: ServiceSchema }) {
 
 export function ServicesPage() {
   const serviceSchemas = useDashboardStore((s) => s.serviceSchemas)
+  const serviceInstances = useDashboardStore((s) => s.serviceInstances)
   const { t } = useI18n()
+
+  const getInstancesForService = (serviceName: string) =>
+    serviceInstances.filter((inst) => inst.service_name === serviceName)
 
   return (
     <div className="space-y-6">
@@ -185,15 +234,19 @@ export function ServicesPage() {
         <h2 className="text-2xl font-bold">{t('gRPC 服务定义', 'gRPC Service Schemas')}</h2>
         <p className="text-sm text-muted-foreground mt-1">
           {t(
-            '注册的 gRPC 服务协议定义。点击服务名展开查看方法和消息类型。',
-            'Registered gRPC service protocol definitions. Click to expand methods and message types.'
+            '注册的 gRPC 服务协议定义及在线实例。点击服务名展开查看详情。',
+            'Registered gRPC service schemas and live instances. Click to expand.'
           )}
         </p>
       </div>
 
       <div className="space-y-4">
         {serviceSchemas.map((schema) => (
-          <ServiceCard key={schema.name} schema={schema} />
+          <ServiceCard
+            key={schema.name}
+            schema={schema}
+            instances={getInstancesForService(schema.name)}
+          />
         ))}
         {serviceSchemas.length === 0 && (
           <Card>

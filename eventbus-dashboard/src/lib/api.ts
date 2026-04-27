@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { API_BASE_URL } from './constants'
-import type { StatusResponse, SubscriberInfo, TopicInfo, RecentEventsResponse, TopicSchema, ServiceSchema } from '@/types/api'
+import type { StatusResponse, SubscriberInfo, TopicInfo, RecentEventsResponse, TopicSchema, ServiceSchema, ServiceInstanceInfo } from '@/types/api'
 
 const api = axios.create({ baseURL: API_BASE_URL })
 
@@ -36,5 +36,11 @@ export async function fetchEventDetail(correlationId: string): Promise<RecentEve
 
 export async function fetchServiceSchemas(): Promise<ServiceSchema[]> {
   const { data } = await api.get('/api/services/schemas')
+  return data || []
+}
+
+export async function fetchServiceInstances(serviceName?: string): Promise<ServiceInstanceInfo[]> {
+  const params = serviceName ? { service_name: serviceName } : {}
+  const { data } = await api.get('/api/services/instances', { params })
   return data || []
 }

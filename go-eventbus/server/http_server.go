@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -88,6 +89,9 @@ func StartHTTPServer(busServer *EventBusServer, addr string) error {
 	// Service schema registry
 	mux.HandleFunc("/api/services/schemas", handleServiceSchemas)
 	mux.HandleFunc("/api/services/schemas/", handleServiceSchema)
+
+	// Service instance registry
+	mux.HandleFunc("/api/services/instances", busServer.handleServiceInstances)
 
 	// Event detail by correlation ID
 	mux.HandleFunc("/api/events/detail/", busServer.handleEventDetail)
@@ -229,4 +233,39 @@ func handleServiceSchema(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, schema)
+}
+
+// --- Service Instance handlers ---
+
+type ServiceInstanceInfoJSON struct {
+	ServiceName  string            `json:"service_name"`
+	InstanceID   string            `json:"instance_id"`
+	Address      string            `json:"address"`
+	Version      string            `json:"version"`
+	Metadata     map[string]string `json:"metadata"`
+	Status       string            `json:"status"`
+	RegisteredAt string            `json:"registered_at"`
+	LastHeartbeat string           `json:"last_heartbeat"`
+	ExpiresAt    string            `json:"expires_at"`
+}
+
+func (s *EventBusServer) handleServiceInstances(w http.ResponseWriter, r *http.Request) {
+	serviceName := r.URL.Query().Get("service_name")
+	instances := s.serviceCache.List(serviceName)
+
+	result := make([]ServiceInstanceInfoJSON, 0, len(instances))
+	for _, inst := range instances {
+		result = append(result, ServiceInstanceInfoJSON{
+			ServiceName:   inst.ServiceName,
+			InstanceID:    inst.InstanceID,
+			Address:       inst.Address,
+			Version:       inst.Version,
+			Metadata:      inst.Metadata,
+			Status:        inst.Status,
+			RegisteredAt:  inst.RegisteredAt.Format(time.RFC3339),
+			LastHeartbeat: inst.LastHeartbeat.Format(time.RFC3339),
+			ExpiresAt:     inst.ExpiresAt.Format(time.RFC3339),
+		})
+	}
+	writeJSON(w, result)
 }

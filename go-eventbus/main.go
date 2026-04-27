@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net"
 	"net/http"
@@ -25,8 +26,24 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
+	// Initialize service registry store (SQLite + memory cache)
+	serviceStore, err := server.NewServiceStore("service_registry.db")
+	if err != nil {
+		log.Fatalf("failed to open service store: %v", err)
+	}
+	if err := serviceStore.InitSchema(); err != nil {
+		log.Fatalf("failed to init service store schema: %v", err)
+	}
+	serviceCache := server.NewServiceCache(serviceStore)
+	if err := serviceCache.ReloadFromDB(); err != nil {
+		log.Printf("warning: failed to reload service cache from DB: %v", err)
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	serviceCache.StartCleanupLoop(ctx)
+
 	s := grpc.NewServer()
-	busServer := server.NewEventBusServer()
+	busServer := server.NewEventBusServer(serviceCache)
 
 	pb.RegisterEventBusServer(s, busServer)
 

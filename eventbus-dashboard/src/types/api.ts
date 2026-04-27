@@ -87,3 +87,15 @@ export type ServiceSchema = {
   methods: MethodSchema[]
   messages: MessageSchema[]
 }
+
+export type ServiceInstanceInfo = {
+  service_name: string
+  instance_id: string
+  address: string
+  version: string
+  metadata: Record<string, string>
+  status: string
+  registered_at: string
+  last_heartbeat: string
+  expires_at: string
+}

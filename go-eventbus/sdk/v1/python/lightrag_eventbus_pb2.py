@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x17lightrag_eventbus.proto\x12\x14lightrag.eventbus.v1\"\x83\x01\n\x0fRegisterRequest\x12\x15\n\rsubscriber_id\x18\x01 \x01(\t\x12\r\n\x05topic\x18\x02 \x01(\t\x12\x14\n\x0c\x63\x61pabilities\x18\x03 \x03(\t\x12\x17\n\x0fmax_concurrency\x18\x04 \x01(\x05\x12\x1b\n\x13\x65xpected_latency_ms\x18\x05 \x01(\x05\"4\n\x10RegisterResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"\xf4\x02\n\rEventEnvelope\x12\r\n\x05topic\x18\x01 \x01(\t\x12\x16\n\x0e\x63orrelation_id\x18\x02 \x01(\t\x12\x10\n\x08trace_id\x18\x03 \x01(\t\x12\x1a\n\x12\x64\x65\x61\x64line_timestamp\x18\x04 \x01(\x03\x12\x10\n\x08priority\x18\x05 \x01(\x05\x12\x16\n\x0esource_service\x18\x06 \x01(\t\x12?\n\x06inputs\x18\n \x03(\x0b\x32/.lightrag.eventbus.v1.EventEnvelope.InputsEntry\x12\x43\n\x08metadata\x18\x0b \x03(\x0b\x32\x31.lightrag.eventbus.v1.EventEnvelope.MetadataEntry\x1a-\n\x0bInputsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x0c:\x02\x38\x01\x1a/\n\rMetadataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"\xb3\x06\n\x0fSubscriberReply\x12\x16\n\x0e\x63orrelation_id\x18\x01 \x01(\t\x12\x15\n\rsubscriber_id\x18\x02 \x01(\t\x12\x43\n\x07outputs\x18\n \x03(\x0b\x32\x32.lightrag.eventbus.v1.SubscriberReply.OutputsEntry\x12\x45\n\x08strategy\x18\x0b \x01(\x0e\x32\x33.lightrag.eventbus.v1.SubscriberReply.MergeStrategy\x12\x0e\n\x06weight\x18\x0c \x01(\x05\x12\x16\n\x0epartial_result\x18\r \x01(\x08\x12\x12\n\nlatency_ms\x18\x14 \x01(\x05\x12\x12\n\nerror_code\x18\x15 \x01(\t\x12\x15\n\rerror_message\x18\x16 \x01(\t\x12\x45\n\x08metadata\x18\x17 \x03(\x0b\x32\x33.lightrag.eventbus.v1.SubscriberReply.MetadataEntry\x12\x42\n\x06health\x18\x18 \x01(\x0e\x32\x32.lightrag.eventbus.v1.SubscriberReply.HealthStatus\x12\x46\n\x08\x61\x64visory\x18\x19 \x01(\x0e\x32\x34.lightrag.eventbus.v1.SubscriberReply.AdvisoryAction\x1a.\n\x0cOutputsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x0c:\x02\x38\x01\x1a/\n\rMetadataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x0c:\x02\x38\x01\"4\n\rMergeStrategy\x12\n\n\x06\x41PPEND\x10\x00\x12\x0b\n\x07REPLACE\x10\x01\x12\n\n\x06IGNORE\x10\x02\"H\n\x0cHealthStatus\x12\x0b\n\x07HEALTHY\x10\x00\x12\x0c\n\x08\x44\x45GRADED\x10\x01\x12\x0e\n\nOVERLOADED\x10\x02\x12\r\n\tUNHEALTHY\x10\x03\"J\n\x0e\x41\x64visoryAction\x12\x0c\n\x08\x43ONTINUE\x10\x00\x12\x11\n\rCIRCUIT_BREAK\x10\x01\x12\t\n\x05RETRY\x10\x02\x12\x0c\n\x08\x46\x41LLBACK\x10\x03\x32\x82\x03\n\x08\x45ventBus\x12\x63\n\x12RegisterSubscriber\x12%.lightrag.eventbus.v1.RegisterRequest\x1a&.lightrag.eventbus.v1.RegisterResponse\x12Y\n\tSubscribe\x12%.lightrag.eventbus.v1.RegisterRequest\x1a#.lightrag.eventbus.v1.EventEnvelope0\x01\x12X\n\x07Respond\x12%.lightrag.eventbus.v1.SubscriberReply\x1a&.lightrag.eventbus.v1.RegisterResponse\x12\\\n\x0ePublishAndWait\x12#.lightrag.eventbus.v1.EventEnvelope\x1a%.lightrag.eventbus.v1.SubscriberReplyB[\n\x18\x63om.lightrag.eventbus.v1P\x01Z=github.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go;eventbusb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x17lightrag_eventbus.proto\x12\x14lightrag.eventbus.v1\"\x83\x01\n\x0fRegisterRequest\x12\x15\n\rsubscriber_id\x18\x01 \x01(\t\x12\r\n\x05topic\x18\x02 \x01(\t\x12\x14\n\x0c\x63\x61pabilities\x18\x03 \x03(\t\x12\x17\n\x0fmax_concurrency\x18\x04 \x01(\x05\x12\x1b\n\x13\x65xpected_latency_ms\x18\x05 \x01(\x05\"4\n\x10RegisterResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"\xd6\x01\n\x0fServiceInstance\x12\x14\n\x0cservice_name\x18\x01 \x01(\t\x12\x13\n\x0binstance_id\x18\x02 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x03 \x01(\t\x12\x0f\n\x07version\x18\x04 \x01(\t\x12\x45\n\x08metadata\x18\x05 \x03(\x0b\x32\x33.lightrag.eventbus.v1.ServiceInstance.MetadataEntry\x1a/\n\rMetadataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"f\n\x16RegisterServiceRequest\x12\x37\n\x08instance\x18\x01 \x01(\x0b\x32%.lightrag.eventbus.v1.ServiceInstance\x12\x13\n\x0bttl_seconds\x18\x02 \x01(\x05\"P\n\x17RegisterServiceResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x13\n\x0bttl_seconds\x18\x03 \x01(\x05\"=\n\x10HeartbeatRequest\x12\x14\n\x0cservice_name\x18\x01 \x01(\t\x12\x13\n\x0binstance_id\x18\x02 \x01(\t\"8\n\x11HeartbeatResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x12\n\nexpires_at\x18\x02 \x01(\x03\"E\n\x18UnregisterServiceRequest\x12\x14\n\x0cservice_name\x18\x01 \x01(\t\x12\x13\n\x0binstance_id\x18\x02 \x01(\t\"3\n\x1bListServiceInstancesRequest\x12\x14\n\x0cservice_name\x18\x01 \x01(\t\"X\n\x1cListServiceInstancesResponse\x12\x38\n\tinstances\x18\x01 \x03(\x0b\x32%.lightrag.eventbus.v1.ServiceInstance\"\xf4\x02\n\rEventEnvelope\x12\r\n\x05topic\x18\x01 \x01(\t\x12\x16\n\x0e\x63orrelation_id\x18\x02 \x01(\t\x12\x10\n\x08trace_id\x18\x03 \x01(\t\x12\x1a\n\x12\x64\x65\x61\x64line_timestamp\x18\x04 \x01(\x03\x12\x10\n\x08priority\x18\x05 \x01(\x05\x12\x16\n\x0esource_service\x18\x06 \x01(\t\x12?\n\x06inputs\x18\n \x03(\x0b\x32/.lightrag.eventbus.v1.EventEnvelope.InputsEntry\x12\x43\n\x08metadata\x18\x0b \x03(\x0b\x32\x31.lightrag.eventbus.v1.EventEnvelope.MetadataEntry\x1a-\n\x0bInputsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x0c:\x02\x38\x01\x1a/\n\rMetadataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"\xb3\x06\n\x0fSubscriberReply\x12\x16\n\x0e\x63orrelation_id\x18\x01 \x01(\t\x12\x15\n\rsubscriber_id\x18\x02 \x01(\t\x12\x43\n\x07outputs\x18\n \x03(\x0b\x32\x32.lightrag.eventbus.v1.SubscriberReply.OutputsEntry\x12\x45\n\x08strategy\x18\x0b \x01(\x0e\x32\x33.lightrag.eventbus.v1.SubscriberReply.MergeStrategy\x12\x0e\n\x06weight\x18\x0c \x01(\x05\x12\x16\n\x0epartial_result\x18\r \x01(\x08\x12\x12\n\nlatency_ms\x18\x14 \x01(\x05\x12\x12\n\nerror_code\x18\x15 \x01(\t\x12\x15\n\rerror_message\x18\x16 \x01(\t\x12\x45\n\x08metadata\x18\x17 \x03(\x0b\x32\x33.lightrag.eventbus.v1.SubscriberReply.MetadataEntry\x12\x42\n\x06health\x18\x18 \x01(\x0e\x32\x32.lightrag.eventbus.v1.SubscriberReply.HealthStatus\x12\x46\n\x08\x61\x64visory\x18\x19 \x01(\x0e\x32\x34.lightrag.eventbus.v1.SubscriberReply.AdvisoryAction\x1a.\n\x0cOutputsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x0c:\x02\x38\x01\x1a/\n\rMetadataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x0c:\x02\x38\x01\"4\n\rMergeStrategy\x12\n\n\x06\x41PPEND\x10\x00\x12\x0b\n\x07REPLACE\x10\x01\x12\n\n\x06IGNORE\x10\x02\"H\n\x0cHealthStatus\x12\x0b\n\x07HEALTHY\x10\x00\x12\x0c\n\x08\x44\x45GRADED\x10\x01\x12\x0e\n\nOVERLOADED\x10\x02\x12\r\n\tUNHEALTHY\x10\x03\"J\n\x0e\x41\x64visoryAction\x12\x0c\n\x08\x43ONTINUE\x10\x00\x12\x11\n\rCIRCUIT_BREAK\x10\x01\x12\t\n\x05RETRY\x10\x02\x12\x0c\n\x08\x46\x41LLBACK\x10\x03\x32\xbc\x06\n\x08\x45ventBus\x12\x63\n\x12RegisterSubscriber\x12%.lightrag.eventbus.v1.RegisterRequest\x1a&.lightrag.eventbus.v1.RegisterResponse\x12Y\n\tSubscribe\x12%.lightrag.eventbus.v1.RegisterRequest\x1a#.lightrag.eventbus.v1.EventEnvelope0\x01\x12X\n\x07Respond\x12%.lightrag.eventbus.v1.SubscriberReply\x1a&.lightrag.eventbus.v1.RegisterResponse\x12\\\n\x0ePublishAndWait\x12#.lightrag.eventbus.v1.EventEnvelope\x1a%.lightrag.eventbus.v1.SubscriberReply\x12n\n\x0fRegisterService\x12,.lightrag.eventbus.v1.RegisterServiceRequest\x1a-.lightrag.eventbus.v1.RegisterServiceResponse\x12\\\n\tHeartbeat\x12&.lightrag.eventbus.v1.HeartbeatRequest\x1a\'.lightrag.eventbus.v1.HeartbeatResponse\x12k\n\x11UnregisterService\x12..lightrag.eventbus.v1.UnregisterServiceRequest\x1a&.lightrag.eventbus.v1.RegisterResponse\x12}\n\x14ListServiceInstances\x12\x31.lightrag.eventbus.v1.ListServiceInstancesRequest\x1a\x32.lightrag.eventbus.v1.ListServiceInstancesResponseB[\n\x18\x63om.lightrag.eventbus.v1P\x01Z=github.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go;eventbusb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -32,6 +32,8 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'lightrag_eventbus_pb2', _gl
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\n\030com.lightrag.eventbus.v1P\001Z=github.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go;eventbus'
+  _globals['_SERVICEINSTANCE_METADATAENTRY']._loaded_options = None
+  _globals['_SERVICEINSTANCE_METADATAENTRY']._serialized_options = b'8\001'
   _globals['_EVENTENVELOPE_INPUTSENTRY']._loaded_options = None
   _globals['_EVENTENVELOPE_INPUTSENTRY']._serialized_options = b'8\001'
   _globals['_EVENTENVELOPE_METADATAENTRY']._loaded_options = None
@@ -44,24 +46,42 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_REGISTERREQUEST']._serialized_end=181
   _globals['_REGISTERRESPONSE']._serialized_start=183
   _globals['_REGISTERRESPONSE']._serialized_end=235
-  _globals['_EVENTENVELOPE']._serialized_start=238
-  _globals['_EVENTENVELOPE']._serialized_end=610
-  _globals['_EVENTENVELOPE_INPUTSENTRY']._serialized_start=516
-  _globals['_EVENTENVELOPE_INPUTSENTRY']._serialized_end=561
-  _globals['_EVENTENVELOPE_METADATAENTRY']._serialized_start=563
-  _globals['_EVENTENVELOPE_METADATAENTRY']._serialized_end=610
-  _globals['_SUBSCRIBERREPLY']._serialized_start=613
-  _globals['_SUBSCRIBERREPLY']._serialized_end=1432
-  _globals['_SUBSCRIBERREPLY_OUTPUTSENTRY']._serialized_start=1133
-  _globals['_SUBSCRIBERREPLY_OUTPUTSENTRY']._serialized_end=1179
-  _globals['_SUBSCRIBERREPLY_METADATAENTRY']._serialized_start=1181
-  _globals['_SUBSCRIBERREPLY_METADATAENTRY']._serialized_end=1228
-  _globals['_SUBSCRIBERREPLY_MERGESTRATEGY']._serialized_start=1230
-  _globals['_SUBSCRIBERREPLY_MERGESTRATEGY']._serialized_end=1282
-  _globals['_SUBSCRIBERREPLY_HEALTHSTATUS']._serialized_start=1284
-  _globals['_SUBSCRIBERREPLY_HEALTHSTATUS']._serialized_end=1356
-  _globals['_SUBSCRIBERREPLY_ADVISORYACTION']._serialized_start=1358
-  _globals['_SUBSCRIBERREPLY_ADVISORYACTION']._serialized_end=1432
-  _globals['_EVENTBUS']._serialized_start=1435
-  _globals['_EVENTBUS']._serialized_end=1821
+  _globals['_SERVICEINSTANCE']._serialized_start=238
+  _globals['_SERVICEINSTANCE']._serialized_end=452
+  _globals['_SERVICEINSTANCE_METADATAENTRY']._serialized_start=405
+  _globals['_SERVICEINSTANCE_METADATAENTRY']._serialized_end=452
+  _globals['_REGISTERSERVICEREQUEST']._serialized_start=454
+  _globals['_REGISTERSERVICEREQUEST']._serialized_end=556
+  _globals['_REGISTERSERVICERESPONSE']._serialized_start=558
+  _globals['_REGISTERSERVICERESPONSE']._serialized_end=638
+  _globals['_HEARTBEATREQUEST']._serialized_start=640
+  _globals['_HEARTBEATREQUEST']._serialized_end=701
+  _globals['_HEARTBEATRESPONSE']._serialized_start=703
+  _globals['_HEARTBEATRESPONSE']._serialized_end=759
+  _globals['_UNREGISTERSERVICEREQUEST']._serialized_start=761
+  _globals['_UNREGISTERSERVICEREQUEST']._serialized_end=830
+  _globals['_LISTSERVICEINSTANCESREQUEST']._serialized_start=832
+  _globals['_LISTSERVICEINSTANCESREQUEST']._serialized_end=883
+  _globals['_LISTSERVICEINSTANCESRESPONSE']._serialized_start=885
+  _globals['_LISTSERVICEINSTANCESRESPONSE']._serialized_end=973
+  _globals['_EVENTENVELOPE']._serialized_start=976
+  _globals['_EVENTENVELOPE']._serialized_end=1348
+  _globals['_EVENTENVELOPE_INPUTSENTRY']._serialized_start=1254
+  _globals['_EVENTENVELOPE_INPUTSENTRY']._serialized_end=1299
+  _globals['_EVENTENVELOPE_METADATAENTRY']._serialized_start=405
+  _globals['_EVENTENVELOPE_METADATAENTRY']._serialized_end=452
+  _globals['_SUBSCRIBERREPLY']._serialized_start=1351
+  _globals['_SUBSCRIBERREPLY']._serialized_end=2170
+  _globals['_SUBSCRIBERREPLY_OUTPUTSENTRY']._serialized_start=1871
+  _globals['_SUBSCRIBERREPLY_OUTPUTSENTRY']._serialized_end=1917
+  _globals['_SUBSCRIBERREPLY_METADATAENTRY']._serialized_start=1919
+  _globals['_SUBSCRIBERREPLY_METADATAENTRY']._serialized_end=1966
+  _globals['_SUBSCRIBERREPLY_MERGESTRATEGY']._serialized_start=1968
+  _globals['_SUBSCRIBERREPLY_MERGESTRATEGY']._serialized_end=2020
+  _globals['_SUBSCRIBERREPLY_HEALTHSTATUS']._serialized_start=2022
+  _globals['_SUBSCRIBERREPLY_HEALTHSTATUS']._serialized_end=2094
+  _globals['_SUBSCRIBERREPLY_ADVISORYACTION']._serialized_start=2096
+  _globals['_SUBSCRIBERREPLY_ADVISORYACTION']._serialized_end=2170
+  _globals['_EVENTBUS']._serialized_start=2173
+  _globals['_EVENTBUS']._serialized_end=3001
 # @@protoc_insertion_point(module_scope)
