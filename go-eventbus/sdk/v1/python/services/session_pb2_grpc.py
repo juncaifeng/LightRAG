@@ -39,37 +39,37 @@ class SessionServiceStub(object):
             channel: A grpc.Channel.
         """
         self.CreateSession = channel.unary_unary(
-                '/lightrag.services.session.v1.SessionService/CreateSession',
+                '/services.session.v1.SessionService/CreateSession',
                 request_serializer=session__pb2.CreateSessionRequest.SerializeToString,
                 response_deserializer=session__pb2.Session.FromString,
                 _registered_method=True)
         self.GetSession = channel.unary_unary(
-                '/lightrag.services.session.v1.SessionService/GetSession',
+                '/services.session.v1.SessionService/GetSession',
                 request_serializer=session__pb2.GetSessionRequest.SerializeToString,
                 response_deserializer=session__pb2.Session.FromString,
                 _registered_method=True)
         self.UpdateSession = channel.unary_unary(
-                '/lightrag.services.session.v1.SessionService/UpdateSession',
+                '/services.session.v1.SessionService/UpdateSession',
                 request_serializer=session__pb2.UpdateSessionRequest.SerializeToString,
                 response_deserializer=session__pb2.Session.FromString,
                 _registered_method=True)
         self.DeleteSession = channel.unary_unary(
-                '/lightrag.services.session.v1.SessionService/DeleteSession',
+                '/services.session.v1.SessionService/DeleteSession',
                 request_serializer=session__pb2.DeleteSessionRequest.SerializeToString,
                 response_deserializer=session__pb2.DeleteResponse.FromString,
                 _registered_method=True)
         self.ListSessions = channel.unary_unary(
-                '/lightrag.services.session.v1.SessionService/ListSessions',
+                '/services.session.v1.SessionService/ListSessions',
                 request_serializer=session__pb2.ListSessionsRequest.SerializeToString,
                 response_deserializer=session__pb2.ListSessionsResponse.FromString,
                 _registered_method=True)
         self.AppendMessage = channel.unary_unary(
-                '/lightrag.services.session.v1.SessionService/AppendMessage',
+                '/services.session.v1.SessionService/AppendMessage',
                 request_serializer=session__pb2.AppendMessageRequest.SerializeToString,
                 response_deserializer=session__pb2.AppendMessageResponse.FromString,
                 _registered_method=True)
         self.ListMessages = channel.unary_unary(
-                '/lightrag.services.session.v1.SessionService/ListMessages',
+                '/services.session.v1.SessionService/ListMessages',
                 request_serializer=session__pb2.ListMessagesRequest.SerializeToString,
                 response_deserializer=session__pb2.ListMessagesResponse.FromString,
                 _registered_method=True)
@@ -166,9 +166,9 @@ def add_SessionServiceServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'lightrag.services.session.v1.SessionService', rpc_method_handlers)
+            'services.session.v1.SessionService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('lightrag.services.session.v1.SessionService', rpc_method_handlers)
+    server.add_registered_method_handlers('services.session.v1.SessionService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
@@ -193,7 +193,7 @@ class SessionService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/lightrag.services.session.v1.SessionService/CreateSession',
+            '/services.session.v1.SessionService/CreateSession',
             session__pb2.CreateSessionRequest.SerializeToString,
             session__pb2.Session.FromString,
             options,
@@ -220,7 +220,7 @@ class SessionService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/lightrag.services.session.v1.SessionService/GetSession',
+            '/services.session.v1.SessionService/GetSession',
             session__pb2.GetSessionRequest.SerializeToString,
             session__pb2.Session.FromString,
             options,
@@ -247,7 +247,7 @@ class SessionService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/lightrag.services.session.v1.SessionService/UpdateSession',
+            '/services.session.v1.SessionService/UpdateSession',
             session__pb2.UpdateSessionRequest.SerializeToString,
             session__pb2.Session.FromString,
             options,
@@ -274,7 +274,7 @@ class SessionService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/lightrag.services.session.v1.SessionService/DeleteSession',
+            '/services.session.v1.SessionService/DeleteSession',
             session__pb2.DeleteSessionRequest.SerializeToString,
             session__pb2.DeleteResponse.FromString,
             options,
@@ -301,7 +301,7 @@ class SessionService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/lightrag.services.session.v1.SessionService/ListSessions',
+            '/services.session.v1.SessionService/ListSessions',
             session__pb2.ListSessionsRequest.SerializeToString,
             session__pb2.ListSessionsResponse.FromString,
             options,
@@ -328,7 +328,7 @@ class SessionService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/lightrag.services.session.v1.SessionService/AppendMessage',
+            '/services.session.v1.SessionService/AppendMessage',
             session__pb2.AppendMessageRequest.SerializeToString,
             session__pb2.AppendMessageResponse.FromString,
             options,
@@ -355,7 +355,7 @@ class SessionService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/lightrag.services.session.v1.SessionService/ListMessages',
+            '/services.session.v1.SessionService/ListMessages',
             session__pb2.ListMessagesRequest.SerializeToString,
             session__pb2.ListMessagesResponse.FromString,
             options,

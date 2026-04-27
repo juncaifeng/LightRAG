@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package lightrag.services.session.v1;
+package services.session.v1;
 
 option go_package = "github.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go/services/session";
 

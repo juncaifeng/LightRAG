@@ -54,7 +54,7 @@ go-eventbus/proto/services/
 ```protobuf
 syntax = "proto3";
 
-package lightrag.services.{service_name}.v1;
+package services.{service_name}.v1;
 option go_package = "github.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go/services/{service_name};{service_name}";
 
 // =============================================================================

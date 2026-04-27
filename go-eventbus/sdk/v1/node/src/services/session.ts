@@ -7,7 +7,7 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 
-export const protobufPackage = "lightrag.services.session.v1";
+export const protobufPackage = "services.session.v1";
 
 /** 会话数据 */
 export interface Session {
@@ -1611,7 +1611,7 @@ export interface SessionService {
   ListMessages(request: ListMessagesRequest): Promise<ListMessagesResponse>;
 }
 
-export const SessionServiceServiceName = "lightrag.services.session.v1.SessionService";
+export const SessionServiceServiceName = "services.session.v1.SessionService";
 export class SessionServiceClientImpl implements SessionService {
   private readonly rpc: Rpc;
   private readonly service: string;

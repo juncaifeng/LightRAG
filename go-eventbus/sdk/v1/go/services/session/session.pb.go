@@ -868,46 +868,46 @@ var File_session_proto protoreflect.FileDescriptor
 
 const file_session_proto_rawDesc = "" +
 	"\n" +
-	"\rsession.proto\x12\x1clightrag.services.session.v1\"\xaa\x04\n" +
+	"\rsession.proto\x12\x13services.session.v1\"\x8f\x04\n" +
 	"\aSession\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x1b\n" +
 	"\ttenant_id\x18\x02 \x01(\tR\btenantId\x12\x17\n" +
-	"\auser_id\x18\x03 \x01(\tR\x06userId\x12L\n" +
-	"\acontext\x18\x04 \x03(\v22.lightrag.services.session.v1.Session.ContextEntryR\acontext\x12?\n" +
-	"\ahistory\x18\x05 \x03(\v2%.lightrag.services.session.v1.MessageR\ahistory\x12\x1d\n" +
+	"\auser_id\x18\x03 \x01(\tR\x06userId\x12C\n" +
+	"\acontext\x18\x04 \x03(\v2).services.session.v1.Session.ContextEntryR\acontext\x126\n" +
+	"\ahistory\x18\x05 \x03(\v2\x1c.services.session.v1.MessageR\ahistory\x12\x1d\n" +
 	"\n" +
 	"created_at\x18\x06 \x01(\x03R\tcreatedAt\x12\x1d\n" +
 	"\n" +
 	"updated_at\x18\a \x01(\x03R\tupdatedAt\x12\x1d\n" +
 	"\n" +
 	"expires_at\x18\b \x01(\x03R\texpiresAt\x12\x14\n" +
-	"\x05state\x18\t \x01(\tR\x05state\x12O\n" +
+	"\x05state\x18\t \x01(\tR\x05state\x12F\n" +
 	"\bmetadata\x18\n" +
-	" \x03(\v23.lightrag.services.session.v1.Session.MetadataEntryR\bmetadata\x1a:\n" +
+	" \x03(\v2*.services.session.v1.Session.MetadataEntryR\bmetadata\x1a:\n" +
 	"\fContextEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x82\x02\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xf9\x01\n" +
 	"\aMessage\x12\x1d\n" +
 	"\n" +
 	"message_id\x18\x01 \x01(\tR\tmessageId\x12\x12\n" +
 	"\x04role\x18\x02 \x01(\tR\x04role\x12\x18\n" +
 	"\acontent\x18\x03 \x01(\tR\acontent\x12\x1c\n" +
-	"\ttimestamp\x18\x04 \x01(\x03R\ttimestamp\x12O\n" +
-	"\bmetadata\x18\x05 \x03(\v23.lightrag.services.session.v1.Message.MetadataEntryR\bmetadata\x1a;\n" +
+	"\ttimestamp\x18\x04 \x01(\x03R\ttimestamp\x12F\n" +
+	"\bmetadata\x18\x05 \x03(\v2*.services.session.v1.Message.MetadataEntryR\bmetadata\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x9f\x03\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x8d\x03\n" +
 	"\x14CreateSessionRequest\x12\x1b\n" +
 	"\ttenant_id\x18\x01 \x01(\tR\btenantId\x12\x17\n" +
-	"\auser_id\x18\x02 \x01(\tR\x06userId\x12Y\n" +
-	"\acontext\x18\x03 \x03(\v2?.lightrag.services.session.v1.CreateSessionRequest.ContextEntryR\acontext\x12\x1f\n" +
+	"\auser_id\x18\x02 \x01(\tR\x06userId\x12P\n" +
+	"\acontext\x18\x03 \x03(\v26.services.session.v1.CreateSessionRequest.ContextEntryR\acontext\x12\x1f\n" +
 	"\vttl_seconds\x18\x04 \x01(\x03R\n" +
-	"ttlSeconds\x12\\\n" +
-	"\bmetadata\x18\x05 \x03(\v2@.lightrag.services.session.v1.CreateSessionRequest.MetadataEntryR\bmetadata\x1a:\n" +
+	"ttlSeconds\x12S\n" +
+	"\bmetadata\x18\x05 \x03(\v27.services.session.v1.CreateSessionRequest.MetadataEntryR\bmetadata\x1a:\n" +
 	"\fContextEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a;\n" +
@@ -916,11 +916,11 @@ const file_session_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"2\n" +
 	"\x11GetSessionRequest\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x01 \x01(\tR\tsessionId\"\xae\x02\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\"\xa5\x02\n" +
 	"\x14UpdateSessionRequest\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x01 \x01(\tR\tsessionId\x12c\n" +
-	"\vcontext_set\x18\x02 \x03(\v2B.lightrag.services.session.v1.UpdateSessionRequest.ContextSetEntryR\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\x12Z\n" +
+	"\vcontext_set\x18\x02 \x03(\v29.services.session.v1.UpdateSessionRequest.ContextSetEntryR\n" +
 	"contextSet\x12%\n" +
 	"\x0econtext_delete\x18\x03 \x03(\tR\rcontextDelete\x12,\n" +
 	"\x12extend_ttl_seconds\x18\x04 \x01(\x03R\x10extendTtlSeconds\x1a=\n" +
@@ -939,16 +939,16 @@ const file_session_proto_rawDesc = "" +
 	"\x05state\x18\x03 \x01(\tR\x05state\x12\x1b\n" +
 	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x05 \x01(\tR\tpageToken\"\xa2\x01\n" +
-	"\x14ListSessionsResponse\x12A\n" +
-	"\bsessions\x18\x01 \x03(\v2%.lightrag.services.session.v1.SessionR\bsessions\x12&\n" +
+	"page_token\x18\x05 \x01(\tR\tpageToken\"\x99\x01\n" +
+	"\x14ListSessionsResponse\x128\n" +
+	"\bsessions\x18\x01 \x03(\v2\x1c.services.session.v1.SessionR\bsessions\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1f\n" +
 	"\vtotal_count\x18\x03 \x01(\x05R\n" +
-	"totalCount\"v\n" +
+	"totalCount\"m\n" +
 	"\x14AppendMessageRequest\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x01 \x01(\tR\tsessionId\x12?\n" +
-	"\amessage\x18\x02 \x01(\v2%.lightrag.services.session.v1.MessageR\amessage\"]\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\x126\n" +
+	"\amessage\x18\x02 \x01(\v2\x1c.services.session.v1.MessageR\amessage\"]\n" +
 	"\x15AppendMessageResponse\x12\x1d\n" +
 	"\n" +
 	"message_id\x18\x01 \x01(\tR\tmessageId\x12%\n" +
@@ -957,21 +957,21 @@ const file_session_proto_rawDesc = "" +
 	"\n" +
 	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x14\n" +
 	"\x05limit\x18\x02 \x01(\x05R\x05limit\x12*\n" +
-	"\x11before_message_id\x18\x03 \x01(\tR\x0fbeforeMessageId\"\x95\x01\n" +
-	"\x14ListMessagesResponse\x12A\n" +
-	"\bmessages\x18\x01 \x03(\v2%.lightrag.services.session.v1.MessageR\bmessages\x12\x1f\n" +
+	"\x11before_message_id\x18\x03 \x01(\tR\x0fbeforeMessageId\"\x8c\x01\n" +
+	"\x14ListMessagesResponse\x128\n" +
+	"\bmessages\x18\x01 \x03(\v2\x1c.services.session.v1.MessageR\bmessages\x12\x1f\n" +
 	"\vtotal_count\x18\x02 \x01(\x05R\n" +
 	"totalCount\x12\x19\n" +
-	"\bhas_more\x18\x03 \x01(\bR\ahasMore2\xa9\x06\n" +
-	"\x0eSessionService\x12j\n" +
-	"\rCreateSession\x122.lightrag.services.session.v1.CreateSessionRequest\x1a%.lightrag.services.session.v1.Session\x12d\n" +
+	"\bhas_more\x18\x03 \x01(\bR\ahasMore2\xab\x05\n" +
+	"\x0eSessionService\x12X\n" +
+	"\rCreateSession\x12).services.session.v1.CreateSessionRequest\x1a\x1c.services.session.v1.Session\x12R\n" +
 	"\n" +
-	"GetSession\x12/.lightrag.services.session.v1.GetSessionRequest\x1a%.lightrag.services.session.v1.Session\x12j\n" +
-	"\rUpdateSession\x122.lightrag.services.session.v1.UpdateSessionRequest\x1a%.lightrag.services.session.v1.Session\x12q\n" +
-	"\rDeleteSession\x122.lightrag.services.session.v1.DeleteSessionRequest\x1a,.lightrag.services.session.v1.DeleteResponse\x12u\n" +
-	"\fListSessions\x121.lightrag.services.session.v1.ListSessionsRequest\x1a2.lightrag.services.session.v1.ListSessionsResponse\x12x\n" +
-	"\rAppendMessage\x122.lightrag.services.session.v1.AppendMessageRequest\x1a3.lightrag.services.session.v1.AppendMessageResponse\x12u\n" +
-	"\fListMessages\x121.lightrag.services.session.v1.ListMessagesRequest\x1a2.lightrag.services.session.v1.ListMessagesResponseBGZEgithub.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go/services/sessionb\x06proto3"
+	"GetSession\x12&.services.session.v1.GetSessionRequest\x1a\x1c.services.session.v1.Session\x12X\n" +
+	"\rUpdateSession\x12).services.session.v1.UpdateSessionRequest\x1a\x1c.services.session.v1.Session\x12_\n" +
+	"\rDeleteSession\x12).services.session.v1.DeleteSessionRequest\x1a#.services.session.v1.DeleteResponse\x12c\n" +
+	"\fListSessions\x12(.services.session.v1.ListSessionsRequest\x1a).services.session.v1.ListSessionsResponse\x12f\n" +
+	"\rAppendMessage\x12).services.session.v1.AppendMessageRequest\x1a*.services.session.v1.AppendMessageResponse\x12c\n" +
+	"\fListMessages\x12(.services.session.v1.ListMessagesRequest\x1a).services.session.v1.ListMessagesResponseBGZEgithub.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go/services/sessionb\x06proto3"
 
 var (
 	file_session_proto_rawDescOnce sync.Once
@@ -987,51 +987,51 @@ func file_session_proto_rawDescGZIP() []byte {
 
 var file_session_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_session_proto_goTypes = []any{
-	(*Session)(nil),               // 0: lightrag.services.session.v1.Session
-	(*Message)(nil),               // 1: lightrag.services.session.v1.Message
-	(*CreateSessionRequest)(nil),  // 2: lightrag.services.session.v1.CreateSessionRequest
-	(*GetSessionRequest)(nil),     // 3: lightrag.services.session.v1.GetSessionRequest
-	(*UpdateSessionRequest)(nil),  // 4: lightrag.services.session.v1.UpdateSessionRequest
-	(*DeleteSessionRequest)(nil),  // 5: lightrag.services.session.v1.DeleteSessionRequest
-	(*DeleteResponse)(nil),        // 6: lightrag.services.session.v1.DeleteResponse
-	(*ListSessionsRequest)(nil),   // 7: lightrag.services.session.v1.ListSessionsRequest
-	(*ListSessionsResponse)(nil),  // 8: lightrag.services.session.v1.ListSessionsResponse
-	(*AppendMessageRequest)(nil),  // 9: lightrag.services.session.v1.AppendMessageRequest
-	(*AppendMessageResponse)(nil), // 10: lightrag.services.session.v1.AppendMessageResponse
-	(*ListMessagesRequest)(nil),   // 11: lightrag.services.session.v1.ListMessagesRequest
-	(*ListMessagesResponse)(nil),  // 12: lightrag.services.session.v1.ListMessagesResponse
-	nil,                           // 13: lightrag.services.session.v1.Session.ContextEntry
-	nil,                           // 14: lightrag.services.session.v1.Session.MetadataEntry
-	nil,                           // 15: lightrag.services.session.v1.Message.MetadataEntry
-	nil,                           // 16: lightrag.services.session.v1.CreateSessionRequest.ContextEntry
-	nil,                           // 17: lightrag.services.session.v1.CreateSessionRequest.MetadataEntry
-	nil,                           // 18: lightrag.services.session.v1.UpdateSessionRequest.ContextSetEntry
+	(*Session)(nil),               // 0: services.session.v1.Session
+	(*Message)(nil),               // 1: services.session.v1.Message
+	(*CreateSessionRequest)(nil),  // 2: services.session.v1.CreateSessionRequest
+	(*GetSessionRequest)(nil),     // 3: services.session.v1.GetSessionRequest
+	(*UpdateSessionRequest)(nil),  // 4: services.session.v1.UpdateSessionRequest
+	(*DeleteSessionRequest)(nil),  // 5: services.session.v1.DeleteSessionRequest
+	(*DeleteResponse)(nil),        // 6: services.session.v1.DeleteResponse
+	(*ListSessionsRequest)(nil),   // 7: services.session.v1.ListSessionsRequest
+	(*ListSessionsResponse)(nil),  // 8: services.session.v1.ListSessionsResponse
+	(*AppendMessageRequest)(nil),  // 9: services.session.v1.AppendMessageRequest
+	(*AppendMessageResponse)(nil), // 10: services.session.v1.AppendMessageResponse
+	(*ListMessagesRequest)(nil),   // 11: services.session.v1.ListMessagesRequest
+	(*ListMessagesResponse)(nil),  // 12: services.session.v1.ListMessagesResponse
+	nil,                           // 13: services.session.v1.Session.ContextEntry
+	nil,                           // 14: services.session.v1.Session.MetadataEntry
+	nil,                           // 15: services.session.v1.Message.MetadataEntry
+	nil,                           // 16: services.session.v1.CreateSessionRequest.ContextEntry
+	nil,                           // 17: services.session.v1.CreateSessionRequest.MetadataEntry
+	nil,                           // 18: services.session.v1.UpdateSessionRequest.ContextSetEntry
 }
 var file_session_proto_depIdxs = []int32{
-	13, // 0: lightrag.services.session.v1.Session.context:type_name -> lightrag.services.session.v1.Session.ContextEntry
-	1,  // 1: lightrag.services.session.v1.Session.history:type_name -> lightrag.services.session.v1.Message
-	14, // 2: lightrag.services.session.v1.Session.metadata:type_name -> lightrag.services.session.v1.Session.MetadataEntry
-	15, // 3: lightrag.services.session.v1.Message.metadata:type_name -> lightrag.services.session.v1.Message.MetadataEntry
-	16, // 4: lightrag.services.session.v1.CreateSessionRequest.context:type_name -> lightrag.services.session.v1.CreateSessionRequest.ContextEntry
-	17, // 5: lightrag.services.session.v1.CreateSessionRequest.metadata:type_name -> lightrag.services.session.v1.CreateSessionRequest.MetadataEntry
-	18, // 6: lightrag.services.session.v1.UpdateSessionRequest.context_set:type_name -> lightrag.services.session.v1.UpdateSessionRequest.ContextSetEntry
-	0,  // 7: lightrag.services.session.v1.ListSessionsResponse.sessions:type_name -> lightrag.services.session.v1.Session
-	1,  // 8: lightrag.services.session.v1.AppendMessageRequest.message:type_name -> lightrag.services.session.v1.Message
-	1,  // 9: lightrag.services.session.v1.ListMessagesResponse.messages:type_name -> lightrag.services.session.v1.Message
-	2,  // 10: lightrag.services.session.v1.SessionService.CreateSession:input_type -> lightrag.services.session.v1.CreateSessionRequest
-	3,  // 11: lightrag.services.session.v1.SessionService.GetSession:input_type -> lightrag.services.session.v1.GetSessionRequest
-	4,  // 12: lightrag.services.session.v1.SessionService.UpdateSession:input_type -> lightrag.services.session.v1.UpdateSessionRequest
-	5,  // 13: lightrag.services.session.v1.SessionService.DeleteSession:input_type -> lightrag.services.session.v1.DeleteSessionRequest
-	7,  // 14: lightrag.services.session.v1.SessionService.ListSessions:input_type -> lightrag.services.session.v1.ListSessionsRequest
-	9,  // 15: lightrag.services.session.v1.SessionService.AppendMessage:input_type -> lightrag.services.session.v1.AppendMessageRequest
-	11, // 16: lightrag.services.session.v1.SessionService.ListMessages:input_type -> lightrag.services.session.v1.ListMessagesRequest
-	0,  // 17: lightrag.services.session.v1.SessionService.CreateSession:output_type -> lightrag.services.session.v1.Session
-	0,  // 18: lightrag.services.session.v1.SessionService.GetSession:output_type -> lightrag.services.session.v1.Session
-	0,  // 19: lightrag.services.session.v1.SessionService.UpdateSession:output_type -> lightrag.services.session.v1.Session
-	6,  // 20: lightrag.services.session.v1.SessionService.DeleteSession:output_type -> lightrag.services.session.v1.DeleteResponse
-	8,  // 21: lightrag.services.session.v1.SessionService.ListSessions:output_type -> lightrag.services.session.v1.ListSessionsResponse
-	10, // 22: lightrag.services.session.v1.SessionService.AppendMessage:output_type -> lightrag.services.session.v1.AppendMessageResponse
-	12, // 23: lightrag.services.session.v1.SessionService.ListMessages:output_type -> lightrag.services.session.v1.ListMessagesResponse
+	13, // 0: services.session.v1.Session.context:type_name -> services.session.v1.Session.ContextEntry
+	1,  // 1: services.session.v1.Session.history:type_name -> services.session.v1.Message
+	14, // 2: services.session.v1.Session.metadata:type_name -> services.session.v1.Session.MetadataEntry
+	15, // 3: services.session.v1.Message.metadata:type_name -> services.session.v1.Message.MetadataEntry
+	16, // 4: services.session.v1.CreateSessionRequest.context:type_name -> services.session.v1.CreateSessionRequest.ContextEntry
+	17, // 5: services.session.v1.CreateSessionRequest.metadata:type_name -> services.session.v1.CreateSessionRequest.MetadataEntry
+	18, // 6: services.session.v1.UpdateSessionRequest.context_set:type_name -> services.session.v1.UpdateSessionRequest.ContextSetEntry
+	0,  // 7: services.session.v1.ListSessionsResponse.sessions:type_name -> services.session.v1.Session
+	1,  // 8: services.session.v1.AppendMessageRequest.message:type_name -> services.session.v1.Message
+	1,  // 9: services.session.v1.ListMessagesResponse.messages:type_name -> services.session.v1.Message
+	2,  // 10: services.session.v1.SessionService.CreateSession:input_type -> services.session.v1.CreateSessionRequest
+	3,  // 11: services.session.v1.SessionService.GetSession:input_type -> services.session.v1.GetSessionRequest
+	4,  // 12: services.session.v1.SessionService.UpdateSession:input_type -> services.session.v1.UpdateSessionRequest
+	5,  // 13: services.session.v1.SessionService.DeleteSession:input_type -> services.session.v1.DeleteSessionRequest
+	7,  // 14: services.session.v1.SessionService.ListSessions:input_type -> services.session.v1.ListSessionsRequest
+	9,  // 15: services.session.v1.SessionService.AppendMessage:input_type -> services.session.v1.AppendMessageRequest
+	11, // 16: services.session.v1.SessionService.ListMessages:input_type -> services.session.v1.ListMessagesRequest
+	0,  // 17: services.session.v1.SessionService.CreateSession:output_type -> services.session.v1.Session
+	0,  // 18: services.session.v1.SessionService.GetSession:output_type -> services.session.v1.Session
+	0,  // 19: services.session.v1.SessionService.UpdateSession:output_type -> services.session.v1.Session
+	6,  // 20: services.session.v1.SessionService.DeleteSession:output_type -> services.session.v1.DeleteResponse
+	8,  // 21: services.session.v1.SessionService.ListSessions:output_type -> services.session.v1.ListSessionsResponse
+	10, // 22: services.session.v1.SessionService.AppendMessage:output_type -> services.session.v1.AppendMessageResponse
+	12, // 23: services.session.v1.SessionService.ListMessages:output_type -> services.session.v1.ListMessagesResponse
 	17, // [17:24] is the sub-list for method output_type
 	10, // [10:17] is the sub-list for method input_type
 	10, // [10:10] is the sub-list for extension type_name
