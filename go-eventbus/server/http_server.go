@@ -85,6 +85,10 @@ func StartHTTPServer(busServer *EventBusServer, addr string) error {
 	mux.HandleFunc("/api/topics/schemas", handleTopicSchemas)
 	mux.HandleFunc("/api/topics/schemas/", handleTopicSchema)
 
+	// Service schema registry
+	mux.HandleFunc("/api/services/schemas", handleServiceSchemas)
+	mux.HandleFunc("/api/services/schemas/", handleServiceSchema)
+
 	// Event detail by correlation ID
 	mux.HandleFunc("/api/events/detail/", busServer.handleEventDetail)
 
@@ -202,6 +206,26 @@ func handleTopicSchema(w http.ResponseWriter, r *http.Request) {
 	schema := GetTopicSchema(name)
 	if schema == nil {
 		http.Error(w, "topic not found", http.StatusNotFound)
+		return
+	}
+	writeJSON(w, schema)
+}
+
+// --- Service Schema handlers ---
+
+func handleServiceSchemas(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, GetServiceSchemas())
+}
+
+func handleServiceSchema(w http.ResponseWriter, r *http.Request) {
+	name := strings.TrimPrefix(r.URL.Path, "/api/services/schemas/")
+	if name == "" {
+		http.Error(w, "service name required", http.StatusBadRequest)
+		return
+	}
+	schema := GetServiceSchema(name)
+	if schema == nil {
+		http.Error(w, "service not found", http.StatusNotFound)
 		return
 	}
 	writeJSON(w, schema)

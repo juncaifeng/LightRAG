@@ -64,3 +64,26 @@ export type TopicSchema = {
   recommended_strategy: string
   recommended_weight: number
 }
+
+export type MethodSchema = {
+  name: string
+  input_type: string
+  output_type: string
+  description: string
+  description_en: string
+}
+
+export type MessageSchema = {
+  name: string
+  description: string
+  fields: FieldSchema[]
+}
+
+export type ServiceSchema = {
+  name: string
+  package: string
+  description: string
+  description_en: string
+  methods: MethodSchema[]
+  messages: MessageSchema[]
+}

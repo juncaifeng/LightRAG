@@ -1,0 +1,126 @@
+syntax = "proto3";
+
+package lightrag.services.session.v1;
+
+option go_package = "github.com/juncaifeng/LightRAG/go-eventbus/sdk/v1/go/services/session";
+
+// =============================================================================
+// Session Store — 多租户会话管理服务
+// =============================================================================
+
+// 会话数据
+message Session {
+    string session_id = 1;                      // 会话唯一标识
+    string tenant_id = 2;                       // 租户 ID
+    string user_id = 3;                         // 用户 ID
+    map<string, string> context = 4;            // 会话上下文 KV
+    repeated Message history = 5;               // 会话历史（可选，大历史走分页）
+    int64 created_at = 6;                       // 创建时间 (Unix ms)
+    int64 updated_at = 7;                       // 最后更新时间 (Unix ms)
+    int64 expires_at = 8;                       // 过期时间 (Unix ms, 0=永不过期)
+    string state = 9;                           // 状态: active, paused, expired, destroyed
+    map<string, string> metadata = 10;          // 扩展元数据
+}
+
+// 会话消息
+message Message {
+    string message_id = 1;                      // 消息 ID
+    string role = 2;                            // 角色: user, assistant, system, tool
+    string content = 3;                         // 消息内容
+    int64 timestamp = 4;                        // 时间戳 (Unix ms)
+    map<string, string> metadata = 5;           // 消息级元数据
+}
+
+// =============================================================================
+// CRUD 接口
+// =============================================================================
+
+// --- Create ---
+message CreateSessionRequest {
+    string tenant_id = 1;                       // 租户 ID（必填）
+    string user_id = 2;                         // 用户 ID（必填）
+    map<string, string> context = 3;            // 初始上下文
+    int64 ttl_seconds = 4;                      // 过期时间（秒，0=永不过期）
+    map<string, string> metadata = 5;
+}
+
+// --- Get ---
+message GetSessionRequest {
+    string session_id = 1;                      // 会话 ID
+}
+
+// --- Update ---
+message UpdateSessionRequest {
+    string session_id = 1;
+    map<string, string> context_set = 2;        // 要设置的 KV（增量更新）
+    repeated string context_delete = 3;         // 要删除的 key
+    int64 extend_ttl_seconds = 4;               // 续期（秒）
+}
+
+// --- Delete ---
+message DeleteSessionRequest {
+    string session_id = 1;
+    bool force = 2;                             // 强制删除（含活跃会话）
+}
+
+message DeleteResponse {
+    bool success = 1;
+}
+
+// --- List ---
+message ListSessionsRequest {
+    string tenant_id = 1;                       // 按租户过滤（必填）
+    string user_id = 2;                         // 按用户过滤（可选）
+    string state = 3;                           // 按状态过滤（可选）
+    int32 page_size = 4;                        // 分页大小
+    string page_token = 5;                      // 分页 token
+}
+
+message ListSessionsResponse {
+    repeated Session sessions = 1;
+    string next_page_token = 2;                 // 下一页 token（空=最后一页）
+    int32 total_count = 3;
+}
+
+// =============================================================================
+// 消息历史接口
+// =============================================================================
+
+message AppendMessageRequest {
+    string session_id = 1;
+    Message message = 2;                        // 要追加的消息
+}
+
+message AppendMessageResponse {
+    string message_id = 1;                      // 分配的消息 ID
+    int32 total_messages = 2;                   // 当前消息总数
+}
+
+message ListMessagesRequest {
+    string session_id = 1;
+    int32 limit = 2;                            // 返回条数（默认 50）
+    string before_message_id = 3;               // 游标：此 ID 之前的消息
+}
+
+message ListMessagesResponse {
+    repeated Message messages = 1;
+    int32 total_count = 2;
+    bool has_more = 3;
+}
+
+// =============================================================================
+// gRPC Service 定义
+// =============================================================================
+
+service SessionService {
+    // 会话 CRUD
+    rpc CreateSession(CreateSessionRequest) returns (Session);
+    rpc GetSession(GetSessionRequest) returns (Session);
+    rpc UpdateSession(UpdateSessionRequest) returns (Session);
+    rpc DeleteSession(DeleteSessionRequest) returns (DeleteResponse);
+    rpc ListSessions(ListSessionsRequest) returns (ListSessionsResponse);
+
+    // 消息历史
+    rpc AppendMessage(AppendMessageRequest) returns (AppendMessageResponse);
+    rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse);
+}

@@ -6,6 +6,7 @@ set -e
 # Prerequisites: protoc, protoc-gen-go, protoc-gen-go-grpc, python grpcio-tools
 
 TOPIC_DIR="proto/topics"
+SERVICE_DIR="proto/services"
 GO_OUT="sdk/v1/go"
 PYTHON_OUT="sdk/v1/python"
 
@@ -35,6 +36,30 @@ find "${GO_TOPIC_TMP}" -name "*.pb.go" -exec mv {} "${GO_OUT}/topics/" \;
 rm -rf "${GO_TOPIC_TMP}"
 echo "[Go] Done."
 
+# --- Go: Service definitions ---
+if [ -d "${SERVICE_DIR}" ] && [ -n "$(find "${SERVICE_DIR}" -name '*.proto' -type f 2>/dev/null)" ]; then
+  echo "[Go] Generating Service definitions ..."
+  mkdir -p "${GO_OUT}/services"
+  GO_SVC_TMP=$(mktemp -d)
+  protoc \
+    -I "${SERVICE_DIR}" \
+    --go_out="${GO_SVC_TMP}" --go_opt=paths=source_relative \
+    --go-grpc_out="${GO_SVC_TMP}" --go-grpc_opt=paths=source_relative \
+    $(find "${SERVICE_DIR}" -name "*.proto" -type f)
+  # Flatten to per-service subdirectories
+  for pb_file in $(find "${GO_SVC_TMP}" -name "*.pb.go" -type f); do
+    filename=$(basename "${pb_file}")
+    # Determine subdirectory from source proto name (session.pb.go → session/)
+    svc_name=$(echo "${filename}" | sed 's/_grpc\.pb\.go$//' | sed 's/\.pb\.go$//' | sed 's/_grpc$//')
+    # Use first segment before any underscore as service dir
+    svc_dir=$(echo "${svc_name}" | cut -d_ -f1)
+    mkdir -p "${GO_OUT}/services/${svc_dir}"
+    mv "${pb_file}" "${GO_OUT}/services/${svc_dir}/"
+  done
+  rm -rf "${GO_SVC_TMP}"
+  echo "[Go] Done."
+fi
+
 # --- Python: EventBus protocol ---
 echo "[Python] Generating EventBus protocol ..."
 python -m grpc_tools.protoc \
@@ -60,6 +85,24 @@ for subdir in $(find "${PYTHON_OUT}/topics" -mindepth 1 -type d ! -name "__pycac
 done
 echo "[Python] Done."
 
+# --- Python: Service definitions ---
+if [ -d "${SERVICE_DIR}" ] && [ -n "$(find "${SERVICE_DIR}" -name '*.proto' -type f 2>/dev/null)" ]; then
+  echo "[Python] Generating Service definitions ..."
+  mkdir -p "${PYTHON_OUT}/services"
+  python -m grpc_tools.protoc \
+    -I "${SERVICE_DIR}" \
+    --python_out="${PYTHON_OUT}/services" \
+    --grpc_python_out="${PYTHON_OUT}/services" \
+    $(find "${SERVICE_DIR}" -name "*.proto" -type f)
+  for subdir in $(find "${PYTHON_OUT}/services" -mindepth 1 -type d ! -name "__pycache__"); do
+    init_file="${subdir}/__init__.py"
+    if [ ! -f "${init_file}" ]; then
+      echo "# Auto-generated: make this directory a Python package" > "${init_file}"
+    fi
+  done
+  echo "[Python] Done."
+fi
+
 # --- Rust (uses tonic-build via cargo) ---
 if command -v cargo &> /dev/null; then
   echo "[Rust] Building via cargo (tonic-build) ..."
@@ -70,16 +113,29 @@ else
 fi
 
 # --- TypeScript/Node.js: Topic data models ---
-TS_OUT="sdk/v1/node/src/topics"
+TS_TOPIC_OUT="sdk/v1/node/src/topics"
 if command -v npx &> /dev/null; then
-  echo "[TypeScript] Generating Topic models to ${TS_OUT}/ ..."
-  mkdir -p "${TS_OUT}"
+  echo "[TypeScript] Generating Topic models to ${TS_TOPIC_OUT}/ ..."
+  mkdir -p "${TS_TOPIC_OUT}"
   npx protoc \
-    --ts_proto_out="${TS_OUT}" \
+    --ts_proto_out="${TS_TOPIC_OUT}" \
     --ts_proto_opt=outputJsonMethods=false,esModuleInterop=true \
     --proto_path="${TOPIC_DIR}" \
     $(find "${TOPIC_DIR}" -name "*.proto" -type f)
   echo "[TypeScript] Done."
+
+  # --- TypeScript/Node.js: Service definitions ---
+  if [ -d "${SERVICE_DIR}" ] && [ -n "$(find "${SERVICE_DIR}" -name '*.proto' -type f 2>/dev/null)" ]; then
+    TS_SVC_OUT="sdk/v1/node/src/services"
+    echo "[TypeScript] Generating Service definitions to ${TS_SVC_OUT}/ ..."
+    mkdir -p "${TS_SVC_OUT}"
+    npx protoc \
+      --ts_proto_out="${TS_SVC_OUT}" \
+      --ts_proto_opt=outputJsonMethods=false,esModuleInterop=true \
+      --proto_path="${SERVICE_DIR}" \
+      $(find "${SERVICE_DIR}" -name "*.proto" -type f)
+    echo "[TypeScript] Done."
+  fi
 else
   echo "[TypeScript] Skipped: npx not found."
 fi
@@ -99,6 +155,14 @@ if command -v protoc-gen-grpc-java &> /dev/null || [ -f "${GRPC_JAVA_PLUGIN}" ];
     -I "${TOPIC_DIR}" \
     --java_out="${JAVA_OUT}" \
     $(find "${TOPIC_DIR}" -name "*.proto" -type f)
+  if [ -d "${SERVICE_DIR}" ] && [ -n "$(find "${SERVICE_DIR}" -name '*.proto' -type f 2>/dev/null)" ]; then
+    protoc \
+      -I "${SERVICE_DIR}" \
+      --java_out="${JAVA_OUT}" \
+      --plugin=protoc-gen-grpc-java="${PLUGIN}" \
+      --grpc-java_out="${JAVA_OUT}" \
+      $(find "${SERVICE_DIR}" -name "*.proto" -type f)
+  fi
   echo "[Java] Done."
 else
   echo "[Java] Skipped: protoc-gen-grpc-java not found. See sdk/v1/java/README.md for setup."
